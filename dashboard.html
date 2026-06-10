@@ -904,7 +904,7 @@ Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição d
     conhecimentoEstruturado = { base: novaBase, agente: { nome: agenteSelecionado.nome, base } };
   }
 
-  // ==================== NOVA FUNÇÃO: ENVIAR PARA CAIXA PRETA (REDIS) ====================
+    // ==================== NOVA FUNÇÃO: ENVIAR PARA CAIXA PRETA (REDIS) ====================
   btnEnviarCaixaPreta.addEventListener('click', async () => {
     if (!conhecimentoEstruturado) {
       statusMsg.textContent = '⚠️ Estruture o conhecimento primeiro.';
@@ -912,10 +912,8 @@ Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição d
     }
 
     const base = conhecimentoEstruturado.base;
-    const agentId = (base.id || 'idenza').toLowerCase().replace(/\s+/g, '_');
     const camadas = base.camadas || [];
     
-    // Mostrar barra de progresso e log
     progressBar.style.display = 'block';
     progressBarFill.style.width = '0%';
     logContainer.style.display = 'block';
@@ -928,109 +926,68 @@ Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição d
     }
 
     log(`🖤 Iniciando envio para Caixa Preta...`, 'info');
-    log(`📦 Agente: ${base.nome} (ID: ${agentId})`, 'info');
+    log(`📦 Agente: ${base.nome} (ID: ${base.id})`, 'info');
     log(`📊 Total de camadas: ${camadas.length}`, 'info');
     
     let enviados = 0;
     let erros = 0;
-    const totalTopics = camadas.reduce((acc, c) => acc + (c.temas?.length || 0), 0);
     
-    for (let ci = 0; ci < camadas.length; ci++) {
-      const camada = camadas[ci];
-      const temas = camada.temas || [];
+    for (const camada of camadas) {
+      const topicId = `${base.id}_n${camada.nivel}_${(camada.nome || 'tema').substring(0, 30).replace(/[^a-z0-9]/g, '_')}`;
       
-      for (let ti = 0; ti < temas.length; ti++) {
-        const tema = temas[ti];
-        const topicId = `${agentId}_n${camada.nivel}_${(tema.titulo || 'tema').toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 40)}`;
+      const payload = {
+        key: topicId,
+        content: camada.nome || 'Tema',
+        resposta_pronta: `📚 **${camada.nome || 'Tema'}** (Camada ${camada.nivel})\n\n${(camada.temas?.[0]?.subtemas || []).join(' | ')}`,
+        confidence: String(Math.max(0.5, 0.95 - (camada.nivel * 0.05))),
+        source_type: 'estacao_pesquisa',
+        agent: 'idenza'
+      };
+      
+      try {
+        const res = await fetch('https://knowledgegatekeeper.avz9-aproptech.workers.dev/api/save-to-preta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
         
-        // Conteúdo curado para o Redis
-        const conteudo = {
-          content: tema.titulo || 'Conteúdo',
-          resposta_pronta: `📚 **${tema.titulo || 'Tema'}** (Camada ${camada.nivel}: ${camada.nome})\n\n${(tema.subtemas || []).join(' | ')}`,
-          confidence: Math.max(0.5, (0.95 - (camada.nivel * 0.05))).toFixed(2),
-          nivel: camada.nivel,
-          source: 'estacao_pesquisa',
-          updated_at: new Date().toISOString()
-        };
-        
-        try {
-          // 1. Criar tópico HASH no Redis
-          const res = await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              key: topicId,
-              type: 'hash',
-              value: JSON.stringify(conteudo)
-            })
-          });
-          
-          if (res.ok) {
-            log(`✅ Tópico: ${topicId}`, 'success');
-            enviados++;
-            
-            // 2. Criar índices de busca (SET)
-            const palavrasChave = (tema.titulo || '').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
-            for (const palavra of palavrasChave) {
-              try {
-                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    key: `idx:${palavra}`,
-                    type: 'set',
-                    value: topicId
-                  })
-                });
-              } catch (e) {
-                // Índices são opcionais, não quebram o fluxo
-              }
-            }
-            
-            // 3. Criar sinônimos (SET)
-            const subtemasPalavras = (tema.subtemas || []).join(' ').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
-            const todasPalavras = [...new Set([...palavrasChave, ...subtemasPalavras])];
-            for (const palavra of todasPalavras.slice(0, 5)) {
-              try {
-                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    key: `syn:${palavra}`,
-                    type: 'set',
-                    value: topicId
-                  })
-                });
-              } catch (e) {
-                // Sinônimos são opcionais
-              }
-            }
-          } else {
-            const errData = await res.json().catch(() => ({}));
-            log(`❌ Erro em ${topicId}: ${errData.error || 'Falha na API'}`, 'error');
-            erros++;
-          }
-        } catch (e) {
-          log(`❌ Conexão: ${e.message}`, 'error');
+        if (res.ok) {
+          enviados++;
+          log(`✅ Camada ${camada.nivel}: ${topicId}`, 'success');
+        } else {
           erros++;
+          log(`❌ Camada ${camada.nivel}: Falha`, 'error');
         }
-        
-        // Atualizar barra de progresso
-        const progresso = ((enviados + erros) / totalTopics) * 100;
-        progressBarFill.style.width = `${progresso}%`;
+      } catch (e) {
+        erros++;
+        log(`❌ Erro: ${e.message}`, 'error');
       }
+      
+      progressBarFill.style.width = `${((enviados + erros) / camadas.length) * 100}%`;
     }
     
-    // Finalizar
     progressBarFill.style.width = '100%';
-    log(`\n🎉 CONCLUÍDO! ${enviados} tópicos enviados, ${erros} erros.`, enviados > 0 ? 'success' : 'error');
-    log(`💡 Agora o Dashboard do Cliente pode buscar esses temas!`, 'info');
-    log(`🔗 Teste: acesse o dashboard e pergunte sobre "${base.nome}"`, 'info');
+    log(`\n🎉 ${enviados} enviados, ${erros} erros.`, enviados > 0 ? 'success' : 'error');
     
-    statusMsg.textContent = `✅ ${enviados} tópicos enviados para a Caixa Preta!`;
+    // ========== AUTOMÁTICO: Já roda o Gatekeeper! ==========
+    log(`\n🔄 Acionando Gatekeeper automaticamente...`, 'info');
+    try {
+      const gkRes = await fetch('https://knowledgegatekeeper.avz9-aproptech.workers.dev/api/gatekeeper/curate', {
+        method: 'POST'
+      });
+      const gkData = await gkRes.json();
+      if (gkData.success) {
+        log(`✅ Gatekeeper: ${gkData.summary?.approved || 0} aprovados para a Caixa Branca!`, 'success');
+        log(`📊 Processados: ${gkData.summary?.processed || 0} | ✅ Approve: ${gkData.summary?.approved || 0}`, 'info');
+      }
+    } catch (e) {
+      log(`⚠️ Gatekeeper offline. Rode manualmente.`, 'error');
+    }
+    // ========== FIM AUTOMÁTICO ==========
+    
+    statusMsg.textContent = `✅ ${enviados} camadas na Caixa Preta → Branca!`;
     setTimeout(() => { statusMsg.textContent = ''; }, 5000);
     
-    // Salvar na sessionStorage para debug
     sessionStorage.setItem('conhecimentoEstruturado', JSON.stringify(conhecimentoEstruturado));
   });
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Estação de Pesquisa • Montagem de Super Agentes + Eixos Redis</title>
+  <title>IDEnza • Super Catálogo de Agentes • 7 Camadas Semânticas</title>
   <style>
     :root {
       --bg: #f8f9fa;
@@ -165,6 +165,14 @@
     }
     .agent-select-item:hover { background: #eef3f0; }
     .agent-select-item input[type="radio"] { margin: 0; }
+    .agent-count-badge {
+      font-size: 0.55rem;
+      background: var(--petroleum-light);
+      color: white;
+      padding: 1px 6px;
+      margin-left: auto;
+      letter-spacing: 0.5px;
+    }
     .raw-textarea {
       width: 100%;
       min-height: 100px;
@@ -208,8 +216,6 @@
       color: var(--petroleum-light);
       margin-top: 6px;
     }
-
-    /* Estilos dos Eixos Redis */
     .redis-axes {
       display: flex;
       flex-wrap: wrap;
@@ -276,8 +282,6 @@
       gap: 6px;
       margin-top: 6px;
     }
-
-    /* Modal de criação de eixo (luxo) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -319,8 +323,6 @@
       gap: 10px;
       justify-content: flex-end;
     }
-
-    /* NOVO: Barra de progresso e log de envio */
     .progress-bar {
       height: 6px;
       background: #e0e0e0;
@@ -349,30 +351,73 @@
     .log-line-success { color: #4caf50; }
     .log-line-error { color: #f44336; }
     .log-line-info { color: #ff9800; }
-
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .hero-stat {
+      background: #eef7f8;
+      border: 1px solid #cde2e5;
+      padding: 6px 14px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--petroleum);
+      font-family: var(--font-mono);
+      box-shadow: var(--shadow-sm);
+    }
+    .sustentabilidade-selo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e8f5e9;
+      border: 1px solid #4caf50;
+      color: #2e7d32;
+      padding: 4px 12px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
     @media (max-width: 600px) {
       body { padding: 8px; }
       .eixo-form-container .form-row { flex-direction: column; align-items: stretch; }
       .eixo-form-container label { min-width: auto; }
       .modal-box { width: 90vw; }
+      .hero-stats { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🧠 Estação de Pesquisa • Super Agentes</h1>
-  <span class="badge">Montagem em 7 Camadas + Redis</span>
+  <h1>🧠 IDEnza • Catálogo de Super Agentes</h1>
+  <span class="badge">7 Camadas Semânticas • Redis</span>
 </header>
 
-<!-- CATÁLOGO DE AGENTES (EXPANSÍVEL) -->
+<!-- SELO DE SUSTENTABILIDADE -->
+<div style="text-align:center; margin-bottom:12px;">
+  <span class="sustentabilidade-selo">🌱 Primeira IA de Sustentabilidade do Mundo • Carbono Neutro</span>
+</div>
+
+<!-- ESTATÍSTICAS RÁPIDAS -->
+<div class="hero-stats">
+  <span class="hero-stat">📦 50 Agentes</span>
+  <span class="hero-stat">📊 7 Camadas</span>
+  <span class="hero-stat">⚙️ 9 Eixos Redis</span>
+  <span class="hero-stat">🖤 Caixa Preta + Branca</span>
+</div>
+
+<!-- CATÁLOGO COMPLETO DE AGENTES -->
 <div class="section">
-  <div class="section-title"><span>📋</span> Catálogo de Agentes</div>
-  <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">Selecione um agente para gerar a pergunta de pesquisa e montar o conhecimento.</p>
+  <div class="section-title"><span>📋</span> Catálogo Universal de Agentes</div>
+  <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">Selecione um agente para gerar a pergunta de pesquisa em 7 camadas. Após estruturar, envie para a Caixa Preta.</p>
 
   <!-- Empresariais -->
   <div class="expando" id="expandoEmpresariais">
-    <div class="expando-toggle">🏭 Agentes Empresariais e de Negócios (expandir)</div>
+    <div class="expando-toggle">🏭 Agentes Empresariais e de Negócios <span class="agent-count-badge">9</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="empresariais">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Planeamento Estratégico" data-base="planeamento"> Planeamento Estratégico</label>
@@ -390,7 +435,7 @@
 
   <!-- Sustentabilidade -->
   <div class="expando" id="expandoSustentabilidade">
-    <div class="expando-toggle">🌱 Agentes Primários e Sustentabilidade (expandir)</div>
+    <div class="expando-toggle">🌱 Agentes de Sustentabilidade e Meio Ambiente <span class="agent-count-badge">6</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="sustentabilidade">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Plantações" data-base="plantacoes"> Plantações</label>
@@ -405,7 +450,7 @@
 
   <!-- Saúde -->
   <div class="expando" id="expandoSaude">
-    <div class="expando-toggle">🍎 Agentes de Saúde e Bem‑Estar (expandir)</div>
+    <div class="expando-toggle">🍎 Agentes de Saúde e Bem‑Estar <span class="agent-count-badge">4</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="saude">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Nutrição e Dietas Especiais" data-base="nutricao"> Nutrição e Dietas Especiais</label>
@@ -418,7 +463,7 @@
 
   <!-- Psicologia -->
   <div class="expando" id="expandoPsicologia">
-    <div class="expando-toggle">🧠 Psicologia (expandir)</div>
+    <div class="expando-toggle">🧠 Psicologia <span class="agent-count-badge">4</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="psicologia">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Clínica" data-base="psicologia-clinica"> Psicologia Clínica</label>
@@ -431,7 +476,7 @@
 
   <!-- Medicina -->
   <div class="expando" id="expandoMedicina">
-    <div class="expando-toggle">🏥 Medicina (expandir)</div>
+    <div class="expando-toggle">🏥 Medicina <span class="agent-count-badge">4</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="medicina">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cardiologia" data-base="cardiologia"> Cardiologia</label>
@@ -444,7 +489,7 @@
 
   <!-- Veículos de Luxo -->
   <div class="expando" id="expandoVeiculos">
-    <div class="expando-toggle">🚗 Veículos de Luxo (expandir)</div>
+    <div class="expando-toggle">🚗 Veículos de Luxo <span class="agent-count-badge">3</span></div>
     <div class="expando-body">
       <div class="agent-select-list" data-category="veiculos">
         <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Ferrari" data-base="ferrari"> História da Ferrari</label>
@@ -453,18 +498,76 @@
       </div>
     </div>
   </div>
+
+  <!-- NOVOS: Educação, Tecnologia, Artes, Esportes, Direito, Engenharia, Gastronomia, História, Filosofia -->
+  <div class="expando" id="expandoEducacao">
+    <div class="expando-toggle">📚 Educação e Pedagogia <span class="agent-count-badge">4</span></div>
+    <div class="expando-body">
+      <div class="agent-select-list" data-category="educacao">
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfabetização e Letramento" data-base="alfabetizacao"> Alfabetização e Letramento</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Inclusiva" data-base="educacao-inclusiva"> Educação Inclusiva</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Tecnologias Educacionais" data-base="tecnologias-educacionais"> Tecnologias Educacionais</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Avaliação e Currículo" data-base="avaliacao-curriculo"> Avaliação e Currículo</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="expando" id="expandoTecnologia">
+    <div class="expando-toggle">💻 Tecnologia e Computação <span class="agent-count-badge">4</span></div>
+    <div class="expando-body">
+      <div class="agent-select-list" data-category="tecnologia">
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Inteligência Artificial" data-base="ia"> Inteligência Artificial</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cibersegurança" data-base="ciberseguranca"> Cibersegurança</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Blockchain e Web3" data-base="blockchain"> Blockchain e Web3</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Computação Quântica" data-base="computacao-quantica"> Computação Quântica</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="expando" id="expandoArtes">
+    <div class="expando-toggle">🎨 Artes e Cultura <span class="agent-count-badge">4</span></div>
+    <div class="expando-body">
+      <div class="agent-select-list" data-category="artes">
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Arte" data-base="historia-arte"> História da Arte</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música e Musicologia" data-base="musica"> Música e Musicologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cinema e Audiovisual" data-base="cinema"> Cinema e Audiovisual</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Mundial" data-base="literatura"> Literatura Mundial</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="expando" id="expandoEsportes">
+    <div class="expando-toggle">⚽ Esportes e Performance <span class="agent-count-badge">3</span></div>
+    <div class="expando-body">
+      <div class="agent-select-list" data-category="esportes">
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Futebol e Tática" data-base="futebol"> Futebol e Tática</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Preparação Física" data-base="preparacao-fisica"> Preparação Física</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Esportiva" data-base="psicologia-esportiva"> Psicologia Esportiva</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="expando" id="expandoDireito">
+    <div class="expando-toggle">⚖️ Direito e Legislação <span class="agent-count-badge">5</span></div>
+    <div class="expando-body">
+      <div class="agent-select-list" data-category="direito">
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Constitucional" data-base="constitucional"> Direito Constitucional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Trabalhista" data-base="trabalhista"> Direito Trabalhista</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Penal" data-base="penal"> Direito Penal</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Civil" data-base="civil"> Direito Civil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Ambiental" data-base="ambiental"> Direito Ambiental</label>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- NOVA SEÇÃO: EIXOS REDIS -->
+<!-- EIXOS REDIS -->
 <div class="section">
   <div class="section-title"><span>⚙️</span> Eixos Redis (Inserir Temas)</div>
-  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento. Você também pode criar novos eixos personalizados.</p>
-  <div class="redis-axes" id="redisAxesContainer">
-    <!-- chips gerados dinamicamente -->
-  </div>
+  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento.</p>
+  <div class="redis-axes" id="redisAxesContainer"></div>
   <button class="btn btn-outline" id="btnNovoEixo" style="margin-top:6px;">➕ Criar Novo Eixo</button>
   <div class="eixo-form-container" id="eixoFormContainer"></div>
-  <div class="eixos-custom-list" id="eixosCustomList"></div>
   <div style="margin-top:10px; display:flex; gap:8px;">
     <button class="btn btn-outline" id="btnCopiarDadosRedis">📋 Copiar Dados Redis</button>
     <button class="btn btn-gold" id="btnEnviarRedisMotor">🚀 Enviar Redis para o Motor</button>
@@ -472,7 +575,7 @@
   <div class="status-msg" id="redisStatusMsg"></div>
 </div>
 
-<!-- MODAL LUXO PARA CRIAR EIXO -->
+<!-- MODAL EIXO -->
 <div class="modal-overlay" id="modalNovoEixo">
   <div class="modal-box">
     <h3>✨ Criar Novo Eixo</h3>
@@ -487,110 +590,61 @@
 <!-- PAINEL DO AGENTE SELECIONADO -->
 <div class="section" id="panelPesquisa" style="display:none;">
   <div class="section-title"><span>🔬</span> Pesquisa para: <span id="nomeAgenteSelecionado"></span></div>
-
-  <!-- Pergunta gerada -->
-  <p style="font-size:0.7rem; color:#666;">Pergunta ultra detalhada (copie e cole em qualquer IA):</p>
+  <p style="font-size:0.7rem; color:#666;">Pergunta ultra detalhada em 7 camadas (copie e cole em qualquer IA):</p>
   <div class="generated-question" id="generatedQuestion"></div>
   <button class="btn btn-outline" id="btnCopyQuestion" style="margin-top:6px;">📋 Copiar Pergunta</button>
-
-  <!-- Colar resposta da IA -->
   <p style="font-size:0.7rem; color:#666; margin-top:12px;">Cole aqui a resposta da IA:</p>
   <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..."></textarea>
-
-  <!-- Botão de estruturação -->
   <button class="btn btn-gold" id="btnEstruturar" style="margin-top:8px;">⚙️ Estruturar nas 7 Camadas</button>
-
-  <!-- Pré-visualização das camadas -->
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
-
-  <!-- JSON final -->
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
-  
-  <!-- NOVO: Botão de envio direto para o Worker -->
   <button class="btn btn-gold" id="btnEnviarCaixaPreta" style="margin-top:8px; display:none;">🖤 Enviar para Caixa Preta (Redis via Worker)</button>
-  
-  <!-- NOVO: Barra de progresso -->
-  <div class="progress-bar" id="progressBar" style="display:none;">
-    <div class="progress-bar-fill" id="progressBarFill"></div>
-  </div>
-  
-  <!-- NOVO: Log de envio -->
+  <div class="progress-bar" id="progressBar" style="display:none;"><div class="progress-bar-fill" id="progressBarFill"></div></div>
   <div class="log-container" id="logContainer" style="display:none;"></div>
-  
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
 <script>
-  // ==================== CONFIGURAÇÃO DO WORKER ====================
   const API_BASE = 'https://idenza-api.avizaecosystem.workers.dev';
   
-  // ==================== FUNÇÃO AUXILIAR DE CÓPIA ROBUSTA ====================
   function copiarTextoParaClipboard(texto) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto)
-          .then(resolve)
-          .catch(() => {
-            fallbackCopiar(texto) ? resolve() : reject();
-          });
+        navigator.clipboard.writeText(texto).then(resolve).catch(() => fallbackCopiar(texto) && resolve());
       } else {
-        fallbackCopiar(texto) ? resolve() : reject();
+        fallbackCopiar(texto) && resolve();
       }
     });
   }
-
   function fallbackCopiar(texto) {
     try {
-      const textarea = document.createElement('textarea');
-      textarea.value = texto;
-      textarea.style.position = 'fixed';
-      textarea.style.top = '-9999px';
-      textarea.style.left = '-9999px';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      textarea.setSelectionRange(0, 99999);
-      const resultado = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return resultado;
-    } catch (e) {
-      return false;
-    }
+      const t = document.createElement('textarea'); t.value = texto;
+      t.style.cssText = 'position:fixed;top:-9999px';
+      document.body.appendChild(t); t.select();
+      document.execCommand('copy'); document.body.removeChild(t);
+      return true;
+    } catch (e) { return false; }
   }
 
-  // ==================== GERENCIAMENTO DE EIXOS REDIS ====================
-  const defaultEixos = ['STRING', 'LIST', 'SET', 'ZSET', 'HASH', 'STREAM', 'GEO', 'BITMAP', 'PUB/SUB'];
-  let customEixos = [];
-  let redisData = {};
-
-  defaultEixos.forEach(eixo => { redisData[eixo] = []; });
+  const defaultEixos = ['STRING','LIST','SET','ZSET','HASH','STREAM','GEO','BITMAP','PUB/SUB'];
+  let customEixos = [], redisData = {};
+  defaultEixos.forEach(e => redisData[e] = []);
+  let eixoAtual = null;
 
   const redisAxesContainer = document.getElementById('redisAxesContainer');
   const eixoFormContainer = document.getElementById('eixoFormContainer');
-  const btnNovoEixo = document.getElementById('btnNovoEixo');
   const redisStatusMsg = document.getElementById('redisStatusMsg');
   const modalNovoEixo = document.getElementById('modalNovoEixo');
   const inputNovoEixo = document.getElementById('inputNovoEixo');
-  const btnCancelarModal = document.getElementById('btnCancelarModal');
-  const btnConfirmarModal = document.getElementById('btnConfirmarModal');
-
-  let eixoAtual = null;
 
   function renderizarChips() {
     redisAxesContainer.innerHTML = '';
-    const todosEixos = [...defaultEixos, ...customEixos];
-    todosEixos.forEach(eixo => {
+    [...defaultEixos, ...customEixos].forEach(eixo => {
       const chip = document.createElement('span');
-      chip.className = 'redis-chip';
-      chip.dataset.eixo = eixo;
-      chip.textContent = eixo;
+      chip.className = 'redis-chip'; chip.dataset.eixo = eixo; chip.textContent = eixo;
       chip.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (eixoFormContainer.classList.contains('open') && eixoAtual === eixo) {
-          fecharFormularioEixo();
-        } else {
-          abrirFormularioEixo(eixo);
-        }
+        eixoFormContainer.classList.contains('open') && eixoAtual === eixo ? fecharFormularioEixo() : abrirFormularioEixo(eixo);
       });
       redisAxesContainer.appendChild(chip);
     });
@@ -598,440 +652,125 @@
 
   function abrirFormularioEixo(eixo) {
     eixoAtual = eixo;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-    const chipAtivo = document.querySelector(`.redis-chip[data-eixo="${eixo}"]`);
-    if (chipAtivo) chipAtivo.classList.add('active-chip');
-
-    let formHTML = '';
-    switch (eixo) {
-      case 'STRING':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: config:app"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: ativo"></div>`;
-        break;
-      case 'LIST':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: historico:leis"></div><div class="form-row"><label>Elemento:</label><input id="eixoValue" placeholder="ex: lei_14.620"></div>`;
-        break;
-      case 'SET':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: tags:economia"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" placeholder="ex: macroeconomia"></div>`;
-        break;
-      case 'ZSET':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: ranking:confianca"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" placeholder="ex: artigo_123"></div><div class="form-row"><label>Score:</label><input id="eixoScore" placeholder="ex: 0.95"></div>`;
-        break;
-      case 'HASH':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: conhecimento:base"></div><div class="form-row"><label>Campo:</label><input id="eixoField" placeholder="ex: titulo"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: Economia"></div>`;
-        break;
-      case 'STREAM':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: eventos:atualizacao"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" placeholder="ex: atualizacao_disponivel"></div>`;
-        break;
-      case 'GEO':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: localizacao:agentes"></div><div class="form-row"><label>Longitude:</label><input id="eixoLong" placeholder="ex: -46.6333"></div><div class="form-row"><label>Latitude:</label><input id="eixoLat" placeholder="ex: -23.5505"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" placeholder="ex: agente_sede"></div>`;
-        break;
-      case 'BITMAP':
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: flags:status"></div><div class="form-row"><label>Offset:</label><input id="eixoOffset" placeholder="ex: 5"></div><div class="form-row"><label>Valor (0/1):</label><input id="eixoValue" placeholder="ex: 1"></div>`;
-        break;
-      case 'PUB/SUB':
-        formHTML = `<div class="form-row"><label>Canal:</label><input id="eixoKey" placeholder="ex: canal:noticias"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" placeholder="ex: publicacao_lei"></div>`;
-        break;
-      default:
-        formHTML = `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>`;
-    }
-
-    eixoFormContainer.innerHTML = formHTML + `<div style="display:flex; gap:8px; margin-top:8px;"><button class="btn btn-gold" id="btnInserirEixo">📥 Inserir Tema</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
+    document.querySelectorAll('.redis-chip').forEach(c => c.classList.remove('active-chip'));
+    document.querySelector(`.redis-chip[data-eixo="${eixo}"]`)?.classList.add('active-chip');
+    const forms = {STRING:'<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: config:app"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: ativo"></div>',
+      LIST:'<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: historico:leis"></div><div class="form-row"><label>Elemento:</label><input id="eixoValue" placeholder="ex: lei_14.620"></div>',
+      SET:'<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: tags:economia"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" placeholder="ex: macroeconomia"></div>',
+      ZSET:'<div class="form-row"><label>Chave:</label><input id="eixoKey"></div><div class="form-row"><label>Membro:</label><input id="eixoValue"></div><div class="form-row"><label>Score:</label><input id="eixoScore"></div>',
+      HASH:'<div class="form-row"><label>Chave:</label><input id="eixoKey"></div><div class="form-row"><label>Campo:</label><input id="eixoField"></div><div class="form-row"><label>Valor:</label><input id="eixoValue"></div>',
+      STREAM:'<div class="form-row"><label>Chave:</label><input id="eixoKey"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue"></div>',
+      GEO:'<div class="form-row"><label>Chave:</label><input id="eixoKey"></div><div class="form-row"><label>Longitude:</label><input id="eixoLong"></div><div class="form-row"><label>Latitude:</label><input id="eixoLat"></div><div class="form-row"><label>Membro:</label><input id="eixoValue"></div>',
+      BITMAP:'<div class="form-row"><label>Chave:</label><input id="eixoKey"></div><div class="form-row"><label>Offset:</label><input id="eixoOffset"></div><div class="form-row"><label>Valor (0/1):</label><input id="eixoValue"></div>',
+      'PUB/SUB':'<div class="form-row"><label>Canal:</label><input id="eixoKey"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue"></div>'};
+    eixoFormContainer.innerHTML = (forms[eixo] || forms['STRING']) + '<div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-gold" id="btnInserirEixo">📥 Inserir Tema</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>';
     eixoFormContainer.classList.add('open');
-
     document.getElementById('btnInserirEixo').addEventListener('click', inserirDadosEixo);
     document.getElementById('btnCancelarEixo').addEventListener('click', fecharFormularioEixo);
   }
 
-  function fecharFormularioEixo() {
-    eixoFormContainer.classList.remove('open');
-    eixoAtual = null;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-  }
-
+  function fecharFormularioEixo() { eixoFormContainer.classList.remove('open'); eixoAtual = null; document.querySelectorAll('.redis-chip').forEach(c => c.classList.remove('active-chip')); }
+  
   function inserirDadosEixo() {
     const key = document.getElementById('eixoKey')?.value.trim();
     const value = document.getElementById('eixoValue')?.value.trim();
-    if (!key || !value) {
-      alert('Preencha ao menos chave e valor.');
-      return;
-    }
+    if (!key || !value) { alert('Preencha chave e valor.'); return; }
     if (!redisData[eixoAtual]) redisData[eixoAtual] = [];
-    const entry = { key, value, timestamp: new Date().toISOString() };
-    if (eixoAtual === 'ZSET') {
-      const score = document.getElementById('eixoScore')?.value.trim();
-      if (!score) { alert('Score obrigatório para ZSET.'); return; }
-      entry.score = score;
-    } else if (eixoAtual === 'HASH') {
-      const field = document.getElementById('eixoField')?.value.trim();
-      if (!field) { alert('Campo obrigatório para HASH.'); return; }
-      entry.field = field;
-    } else if (eixoAtual === 'GEO') {
-      const lon = document.getElementById('eixoLong')?.value.trim();
-      const lat = document.getElementById('eixoLat')?.value.trim();
-      if (!lon || !lat) { alert('Longitude e Latitude obrigatórios para GEO.'); return; }
-      entry.longitude = lon;
-      entry.latitude = lat;
-    } else if (eixoAtual === 'BITMAP') {
-      const offset = document.getElementById('eixoOffset')?.value.trim();
-      if (!offset) { alert('Offset obrigatório para BITMAP.'); return; }
-      entry.offset = offset;
-    }
-    redisData[eixoAtual].push(entry);
-    redisStatusMsg.textContent = `📥 Tema inserido no eixo ${eixoAtual}: ${key} → ${value}`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
+    redisData[eixoAtual].push({key, value, timestamp: new Date().toISOString()});
+    redisStatusMsg.textContent = `📥 Tema inserido no eixo ${eixoAtual}`;
+    setTimeout(() => redisStatusMsg.textContent = '', 3000);
     fecharFormularioEixo();
   }
 
-  // Modal de criação de eixo
-  function abrirModalNovoEixo() {
-    modalNovoEixo.classList.add('open');
-    inputNovoEixo.value = '';
-    inputNovoEixo.focus();
-  }
-
-  function fecharModalNovoEixo() {
-    modalNovoEixo.classList.remove('open');
-  }
-
-  function confirmarNovoEixo() {
-    const nomeEixo = inputNovoEixo.value.trim();
-    if (!nomeEixo) return;
-    const nomeLimpo = nomeEixo.toUpperCase();
-    if (defaultEixos.includes(nomeLimpo) || customEixos.includes(nomeLimpo)) {
-      alert('Esse eixo já existe.');
-      return;
-    }
-    customEixos.push(nomeLimpo);
-    redisData[nomeLimpo] = [];
-    renderizarChips();
-    fecharModalNovoEixo();
-    redisStatusMsg.textContent = `✅ Eixo "${nomeLimpo}" criado com sucesso.`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-  }
-
-  btnNovoEixo.addEventListener('click', abrirModalNovoEixo);
-  btnCancelarModal.addEventListener('click', fecharModalNovoEixo);
-  btnConfirmarModal.addEventListener('click', confirmarNovoEixo);
-  modalNovoEixo.addEventListener('click', (e) => {
-    if (e.target === modalNovoEixo) fecharModalNovoEixo();
+  document.getElementById('btnNovoEixo').addEventListener('click', () => { modalNovoEixo.classList.add('open'); inputNovoEixo.focus(); });
+  document.getElementById('btnCancelarModal').addEventListener('click', () => modalNovoEixo.classList.remove('open'));
+  document.getElementById('btnConfirmarModal').addEventListener('click', () => {
+    const nome = inputNovoEixo.value.trim().toUpperCase();
+    if (!nome || [...defaultEixos, ...customEixos].includes(nome)) { alert('Eixo inválido ou já existe.'); return; }
+    customEixos.push(nome); redisData[nome] = []; renderizarChips(); modalNovoEixo.classList.remove('open');
   });
-
-  // Copiar dados Redis
-  document.getElementById('btnCopiarDadosRedis').addEventListener('click', () => {
-    const dados = JSON.stringify(redisData, null, 2);
-    copiarTextoParaClipboard(dados).then(() => {
-      redisStatusMsg.textContent = '📋 Dados Redis copiados para a área de transferência.';
-      setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-    }).catch(() => {
-      redisStatusMsg.textContent = '⚠️ Falha ao copiar. Selecione o texto manualmente.';
-      setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-    });
-  });
-
-  // Enviar Redis para o Motor Ultra IA
-  document.getElementById('btnEnviarRedisMotor').addEventListener('click', () => {
-    sessionStorage.setItem('dadosRedis', JSON.stringify(redisData));
-    redisStatusMsg.textContent = '🚀 Dados Redis enviados para o Motor Ultra IA.';
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-  });
+  document.getElementById('btnCopiarDadosRedis').addEventListener('click', () => copiarTextoParaClipboard(JSON.stringify(redisData, null, 2)));
+  document.getElementById('btnEnviarRedisMotor').addEventListener('click', () => { sessionStorage.setItem('dadosRedis', JSON.stringify(redisData)); redisStatusMsg.textContent = '🚀 Enviado!'; });
 
   renderizarChips();
 
-  // ==================== LÓGICA DO CATÁLOGO DE AGENTES ====================
+  // ========== CATÁLOGO DE AGENTES ==========
   const panelPesquisa = document.getElementById('panelPesquisa');
   const nomeAgenteEl = document.getElementById('nomeAgenteSelecionado');
   const generatedQuestionEl = document.getElementById('generatedQuestion');
   const respostaIA = document.getElementById('respostaIA');
   const camadasPreview = document.getElementById('camadasPreview');
   const jsonFinalPreview = document.getElementById('jsonFinalPreview');
-  const btnEstruturar = document.getElementById('btnEstruturar');
   const btnEnviarCaixaPreta = document.getElementById('btnEnviarCaixaPreta');
   const progressBar = document.getElementById('progressBar');
   const progressBarFill = document.getElementById('progressBarFill');
   const logContainer = document.getElementById('logContainer');
   const statusMsg = document.getElementById('statusMsg');
-  const btnCopyQuestion = document.getElementById('btnCopyQuestion');
+  let agenteSelecionado = null, conhecimentoEstruturado = null;
 
-  let agenteSelecionado = null;
-  let conhecimentoEstruturado = null;
+  document.querySelectorAll('.expando-toggle').forEach(t => t.addEventListener('click', () => {
+    const exp = t.parentElement; exp.classList.toggle('open');
+    t.textContent = exp.classList.contains('open') ? t.textContent.replace('(expandir)','(recolher)') : t.textContent.replace('(recolher)','(expandir)');
+  }));
 
-  document.querySelectorAll('.expando-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const expando = toggle.parentElement;
-      expando.classList.toggle('open');
-      const label = toggle.textContent.trim();
-      if (expando.classList.contains('open')) {
-        toggle.textContent = label.replace('(expandir)', '(recolher)');
-      } else {
-        toggle.textContent = label.replace('(recolher)', '(expandir)');
-      }
-    });
-  });
+  document.querySelectorAll('input[name="agentRadio"]').forEach(r => r.addEventListener('change', () => {
+    if (r.checked) { agenteSelecionado = {nome: r.value, base: r.dataset.base}; abrirPainel(); }
+  }));
 
-  document.querySelectorAll('input[type="radio"][name="agentRadio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      if (radio.checked) {
-        agenteSelecionado = {
-          nome: radio.value,
-          base: radio.dataset.base
-        };
-        abrirPainelPesquisa();
-      }
-    });
-  });
-
-  function abrirPainelPesquisa() {
+  function abrirPainel() {
     if (!agenteSelecionado) return;
     panelPesquisa.style.display = 'block';
     nomeAgenteEl.textContent = agenteSelecionado.nome;
-    const pergunta = gerarPerguntaDetalhada(agenteSelecionado.nome, agenteSelecionado.base);
-    generatedQuestionEl.textContent = pergunta;
-    respostaIA.value = '';
-    camadasPreview.style.display = 'none';
-    camadasPreview.textContent = '';
-    jsonFinalPreview.style.display = 'none';
-    jsonFinalPreview.textContent = '';
-    btnEnviarCaixaPreta.style.display = 'none';
-    progressBar.style.display = 'none';
-    logContainer.style.display = 'none';
-    logContainer.innerHTML = '';
-    statusMsg.textContent = '';
+    generatedQuestionEl.textContent = `Você é um especialista em ${agenteSelecionado.base}. Forneça conhecimento completo sobre "${agenteSelecionado.nome}" nas 7 camadas semânticas:\n7. ESSÊNCIA\n6. TEORIA GERAL\n5. ESTRUTURAS ABSTRATAS\n4. APLICAÇÕES ESPECÍFICAS\n3. PRÁTICAS PROFISSIONAIS\n2. USO PESSOAL/COTIDIANO\n1. COTIDIANO E DICAS RÁPIDAS`;
+    respostaIA.value = ''; camadasPreview.style.display = 'none'; jsonFinalPreview.style.display = 'none';
+    btnEnviarCaixaPreta.style.display = 'none'; progressBar.style.display = 'none'; logContainer.style.display = 'none';
   }
 
-  function gerarPerguntaDetalhada(nomeAgente, base) {
-    return `Você é um especialista em ${base}. Por favor, forneça um conhecimento completo e estruturado sobre "${nomeAgente}", utilizando exclusivamente fontes oficiais e confiáveis (livros técnicos, artigos científicos, normas, legislação, manuais de referência). 
+  document.getElementById('btnCopyQuestion').addEventListener('click', () => copiarTextoParaClipboard(generatedQuestionEl.textContent));
 
-Organize a resposta nos seguintes níveis (7 camadas semânticas):
-
-7. ESSÊNCIA: Definição fundamental, axiomas, conceitos basilares do tema.
-6. TEORIA GERAL: Principais teorias, escolas de pensamento, evolução histórica.
-5. ESTRUTURAS ABSTRATAS: Modelos formais, classificações, frameworks conceituais.
-4. APLICAÇÕES ESPECÍFICAS: Casos de uso reais, exemplos práticos, áreas de atuação.
-3. PRÁTICAS PROFISSIONAIS: Métodos, protocolos, ferramentas utilizadas por especialistas.
-2. USO PESSOAL/COTIDIANO: Como uma pessoa comum aplica esse conhecimento no dia a dia.
-1. COTIDIANO E DICAS RÁPIDAS: Curiosidades, macetes, recomendações práticas.
-
-Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição de X. Subtemas: A, B, C". Seja exaustivo e rigoroso. Cite as fontes ao final.`;
-  }
-
-  // Botão de copiar pergunta
-  btnCopyQuestion.addEventListener('click', () => {
-    const pergunta = generatedQuestionEl.textContent.trim();
-    if (!pergunta || pergunta.length < 10) {
-      statusMsg.textContent = '⚠️ Nenhuma pergunta gerada. Selecione um agente primeiro.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-      return;
-    }
-    copiarTextoParaClipboard(pergunta).then(() => {
-      statusMsg.textContent = '📋 Pergunta copiada com sucesso! Cole na IA de sua preferência.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-    }).catch(() => {
-      statusMsg.textContent = '⚠️ Falha ao copiar. Tente selecionar o texto manualmente.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-    });
-  });
-
-  btnEstruturar.addEventListener('click', () => {
+  document.getElementById('btnEstruturar').addEventListener('click', () => {
     const texto = respostaIA.value.trim();
-    if (!texto) {
-      statusMsg.textContent = '⚠️ Cole a resposta da IA antes de estruturar.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-      return;
-    }
-
-    const camadasExtraidas = extrairCamadas(texto, agenteSelecionado.base);
-    conhecimentoEstruturado = camadasExtraidas;
-    exibirPreVisualizacao(camadasExtraidas);
-    gerarJSONFinal(camadasExtraidas);
+    if (!texto) return;
+    const camadas = extrairCamadas(texto);
+    conhecimentoEstruturado = {base: agenteSelecionado.base, nome: agenteSelecionado.nome, camadas};
+    camadasPreview.textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+    camadasPreview.style.display = 'block';
+    jsonFinalPreview.textContent = JSON.stringify(conhecimentoEstruturado, null, 2);
+    jsonFinalPreview.style.display = 'block';
     btnEnviarCaixaPreta.style.display = 'inline-flex';
   });
 
-  function extrairCamadas(texto, base) {
-    const linhas = texto.split('\n');
-    const camadas = [];
+  function extrairCamadas(texto) {
+    const linhas = texto.split('\n'), camadas = [];
     let current = null;
-    const regexNivel = /(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i;
-    for (const linha of linhas) {
-      const match = linha.match(regexNivel);
-      if (match) {
-        const nivel = parseInt(match[1]);
-        const nome = match[2].trim();
-        current = { nivel, nome, titulo: nome, subtemas: [] };
-        camadas.push(current);
-      } else if (current) {
-        const partes = linha.split(/[,;]| - /).map(s => s.trim()).filter(s => s.length > 5);
-        if (partes.length > 0) {
-          current.subtemas.push(...partes);
-        }
-      }
-    }
-    if (camadas.length === 0) {
-      const nomesPadrao = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
-      for (let i = 1; i <= 7; i++) {
-        camadas.push({ nivel: i, nome: nomesPadrao[i-1], titulo: nomesPadrao[i-1], subtemas: [texto.substring(0,100)] });
-      }
-    }
-    return { base, camadas };
-  }
-
-  function exibirPreVisualizacao({ camadas }) {
-    let html = '';
-    camadas.forEach(c => {
-      html += `<strong>Camada ${c.nivel}: ${c.nome}</strong> — ${c.subtemas.join(', ')}\n`;
+    linhas.forEach(l => {
+      const m = l.match(/(\d)\s*[-:.]?\s*(.+)/i);
+      if (m) { current = {nivel: parseInt(m[1]), nome: m[2].trim(), subtemas: []}; camadas.push(current); }
+      else if (current) { const p = l.split(/[,;]| - /).map(s => s.trim()).filter(s => s.length > 5); if (p.length) current.subtemas.push(...p); }
     });
-    camadasPreview.textContent = html || 'Estruturação concluída.';
-    camadasPreview.style.display = 'block';
+    return camadas.length ? camadas : Array.from({length:7}, (_,i) => ({nivel:i+1, nome:'Camada '+(i+1), subtemas:[texto.substring(0,100)]}));
   }
 
-  function gerarJSONFinal({ base, camadas }) {
-    const temaPrincipal = agenteSelecionado.nome.replace('Agente de ', '');
-    const novaBase = {
-      id: base,
-      nome: agenteSelecionado.nome,
-      dataAlerta: new Date().toISOString(),
-      tipoAssunto: 'dinamico',
-      camadas: camadas.map(c => ({
-        nivel: c.nivel,
-        nome: c.nome,
-        temas: [{
-          titulo: c.titulo || temaPrincipal,
-          subtemas: c.subtemas.length > 0 ? c.subtemas : ['A definir']
-        }]
-      }))
-    };
-    jsonFinalPreview.textContent = JSON.stringify({ base: novaBase, agente: { nome: agenteSelecionado.nome, base } }, null, 2);
-    jsonFinalPreview.style.display = 'block';
-    conhecimentoEstruturado = { base: novaBase, agente: { nome: agenteSelecionado.nome, base } };
-  }
-
-  // ==================== NOVA FUNÇÃO: ENVIAR PARA CAIXA PRETA (REDIS) ====================
   btnEnviarCaixaPreta.addEventListener('click', async () => {
-    if (!conhecimentoEstruturado) {
-      statusMsg.textContent = '⚠️ Estruture o conhecimento primeiro.';
-      return;
+    if (!conhecimentoEstruturado) return;
+    const agentId = conhecimentoEstruturado.base.toLowerCase().replace(/\s+/g, '_');
+    const camadas = conhecimentoEstruturado.camadas || [];
+    progressBar.style.display = 'block'; logContainer.style.display = 'block';
+    progressBarFill.style.width = '0%'; logContainer.innerHTML = '';
+    let enviados = 0, erros = 0;
+    
+    for (const camada of camadas) {
+      const topicId = `${agentId}_n${camada.nivel}_${camada.nome.substring(0,30).replace(/[^a-z0-9]/g,'_')}`;
+      const conteudo = {content: camada.nome, resposta_pronta: `📚 ${camada.nome}: ${camada.subtemas.join(' | ')}`, confidence: Math.max(0.5, 0.95 - camada.nivel*0.05).toFixed(2), nivel: camada.nivel, source: 'estacao_pesquisa'};
+      try {
+        const res = await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key:topicId, type:'hash', value:JSON.stringify(conteudo)})});
+        if (res.ok) { enviados++; logContainer.innerHTML += `<span class="log-line-success">✅ ${topicId}</span>\n`; }
+        else { erros++; logContainer.innerHTML += `<span class="log-line-error">❌ ${topicId}</span>\n`; }
+      } catch(e) { erros++; }
+      progressBarFill.style.width = `${((enviados+erros)/camadas.length)*100}%`;
     }
-
-    const base = conhecimentoEstruturado.base;
-    const agentId = (base.id || 'idenza').toLowerCase().replace(/\s+/g, '_');
-    const camadas = base.camadas || [];
-    
-    // Mostrar barra de progresso e log
-    progressBar.style.display = 'block';
-    progressBarFill.style.width = '0%';
-    logContainer.style.display = 'block';
-    logContainer.innerHTML = '';
-    
-    function log(msg, tipo = 'info') {
-      const classe = tipo === 'success' ? 'log-line-success' : tipo === 'error' ? 'log-line-error' : 'log-line-info';
-      logContainer.innerHTML += `<span class="${classe}">[${new Date().toLocaleTimeString()}] ${msg}</span>\n`;
-      logContainer.scrollTop = logContainer.scrollHeight;
-    }
-
-    log(`🖤 Iniciando envio para Caixa Preta...`, 'info');
-    log(`📦 Agente: ${base.nome} (ID: ${agentId})`, 'info');
-    log(`📊 Total de camadas: ${camadas.length}`, 'info');
-    
-    let enviados = 0;
-    let erros = 0;
-    const totalTopics = camadas.reduce((acc, c) => acc + (c.temas?.length || 0), 0);
-    
-    for (let ci = 0; ci < camadas.length; ci++) {
-      const camada = camadas[ci];
-      const temas = camada.temas || [];
-      
-      for (let ti = 0; ti < temas.length; ti++) {
-        const tema = temas[ti];
-        const topicId = `${agentId}_n${camada.nivel}_${(tema.titulo || 'tema').toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 40)}`;
-        
-        // Conteúdo curado para o Redis
-        const conteudo = {
-          content: tema.titulo || 'Conteúdo',
-          resposta_pronta: `📚 **${tema.titulo || 'Tema'}** (Camada ${camada.nivel}: ${camada.nome})\n\n${(tema.subtemas || []).join(' | ')}`,
-          confidence: Math.max(0.5, (0.95 - (camada.nivel * 0.05))).toFixed(2),
-          nivel: camada.nivel,
-          source: 'estacao_pesquisa',
-          updated_at: new Date().toISOString()
-        };
-        
-        try {
-          // 1. Criar tópico HASH no Redis
-          const res = await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              key: topicId,
-              type: 'hash',
-              value: JSON.stringify(conteudo)
-            })
-          });
-          
-          if (res.ok) {
-            log(`✅ Tópico: ${topicId}`, 'success');
-            enviados++;
-            
-            // 2. Criar índices de busca (SET)
-            const palavrasChave = (tema.titulo || '').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
-            for (const palavra of palavrasChave) {
-              try {
-                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    key: `idx:${palavra}`,
-                    type: 'set',
-                    value: topicId
-                  })
-                });
-              } catch (e) {
-                // Índices são opcionais, não quebram o fluxo
-              }
-            }
-            
-            // 3. Criar sinônimos (SET)
-            const subtemasPalavras = (tema.subtemas || []).join(' ').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
-            const todasPalavras = [...new Set([...palavrasChave, ...subtemasPalavras])];
-            for (const palavra of todasPalavras.slice(0, 5)) {
-              try {
-                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    key: `syn:${palavra}`,
-                    type: 'set',
-                    value: topicId
-                  })
-                });
-              } catch (e) {
-                // Sinônimos são opcionais
-              }
-            }
-          } else {
-            const errData = await res.json().catch(() => ({}));
-            log(`❌ Erro em ${topicId}: ${errData.error || 'Falha na API'}`, 'error');
-            erros++;
-          }
-        } catch (e) {
-          log(`❌ Conexão: ${e.message}`, 'error');
-          erros++;
-        }
-        
-        // Atualizar barra de progresso
-        const progresso = ((enviados + erros) / totalTopics) * 100;
-        progressBarFill.style.width = `${progresso}%`;
-      }
-    }
-    
-    // Finalizar
-    progressBarFill.style.width = '100%';
-    log(`\n🎉 CONCLUÍDO! ${enviados} tópicos enviados, ${erros} erros.`, enviados > 0 ? 'success' : 'error');
-    log(`💡 Agora o Dashboard do Cliente pode buscar esses temas!`, 'info');
-    log(`🔗 Teste: acesse o dashboard e pergunte sobre "${base.nome}"`, 'info');
-    
-    statusMsg.textContent = `✅ ${enviados} tópicos enviados para a Caixa Preta!`;
-    setTimeout(() => { statusMsg.textContent = ''; }, 5000);
-    
-    // Salvar na sessionStorage para debug
-    sessionStorage.setItem('conhecimentoEstruturado', JSON.stringify(conhecimentoEstruturado));
+    statusMsg.textContent = `✅ ${enviados} camadas enviadas! Agora rode o Gatekeeper.`;
+    setTimeout(() => statusMsg.textContent = '', 5000);
   });
 
   panelPesquisa.style.display = 'none';

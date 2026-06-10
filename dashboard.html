@@ -319,6 +319,37 @@
       gap: 10px;
       justify-content: flex-end;
     }
+
+    /* NOVO: Barra de progresso e log de envio */
+    .progress-bar {
+      height: 6px;
+      background: #e0e0e0;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gold-dark);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .log-container {
+      background: #1e1e1e;
+      color: #e0e0e0;
+      border: 1px solid var(--border);
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 8px;
+      white-space: pre-wrap;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.2);
+    }
+    .log-line-success { color: #4caf50; }
+    .log-line-error { color: #f44336; }
+    .log-line-info { color: #ff9800; }
+
     @media (max-width: 600px) {
       body { padding: 8px; }
       .eixo-form-container .form-row { flex-direction: column; align-items: stretch; }
@@ -474,24 +505,35 @@
 
   <!-- JSON final -->
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
-  <button class="btn btn-gold" id="btnEnviarMotor" style="margin-top:8px; display:none;">🚀 Enviar para o Motor Ultra IA</button>
+  
+  <!-- NOVO: Botão de envio direto para o Worker -->
+  <button class="btn btn-gold" id="btnEnviarCaixaPreta" style="margin-top:8px; display:none;">🖤 Enviar para Caixa Preta (Redis via Worker)</button>
+  
+  <!-- NOVO: Barra de progresso -->
+  <div class="progress-bar" id="progressBar" style="display:none;">
+    <div class="progress-bar-fill" id="progressBarFill"></div>
+  </div>
+  
+  <!-- NOVO: Log de envio -->
+  <div class="log-container" id="logContainer" style="display:none;"></div>
+  
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
 <script>
+  // ==================== CONFIGURAÇÃO DO WORKER ====================
+  const API_BASE = 'https://idenza-api.avizaecosystem.workers.dev';
+  
   // ==================== FUNÇÃO AUXILIAR DE CÓPIA ROBUSTA ====================
   function copiarTextoParaClipboard(texto) {
     return new Promise((resolve, reject) => {
-      // Tenta a API moderna primeiro
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(texto)
           .then(resolve)
           .catch(() => {
-            // Se falhar, tenta o fallback
             fallbackCopiar(texto) ? resolve() : reject();
           });
       } else {
-        // Fallback direto
         fallbackCopiar(texto) ? resolve() : reject();
       }
     });
@@ -674,7 +716,7 @@
     if (e.target === modalNovoEixo) fecharModalNovoEixo();
   });
 
-  // Copiar dados Redis (corrigido)
+  // Copiar dados Redis
   document.getElementById('btnCopiarDadosRedis').addEventListener('click', () => {
     const dados = JSON.stringify(redisData, null, 2);
     copiarTextoParaClipboard(dados).then(() => {
@@ -703,7 +745,10 @@
   const camadasPreview = document.getElementById('camadasPreview');
   const jsonFinalPreview = document.getElementById('jsonFinalPreview');
   const btnEstruturar = document.getElementById('btnEstruturar');
-  const btnEnviarMotor = document.getElementById('btnEnviarMotor');
+  const btnEnviarCaixaPreta = document.getElementById('btnEnviarCaixaPreta');
+  const progressBar = document.getElementById('progressBar');
+  const progressBarFill = document.getElementById('progressBarFill');
+  const logContainer = document.getElementById('logContainer');
   const statusMsg = document.getElementById('statusMsg');
   const btnCopyQuestion = document.getElementById('btnCopyQuestion');
 
@@ -746,7 +791,10 @@
     camadasPreview.textContent = '';
     jsonFinalPreview.style.display = 'none';
     jsonFinalPreview.textContent = '';
-    btnEnviarMotor.style.display = 'none';
+    btnEnviarCaixaPreta.style.display = 'none';
+    progressBar.style.display = 'none';
+    logContainer.style.display = 'none';
+    logContainer.innerHTML = '';
     statusMsg.textContent = '';
   }
 
@@ -766,7 +814,7 @@ Organize a resposta nos seguintes níveis (7 camadas semânticas):
 Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição de X. Subtemas: A, B, C". Seja exaustivo e rigoroso. Cite as fontes ao final.`;
   }
 
-  // Botão de copiar pergunta - CORRIGIDO
+  // Botão de copiar pergunta
   btnCopyQuestion.addEventListener('click', () => {
     const pergunta = generatedQuestionEl.textContent.trim();
     if (!pergunta || pergunta.length < 10) {
@@ -795,7 +843,7 @@ Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição d
     conhecimentoEstruturado = camadasExtraidas;
     exibirPreVisualizacao(camadasExtraidas);
     gerarJSONFinal(camadasExtraidas);
-    btnEnviarMotor.style.display = 'inline-flex';
+    btnEnviarCaixaPreta.style.display = 'inline-flex';
   });
 
   function extrairCamadas(texto, base) {
@@ -856,11 +904,134 @@ Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição d
     conhecimentoEstruturado = { base: novaBase, agente: { nome: agenteSelecionado.nome, base } };
   }
 
-  btnEnviarMotor.addEventListener('click', () => {
-    if (!conhecimentoEstruturado) return;
-    sessionStorage.setItem('conhecimentoEstruturado', JSON.stringify(conhecimentoEstruturado));
-    statusMsg.textContent = '🚀 Conhecimento enviado! Abra o Motor Ultra IA e use a opção de upload ou importação.';
+  // ==================== NOVA FUNÇÃO: ENVIAR PARA CAIXA PRETA (REDIS) ====================
+  btnEnviarCaixaPreta.addEventListener('click', async () => {
+    if (!conhecimentoEstruturado) {
+      statusMsg.textContent = '⚠️ Estruture o conhecimento primeiro.';
+      return;
+    }
+
+    const base = conhecimentoEstruturado.base;
+    const agentId = (base.id || 'idenza').toLowerCase().replace(/\s+/g, '_');
+    const camadas = base.camadas || [];
+    
+    // Mostrar barra de progresso e log
+    progressBar.style.display = 'block';
+    progressBarFill.style.width = '0%';
+    logContainer.style.display = 'block';
+    logContainer.innerHTML = '';
+    
+    function log(msg, tipo = 'info') {
+      const classe = tipo === 'success' ? 'log-line-success' : tipo === 'error' ? 'log-line-error' : 'log-line-info';
+      logContainer.innerHTML += `<span class="${classe}">[${new Date().toLocaleTimeString()}] ${msg}</span>\n`;
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    log(`🖤 Iniciando envio para Caixa Preta...`, 'info');
+    log(`📦 Agente: ${base.nome} (ID: ${agentId})`, 'info');
+    log(`📊 Total de camadas: ${camadas.length}`, 'info');
+    
+    let enviados = 0;
+    let erros = 0;
+    const totalTopics = camadas.reduce((acc, c) => acc + (c.temas?.length || 0), 0);
+    
+    for (let ci = 0; ci < camadas.length; ci++) {
+      const camada = camadas[ci];
+      const temas = camada.temas || [];
+      
+      for (let ti = 0; ti < temas.length; ti++) {
+        const tema = temas[ti];
+        const topicId = `${agentId}_n${camada.nivel}_${(tema.titulo || 'tema').toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 40)}`;
+        
+        // Conteúdo curado para o Redis
+        const conteudo = {
+          content: tema.titulo || 'Conteúdo',
+          resposta_pronta: `📚 **${tema.titulo || 'Tema'}** (Camada ${camada.nivel}: ${camada.nome})\n\n${(tema.subtemas || []).join(' | ')}`,
+          confidence: Math.max(0.5, (0.95 - (camada.nivel * 0.05))).toFixed(2),
+          nivel: camada.nivel,
+          source: 'estacao_pesquisa',
+          updated_at: new Date().toISOString()
+        };
+        
+        try {
+          // 1. Criar tópico HASH no Redis
+          const res = await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              key: topicId,
+              type: 'hash',
+              value: JSON.stringify(conteudo)
+            })
+          });
+          
+          if (res.ok) {
+            log(`✅ Tópico: ${topicId}`, 'success');
+            enviados++;
+            
+            // 2. Criar índices de busca (SET)
+            const palavrasChave = (tema.titulo || '').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
+            for (const palavra of palavrasChave) {
+              try {
+                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    key: `idx:${palavra}`,
+                    type: 'set',
+                    value: topicId
+                  })
+                });
+              } catch (e) {
+                // Índices são opcionais, não quebram o fluxo
+              }
+            }
+            
+            // 3. Criar sinônimos (SET)
+            const subtemasPalavras = (tema.subtemas || []).join(' ').toLowerCase().split(/[\s,]+/).filter(w => w.length > 3);
+            const todasPalavras = [...new Set([...palavrasChave, ...subtemasPalavras])];
+            for (const palavra of todasPalavras.slice(0, 5)) {
+              try {
+                await fetch(`${API_BASE}/api/dashboard/agent/${agentId}/topic`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    key: `syn:${palavra}`,
+                    type: 'set',
+                    value: topicId
+                  })
+                });
+              } catch (e) {
+                // Sinônimos são opcionais
+              }
+            }
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            log(`❌ Erro em ${topicId}: ${errData.error || 'Falha na API'}`, 'error');
+            erros++;
+          }
+        } catch (e) {
+          log(`❌ Conexão: ${e.message}`, 'error');
+          erros++;
+        }
+        
+        // Atualizar barra de progresso
+        const progresso = ((enviados + erros) / totalTopics) * 100;
+        progressBarFill.style.width = `${progresso}%`;
+      }
+    }
+    
+    // Finalizar
+    progressBarFill.style.width = '100%';
+    log(`\n🎉 CONCLUÍDO! ${enviados} tópicos enviados, ${erros} erros.`, enviados > 0 ? 'success' : 'error');
+    log(`💡 Agora o Dashboard do Cliente pode buscar esses temas!`, 'info');
+    log(`🔗 Teste: acesse o dashboard e pergunte sobre "${base.nome}"`, 'info');
+    
+    statusMsg.textContent = `✅ ${enviados} tópicos enviados para a Caixa Preta!`;
     setTimeout(() => { statusMsg.textContent = ''; }, 5000);
+    
+    // Salvar na sessionStorage para debug
+    sessionStorage.setItem('conhecimentoEstruturado', JSON.stringify(conhecimentoEstruturado));
   });
 
   panelPesquisa.style.display = 'none';

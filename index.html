@@ -1,1548 +1,576 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Estação de Pesquisa — Montagem de Super Agentes, Humanoides e Estrutura Universal</title>
-  <style>
-    :root {
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --petroleum: #0d4f5c;
-      --petroleum-light: #1a6e7a;
-      --gold-dark: #b8860b;
-      --gold: #c9942c;
-      --gold-light: #e6c66a;
-      --text: #1e1e1e;
-      --text-soft: #555;
-      --border: #d0d0d0;
-      --shadow-sm: 2px 2px 6px rgba(0,0,0,0.08);
-      --shadow-md: 3px 3px 10px rgba(0,0,0,0.10);
-      --shadow-lg: 4px 4px 16px rgba(0,0,0,0.12);
-      --success: #0d5c3a;
-      --success-bg: #e0f5e8;
-      --warning: #b8860b;
-      --warning-bg: #fefce8;
-      --error: #b91c1c;
-      --error-bg: #fef2f2;
-      --font-mono: 'Fira Code', 'Courier New', monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.5;
-      padding: 16px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 20px;
-      background: var(--card-bg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--border);
-      margin-bottom: 16px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    header h1 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--petroleum);
-      letter-spacing: 1px;
-    }
-    .badge {
-      background: var(--gold-dark);
-      color: white;
-      font-size: 0.6rem;
-      font-weight: bold;
-      padding: 4px 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .badge-hum {
-      background: var(--petroleum);
-      color: white;
-      font-size: 0.6rem;
-      font-weight: bold;
-      padding: 4px 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .badge-data {
-      background: #0d5c3a;
-      color: white;
-      font-size: 0.6rem;
-      font-weight: bold;
-      padding: 4px 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* CONEXÃO REDIS STATUS */
-    .redis-connection-bar {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 10px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      font-size: 0.7rem;
-      font-family: var(--font-mono);
-      box-shadow: var(--shadow-sm);
-    }
-    .redis-status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50% !important;
-      display: inline-block;
-    }
-    .redis-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
-    .redis-status-dot.disconnected { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
-    .redis-status-dot.sending { background: #eab308; animation: pulse 0.8s infinite; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* TABS */
-    .tab-nav {
-      display: flex;
-      gap: 0;
-      margin-bottom: 0;
-      background: var(--card-bg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      padding: 12px 14px;
-      border: none;
-      background: #f0f0f0;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.2s;
-      color: #666;
-      border-right: 1px solid var(--border);
-    }
-    .tab-btn:last-child { border-right: none; }
-    .tab-btn:hover { background: #e8e8e8; }
-    .tab-btn.active {
-      background: var(--card-bg);
-      color: var(--petroleum);
-      border-bottom: 3px solid var(--gold-dark);
-      box-shadow: inset 0 -3px 0 var(--gold-dark);
-    }
-    .tab-btn.active.hum-tab {
-      color: var(--petroleum);
-      border-bottom: 3px solid var(--petroleum-light);
-      box-shadow: inset 0 -3px 0 var(--petroleum-light);
-    }
-    .tab-btn.active.data-tab {
-      color: #0d5c3a;
-      border-bottom: 3px solid #0d5c3a;
-      box-shadow: inset 0 -3px 0 #0d5c3a;
-    }
-    .tab-content {
-      display: none;
-      background: var(--card-bg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--border);
-      border-top: none;
-      padding: 20px;
-    }
-    .tab-content.active { display: block; }
-
-    .section {
-      background: var(--card-bg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--border);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--petroleum);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title.hum-title { color: var(--petroleum); }
-    .section-title.data-title { color: #0d5c3a; }
-    .btn {
-      padding: 8px 18px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: var(--shadow-sm);
-    }
-    .btn:active { transform: translateY(1px); box-shadow: none; }
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-    .btn-gold { background: var(--gold-dark); color: white; border: 1px solid #9a6f0a; }
-    .btn-outline { background: transparent; border: 1px solid var(--petroleum-light); color: var(--petroleum); }
-    .btn-petroleum { background: var(--petroleum); color: white; border: 1px solid #0a3a44; }
-    .btn-data { background: #0d5c3a; color: white; border: 1px solid #064025; }
-    .btn-gold:hover { opacity: 0.9; }
-    .btn-outline:hover { background: #f0f8f9; }
-    .btn-petroleum:hover { opacity: 0.9; }
-    .btn-data:hover { opacity: 0.9; }
-
-    .expando {
-      border: 1px solid var(--border);
-      background: white;
-      box-shadow: var(--shadow-sm);
-      margin-top: 6px;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-      max-height: 32px;
-    }
-    .expando.open { max-height: 600px; overflow-y: auto; }
-    .expando-toggle {
-      padding: 6px 14px;
-      font-size: 0.65rem;
-      color: var(--text-soft);
-      cursor: pointer;
-      text-align: left;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 600;
-      background: #fafafa;
-      border-bottom: 1px solid transparent;
-    }
-    .expando.open .expando-toggle { border-bottom-color: var(--border); }
-    .expando-body { padding: 10px 14px; font-size: 0.7rem; display: none; }
-    .expando.open .expando-body { display: block; }
-    .agent-select-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-      padding: 6px;
-      background: #fafbfc;
-    }
-    .agent-select-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.75rem;
-      padding: 4px 6px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .agent-select-item:hover { background: #eef3f0; }
-    .agent-select-item input[type="radio"] { margin: 0; }
-    .raw-textarea {
-      width: 100%;
-      min-height: 100px;
-      background: #fff;
-      border: 1px solid var(--border);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      resize: vertical;
-      color: var(--text);
-      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
-    }
-    .raw-textarea.hum-textarea { min-height: 120px; border-left: 4px solid var(--petroleum-light); }
-    .raw-textarea.data-textarea { min-height: 120px; border-left: 4px solid #0d5c3a; }
-    .generated-question {
-      background: #f4f7f8;
-      border: 1px solid var(--border);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      white-space: pre-wrap;
-      max-height: 200px;
-      overflow-y: auto;
-      margin-top: 8px;
-      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
-      color: #1e1e1e;
-    }
-    .camadas-preview {
-      background: #f4f7f8;
-      border: 1px solid var(--border);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      white-space: pre-wrap;
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 8px;
-      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
-      color: #1e1e1e;
-    }
-    .hum-json-preview, .data-json-preview {
-      background: #f0f8f9;
-      border: 1px solid #b0d4d9;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      white-space: pre-wrap;
-      max-height: 500px;
-      overflow-y: auto;
-      margin-top: 12px;
-      color: #1e1e1e;
-    }
-    .data-json-preview { background: #f0f9f4; border-color: #a0d4b8; }
-    .status-msg { font-size: 0.7rem; color: var(--petroleum-light); margin-top: 6px; }
-    .redis-feedback {
-      padding: 10px 14px;
-      margin-top: 10px;
-      font-size: 0.65rem;
-      font-family: var(--font-mono);
-      border-left: 4px solid var(--petroleum-light);
-      background: #f0f8f9;
-      display: none;
-      line-height: 1.6;
-    }
-    .redis-feedback.show { display: block; }
-    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); color: var(--success); }
-    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); color: var(--error); }
-    .redis-feedback.loading { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
-
-    .redis-axes { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
-    .redis-chip-wrapper { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .redis-chip {
-      background: #eef7f8;
-      color: var(--petroleum);
-      padding: 4px 12px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      font-family: var(--font-mono);
-      border: 1px solid #cde2e5;
-      box-shadow: var(--shadow-sm);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .redis-chip:hover { background: var(--petroleum); color: white; border-color: var(--petroleum); }
-    .redis-chip.active-chip { background: var(--petroleum); color: white; border-color: var(--petroleum); }
-    .redis-chip-hint { font-size: 0.5rem; color: #888; text-align: center; max-width: 80px; line-height: 1.2; }
-    .eixo-form-container {
-      background: #f9fbfc;
-      border: 1px solid var(--border);
-      padding: 12px;
-      margin-top: 10px;
-      display: none;
-    }
-    .eixo-form-container.open { display: block; }
-    .eixo-form-container .form-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
-    .eixo-form-container label { font-size: 0.7rem; font-weight: 600; min-width: 60px; color: var(--petroleum); }
-    .eixo-form-container input {
-      flex: 1;
-      border: 1px solid var(--border);
-      padding: 6px 8px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-    }
-    .hum-alert-box {
-      padding: 12px 16px;
-      margin: 8px 0;
-      border-left: 5px solid #ccc;
-      background: #f9f9f9;
-      font-size: 0.75rem;
-    }
-    .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
-    .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
-    .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
-    .hum-alert-box.critico { border-color: #ef4444; background: #fef2f2; }
-    .hum-metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
-    .hum-metric-item { background: #f0f8f9; padding: 8px; border: 1px solid #cde2e5; text-align: center; }
-    .hum-metric-item .label { font-size: 0.55rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
-    .hum-metric-item .value { font-size: 1.1rem; font-weight: 700; color: var(--petroleum); font-family: var(--font-mono); }
-    .hum-resposta-box {
-      background: #fff;
-      border: 1px solid var(--petroleum-light);
-      padding: 16px;
-      margin-top: 12px;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      color: #333;
-    }
-    .data-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
-    .data-category-card {
-      border: 1px solid var(--border);
-      padding: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fafdfb;
-    }
-    .data-category-card:hover { border-color: #0d5c3a; box-shadow: var(--shadow-md); background: #f0f9f4; }
-    .data-category-card.selected { border-color: #0d5c3a; background: #e0f5e8; box-shadow: var(--shadow-md); }
-    .data-category-card .cat-code { font-size: 0.55rem; color: #0d5c3a; font-family: var(--font-mono); font-weight: 700; }
-    .data-category-card .cat-name { font-size: 0.75rem; font-weight: 600; color: #1e1e1e; }
-    .data-category-card .cat-desc { font-size: 0.6rem; color: #888; margin-top: 2px; }
-    .data-code-display {
-      background: #0d5c3a;
-      color: #a0f0c0;
-      padding: 6px 12px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      display: inline-block;
-      margin: 4px 0;
-    }
-    .hum-code-display {
-      background: var(--petroleum);
-      color: #b0e0e8;
-      padding: 6px 12px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      display: inline-block;
-      margin: 4px 0;
-    }
-    .hum-type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-top: 8px; }
-    .hum-type-card {
-      border: 1px solid var(--border);
-      padding: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fafdfd;
-      text-align: center;
-    }
-    .hum-type-card:hover { border-color: var(--petroleum); box-shadow: var(--shadow-md); background: #f0f8f9; }
-    .hum-type-card.selected { border-color: var(--petroleum); background: #d8eff3; box-shadow: var(--shadow-md); }
-    .hum-type-card .type-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
-    .hum-type-card .type-name { font-size: 0.7rem; font-weight: 700; color: var(--petroleum); }
-    .hum-type-card .type-code { font-size: 0.5rem; color: #888; font-family: var(--font-mono); }
-
-    @media (max-width: 600px) {
-      body { padding: 8px; }
-      .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
-      .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-      .data-category-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-      .hum-type-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Acesso Restrito · Estação de Pesquisa IDEnza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+       :root {
+           --deep-abyss: #020b13;
+           --ocean-blue: #061f2f;
+           --petrol-depths: #0a3147;
+           --liquid-gold: #b8860b;
+           --gold-shimmer: #d4a843;
+           --gold-pale: #e6c27a;
+           --error-red: #c0392b;
+           --error-glow: #e74c3c;
+           --font-display: 'Playfair Display', serif;
+           --font-body-lux: 'Cinzel', serif;
+           --font-ui: 'Inter', sans-serif;
+       }
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body {
+           font-family: var(--font-ui);
+           background: radial-gradient(ellipse at center, #0d3b56 0%, #061e2f 40%, #020c14 100%);
+           min-height: 100vh;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           overflow: hidden;
+       }
+       .superia-splash {
+           position: fixed;
+           inset: 0;
+           z-index: 10;
+           background: radial-gradient(ellipse at center, #0d3b56 0%, #061e2f 40%, #020c14 100%);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           flex-direction: column;
+           transition: opacity 0.8s cubic-bezier(.4,0,.2,1), visibility 0.8s;
+           overflow: hidden;
+       }
+       .superia-splash.fade-out {
+           opacity: 0;
+           visibility: hidden;
+           pointer-events: none;
+       }
+       .particles-container {
+           position: absolute;
+           inset: 0;
+           pointer-events: none;
+       }
+       .particle {
+           position: absolute;
+           width: 2px;
+           height: 2px;
+           background: #b8860b;
+           border-radius: 50%;
+           animation: particleFloat 6s infinite ease-in-out;
+           opacity: 0;
+       }
+       .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+       .particle:nth-child(2) { left: 25%; top: 60%; animation-delay: 0.8s; }
+       .particle:nth-child(3) { left: 40%; top: 30%; animation-delay: 1.6s; }
+       .particle:nth-child(4) { left: 55%; top: 70%; animation-delay: 2.4s; }
+       .particle:nth-child(5) { left: 70%; top: 15%; animation-delay: 3.2s; }
+       .particle:nth-child(6) { left: 80%; top: 50%; animation-delay: 4.0s; }
+       .particle:nth-child(7) { left: 15%; top: 85%; animation-delay: 4.8s; }
+       .particle:nth-child(8) { left: 90%; top: 35%; animation-delay: 1.2s; }
+       .particle:nth-child(9) { left: 50%; top: 45%; animation-delay: 3.6s; }
+       .particle:nth-child(10) { left: 35%; top: 10%; animation-delay: 5.2s; }
+       .particle:nth-child(11) { left: 65%; top: 80%; animation-delay: 2.0s; }
+       .particle:nth-child(12) { left: 5%; top: 40%; animation-delay: 4.4s; }
+       @keyframes particleFloat {
+           0% { opacity: 0; transform: translateY(0) scale(.5); }
+           10% { opacity: .8; }
+           30% { opacity: .4; transform: translateY(-30px) scale(1.2); }
+           50% { opacity: .7; transform: translateY(-15px) scale(.8); }
+           70% { opacity: .3; transform: translateY(-40px) scale(1.4); }
+           90% { opacity: .6; }
+           100% { opacity: 0; transform: translateY(-60px) scale(.3); }
+       }
+       .golden-line {
+           position: absolute;
+           top: 0;
+           left: 50%;
+           transform: translateX(-50%);
+           width: 1px;
+           height: 100%;
+           background: linear-gradient(180deg, transparent 0%, rgb(184 134 11 / .4) 20%, rgb(184 134 11 / .15) 50%, rgb(184 134 11 / .4) 80%, transparent 100%);
+           animation: goldenLinePulse 3s ease-in-out infinite;
+       }
+       .golden-line:nth-child(2) { left: 48%; animation-delay: 0.5s; width: .5px; }
+       .golden-line:nth-child(3) { left: 52%; animation-delay: 1s; width: .5px; }
+       @keyframes goldenLinePulse {
+           0%, 100% { opacity: .3; }
+           50% { opacity: .7; }
+       }
+       .horizontal-line {
+           position: absolute;
+           left: 50%;
+           transform: translateX(-50%);
+           width: 300px;
+           height: 1px;
+           background: linear-gradient(90deg, transparent, rgb(184 134 11 / .3), transparent);
+           animation: horizontalLinePulse 4s ease-in-out infinite;
+       }
+       .horizontal-line.top { top: 18%; }
+       .horizontal-line.bottom { bottom: 18%; animation-delay: 2s; }
+       @keyframes horizontalLinePulse {
+           0%, 100% { opacity: .2; width: 300px; }
+           50% { opacity: .6; width: 500px; }
+       }
+       .splash-content {
+           position: relative;
+           z-index: 2;
+           text-align: center;
+           padding: 2rem;
+       }
+       .brand-tag {
+           font-family: 'Inter', sans-serif;
+           font-size: .55rem;
+           text-transform: uppercase;
+           letter-spacing: 6px;
+           color: rgb(184 134 11 / .7);
+           margin-bottom: 1.5rem;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 0.3s;
+       }
+       .splash-title {
+           font-family: 'Cinzel', serif;
+           font-size: clamp(2.2rem, 5vw, 3.8rem);
+           font-weight: 600;
+           color: #fff;
+           letter-spacing: 8px;
+           margin-bottom: .3rem;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 0.5s;
+           text-shadow: 0 0 60px rgb(184 134 11 / .3);
+       }
+       .splash-title span {
+           color: #b8860b;
+           font-weight: 700;
+       }
+       .splash-subtitle {
+           font-family: 'Marcellus', serif;
+           font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+           color: rgb(255 255 255 / .6);
+           letter-spacing: 4px;
+           margin-bottom: 2.5rem;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 0.7s;
+       }
+       .splash-divider {
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           gap: 15px;
+           margin-bottom: 2.5rem;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 0.9s;
+       }
+       .divider-wing {
+           width: 50px;
+           height: 1px;
+           background: linear-gradient(90deg, transparent, #b8860b);
+       }
+       .divider-wing.right {
+           background: linear-gradient(90deg, #b8860b, transparent);
+       }
+       .divider-diamond {
+           width: 8px;
+           height: 8px;
+           background: #b8860b;
+           transform: rotate(45deg);
+           box-shadow: 0 0 20px rgb(184 134 11 / .6);
+       }
+       .enter-btn {
+           font-family: 'Cinzel', serif;
+           font-size: .75rem;
+           text-transform: uppercase;
+           letter-spacing: 5px;
+           color: #fff;
+           background: transparent;
+           border: 1.5px solid rgb(184 134 11 / .4);
+           padding: 14px 40px;
+           cursor: pointer;
+           transition: all 0.5s ease;
+           position: relative;
+           overflow: hidden;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 1.1s;
+       }
+       .enter-btn::before {
+           content: '';
+           position: absolute;
+           inset: 0;
+           background: linear-gradient(135deg, rgb(184 134 11 / .15) 0%, rgb(184 134 11 / .05) 50%, transparent 100%);
+           transition: opacity 0.5s ease;
+       }
+       .enter-btn:hover {
+           border-color: #b8860b;
+           color: #b8860b;
+           box-shadow: 0 0 40px rgb(184 134 11 / .2), inset 0 0 40px rgb(184 134 11 / .05);
+           letter-spacing: 8px;
+           transform: translateY(-2px);
+       }
+       .enter-btn:hover::before { opacity: 1; }
+       .splash-loader {
+           margin-top: 2rem;
+           display: flex;
+           gap: 6px;
+           justify-content: center;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 1.2s;
+       }
+       .dot {
+           width: 4px;
+           height: 4px;
+           background: rgb(184 134 11 / .6);
+           border-radius: 50%;
+           animation: dotPulse 1.5s ease-in-out infinite;
+       }
+       .dot:nth-child(2) { animation-delay: 0.2s; }
+       .dot:nth-child(3) { animation-delay: 0.4s; }
+       @keyframes dotPulse {
+           0%, 100% { opacity: .3; transform: scale(.8); }
+           50% { opacity: 1; transform: scale(1.5); }
+       }
+       .version-tag {
+           position: absolute;
+           bottom: 30px;
+           left: 50%;
+           transform: translateX(-50%);
+           font-family: 'Inter', sans-serif;
+           font-size: .5rem;
+           color: rgb(255 255 255 / .25);
+           letter-spacing: 3px;
+           animation: fadeInUp 1s ease forwards;
+           opacity: 0;
+           animation-delay: 1.3s;
+       }
+       @keyframes fadeInUp {
+           from { opacity: 0; transform: translateY(30px); }
+           to { opacity: 1; transform: translateY(0); }
+       }
+       .password-overlay {
+           position: fixed;
+           inset: 0;
+           background: rgb(0 0 0 / .85);
+           z-index: 100;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           backdrop-filter: blur(10px);
+           animation: fadeIn 0.5s ease;
+       }
+       .password-overlay.fade-out {
+           opacity: 0;
+           transition: opacity 0.3s;
+       }
+       .password-box {
+           background: linear-gradient(145deg, #0d3b56 0%, #061e2f 100%);
+           border: 1px solid rgb(184 134 11 / .4);
+           border-radius: 16px;
+           padding: 2.5rem;
+           width: 90%;
+           max-width: 400px;
+           text-align: center;
+           box-shadow: 0 20px 60px rgb(0 0 0 / .8), 0 0 40px rgb(184 134 11 / .2);
+           animation: fadeInUp 0.5s ease;
+       }
+       .password-box h2 {
+           font-family: 'Cinzel', serif;
+           color: #fff;
+           font-size: 1.2rem;
+           letter-spacing: 3px;
+           margin-bottom: .3rem;
+       }
+       .password-box .gold-line {
+           width: 60px;
+           height: 2px;
+           background: linear-gradient(90deg, transparent, #b8860b, transparent);
+           margin: .8rem auto 1.5rem;
+       }
+       .password-box input {
+           width: 100%;
+           padding: 12px 16px;
+           background: rgb(255 255 255 / .05);
+           border: 1px solid rgb(184 134 11 / .3);
+           border-radius: 8px;
+           color: #fff;
+           font-family: 'Marcellus', serif;
+           font-size: 1rem;
+           letter-spacing: 4px;
+           text-align: center;
+           outline: none;
+           transition: border-color 0.3s, box-shadow 0.3s;
+       }
+       .password-box input:focus {
+           border-color: #b8860b;
+           box-shadow: 0 0 20px rgb(184 134 11 / .3);
+       }
+       .password-box .btn-row {
+           display: flex;
+           gap: 10px;
+           justify-content: center;
+           margin-top: 1.5rem;
+       }
+       .password-btn {
+           font-family: 'Cinzel', serif;
+           font-size: .7rem;
+           text-transform: uppercase;
+           letter-spacing: 3px;
+           padding: 10px 24px;
+           border-radius: 6px;
+           cursor: pointer;
+           transition: all 0.4s ease;
+           background: transparent;
+           color: #fff;
+           border: 1px solid rgb(184 134 11 / .4);
+       }
+       .password-btn.primary {
+           background: rgb(184 134 11 / .2);
+           border-color: #b8860b;
+       }
+       .password-btn:hover {
+           background: rgb(184 134 11 / .3);
+           border-color: #b8860b;
+           box-shadow: 0 0 20px rgb(184 134 11 / .3);
+           transform: translateY(-2px);
+       }
+       .password-btn:disabled {
+           opacity: 0.5;
+           cursor: not-allowed;
+           transform: none !important;
+       }
+       .error-msg {
+           color: #c78b1a;
+           font-size: .7rem;
+           margin-top: .6rem;
+           min-height: 1.2em;
+       }
+       @keyframes fadeIn {
+           from { opacity: 0; }
+           to { opacity: 1; }
+       }
+    </style>
 </head>
 <body>
-
-<!-- BARRA DE STATUS DA CONEXÃO REDIS -->
-<div class="redis-connection-bar">
-  <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
-  <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
-  <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
-</div>
-
-<header>
-  <h1>Estação de Pesquisa: Super Agentes, Humanoides e Dados Universais</h1>
-  <div style="display:flex; gap:8px; flex-wrap:wrap;">
-    <span class="badge">Montagem 7 Camadas</span>
-    <span class="badge-hum">Template de Humanoides</span>
-    <span class="badge-data">Estrutura Universal</span>
-  </div>
-</header>
-
-<!-- TABS NAVIGATION -->
-<div class="tab-nav">
-  <button class="tab-btn active" data-tab="tab-agentes">Catálogo de Agentes</button>
-  <button class="tab-btn hum-tab" data-tab="tab-humanoides">Template de Humanoides</button>
-  <button class="tab-btn data-tab" data-tab="tab-dados">Estrutura de Dados Universal</button>
-</div>
-
-<!-- ==================== TAB 1: CATÁLOGO DE AGENTES ==================== -->
-<div class="tab-content active" id="tab-agentes">
-
-<div class="section">
-  <div class="section-title"><span>📋</span> Catálogo de Agentes (Universo do Conhecimento)</div>
-  <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">Selecione um agente para gerar a pergunta de pesquisa e estruturar o conhecimento.</p>
-
-  <!-- NEGÓCIOS E EMPRESAS -->
-  <div class="expando">
-    <div class="expando-toggle">Negócios, Empresas e Gestão (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Planeamento Estratégico" data-base="planeamento" data-code="business.strat.idenza.1"> Planeamento Estratégico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Finanças Corporativas" data-base="financas" data-code="business.fin.idenza.2"> Finanças Corporativas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Contabilidade e Fiscalidade" data-base="contabilidade" data-code="business.acc.idenza.3"> Contabilidade e Fiscalidade</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Auditoria e Compliance" data-base="auditoria" data-code="business.audit.idenza.4"> Auditoria e Compliance</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Marketing Digital" data-base="marketing" data-code="business.mkt.idenza.5"> Marketing Digital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Vendas B2B e B2C" data-base="vendas" data-code="business.sales.idenza.6"> Vendas B2B e B2C</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Recursos Humanos" data-base="rh" data-code="business.hr.idenza.7"> Recursos Humanos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão de Projetos (PMBOK, Scrum)" data-base="projetos" data-code="business.pm.idenza.8"> Gestão de Projetos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Supply Chain e Logística" data-base="supplychain" data-code="business.scm.idenza.9"> Supply Chain e Logística</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Transformação Digital" data-base="digital" data-code="business.dt.idenza.10"> Transformação Digital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fusões e Aquisições (M&A)" data-base="ma" data-code="business.ma.idenza.11"> Fusões e Aquisições</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Private Equity e Venture Capital" data-base="pevc" data-code="business.pe.idenza.12"> Private Equity e Venture Capital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança Corporativa" data-base="governanca" data-code="business.gov.idenza.13"> Governança Corporativa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Empreendedorismo e Startups" data-base="empreendedorismo" data-code="business.startup.idenza.14"> Empreendedorismo e Startups</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Comércio Exterior (Exportação/Importação)" data-base="comex" data-code="business.trade.idenza.15"> Comércio Exterior</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Franchising e Expansão de Negócios" data-base="franchising" data-code="business.franchise.idenza.16"> Franchising</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de E-commerce e Marketplaces" data-base="ecommerce" data-code="business.ecom.idenza.17"> E-commerce e Marketplaces</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de CRM e Fidelização de Clientes" data-base="crm" data-code="business.crm.idenza.18"> CRM e Fidelização</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- ECONOMIA -->
-  <div class="expando">
-    <div class="expando-toggle">Economia (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Microeconomia" data-base="microeconomia" data-code="econ.micro.idenza.1"> Microeconomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Macroeconomia" data-base="macroeconomia" data-code="econ.macro.idenza.2"> Macroeconomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Internacional" data-base="economia-internacional" data-code="econ.intl.idenza.3"> Economia Internacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Comportamental" data-base="economia-comportamental" data-code="econ.behav.idenza.4"> Economia Comportamental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Trabalho" data-base="economia-trabalho" data-code="econ.labor.idenza.5"> Economia do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Monetária" data-base="economia-monetaria" data-code="econ.mon.idenza.6"> Economia Monetária</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Setor Público" data-base="economia-publica" data-code="econ.pub.idenza.7"> Economia do Setor Público</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Ambiental" data-base="economia-ambiental" data-code="econ.env.idenza.8"> Economia Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Econometria e Modelos Estatísticos" data-base="econometria" data-code="econ.metrics.idenza.9"> Econometria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História do Pensamento Econômico" data-base="historia-economia" data-code="econ.hist.idenza.10"> História do Pensamento Econômico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Econômico" data-base="desenvolvimento" data-code="econ.dev.idenza.11"> Desenvolvimento Econômico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mercado de Capitais e Bolsas" data-base="mercado-capitais" data-code="econ.cap.idenza.12"> Mercado de Capitais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Criptomoedas e Blockchain Financeiro" data-base="criptomoedas" data-code="econ.crypto.idenza.13"> Criptomoedas e Blockchain</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- DIREITO -->
-  <div class="expando">
-    <div class="expando-toggle">Direito (todas as áreas) (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Constitucional" data-base="direito-constitucional" data-code="law.const.idenza.1"> Direito Constitucional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Civil e Obrigações" data-base="direito-civil" data-code="law.civil.idenza.2"> Direito Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Penal e Processual Penal" data-base="direito-penal" data-code="law.penal.idenza.3"> Direito Penal</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Trabalho e Processual Trabalhista" data-base="direito-trabalho" data-code="law.labor.idenza.4"> Direito do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Tributário" data-base="direito-tributario" data-code="law.tax.idenza.5"> Direito Tributário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Empresarial e Societário" data-base="direito-empresarial" data-code="law.corp.idenza.6"> Direito Empresarial e Societário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Consumidor" data-base="direito-consumidor" data-code="law.cons.idenza.7"> Direito do Consumidor</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Ambiental" data-base="direito-ambiental" data-code="law.env.idenza.8"> Direito Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Internacional Público" data-base="direito-internacional" data-code="law.intl.idenza.9"> Direito Internacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Marítimo e Portuário" data-base="direito-maritimo" data-code="law.mar.idenza.10"> Direito Marítimo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Aeronáutico e Espacial" data-base="direito-aeronautico" data-code="law.aero.idenza.11"> Direito Aeronáutico e Espacial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Propriedade Intelectual e Patentes" data-base="propriedade-intelectual" data-code="law.ip.idenza.12"> Propriedade Intelectual</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Digital e Proteção de Dados (LGPD/GDPR)" data-base="direito-digital" data-code="law.digital.idenza.13"> Direito Digital e LGPD/GDPR</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito de Família e Sucessões" data-base="direito-familia" data-code="law.fam.idenza.14"> Direito de Família e Sucessões</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Imobiliário e Registral" data-base="direito-imobiliario" data-code="law.real.idenza.15"> Direito Imobiliário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Administrativo e Licitações" data-base="direito-administrativo" data-code="law.admin.idenza.16"> Direito Administrativo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Previdenciário" data-base="direito-previdenciario" data-code="law.social.idenza.17"> Direito Previdenciário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Eleitoral e Partidário" data-base="direito-eleitoral" data-code="law.elect.idenza.18"> Direito Eleitoral</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direitos Humanos e Refugiados" data-base="direitos-humanos" data-code="law.hr.idenza.19"> Direitos Humanos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mediação e Arbitragem" data-base="arbitragem" data-code="law.arb.idenza.20"> Mediação e Arbitragem</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- SAÚDE E MEDICINA -->
-  <div class="expando">
-    <div class="expando-toggle">Saúde, Medicina e Bem‑Estar (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Anatomia Humana" data-base="anatomia" data-code="med.anat.idenza.1"> Anatomia Humana</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisiologia Humana" data-base="fisiologia" data-code="med.physio.idenza.2"> Fisiologia Humana</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Farmacologia Clínica" data-base="farmacologia" data-code="med.pharm.idenza.3"> Farmacologia Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cardiologia" data-base="cardiologia" data-code="med.cardio.idenza.4"> Cardiologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neurologia e Neurociências" data-base="neurologia" data-code="med.neuro.idenza.5"> Neurologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oncologia e Cancerologia" data-base="oncologia" data-code="med.onco.idenza.6"> Oncologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pediatria e Neonatologia" data-base="pediatria" data-code="med.ped.idenza.7"> Pediatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psiquiatria e Saúde Mental" data-base="psiquiatria" data-code="med.psych.idenza.8"> Psiquiatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Infectologia e Epidemiologia" data-base="infectologia" data-code="med.infect.idenza.9"> Infectologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cirurgia Geral e Especializada" data-base="cirurgia" data-code="med.surg.idenza.10"> Cirurgia Geral</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ortopedia e Traumatologia" data-base="ortopedia" data-code="med.ortho.idenza.11"> Ortopedia e Traumatologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ginecologia e Obstetrícia" data-base="ginecologia" data-code="med.gyn.idenza.12"> Ginecologia e Obstetrícia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oftalmologia" data-base="oftalmologia" data-code="med.ophth.idenza.13"> Oftalmologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Dermatologia e Estética" data-base="dermatologia" data-code="med.derm.idenza.14"> Dermatologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina de Emergência e UTI" data-base="emergencia" data-code="med.er.idenza.15"> Medicina de Emergência</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geriatria e Gerontologia" data-base="geriatria" data-code="med.ger.idenza.16"> Geriatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Nutrição Clínica e Dietética" data-base="nutricao" data-code="med.nutr.idenza.17"> Nutrição Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisioterapia e Reabilitação" data-base="fisioterapia" data-code="med.phys.idenza.18"> Fisioterapia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enfermagem Geral e Intensiva" data-base="enfermagem" data-code="med.nurse.idenza.19"> Enfermagem</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Odontologia e Ortodontia" data-base="odontologia" data-code="med.dent.idenza.20"> Odontologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina Veterinária" data-base="veterinaria" data-code="med.vet.idenza.21"> Medicina Veterinária</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Genética Médica e Genômica" data-base="genetica" data-code="med.gen.idenza.22"> Genética Médica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Radiologia e Diagnóstico por Imagem" data-base="radiologia" data-code="med.rad.idenza.23"> Radiologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cuidados Paliativos e Tanatologia" data-base="paliativos" data-code="med.pall.idenza.24"> Cuidados Paliativos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Primeiros Socorros e Suporte Básico" data-base="primeiros-socorros" data-code="med.fa.idenza.25"> Primeiros Socorros</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- PSICOLOGIA -->
-  <div class="expando">
-    <div class="expando-toggle">Psicologia (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Clínica" data-base="psicologia-clinica" data-code="psych.clin.idenza.1"> Psicologia Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Terapia Cognitivo-Comportamental (TCC)" data-base="tcc" data-code="psych.cbt.idenza.2"> Terapia Cognitivo-Comportamental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicanálise (Freud, Lacan, Jung)" data-base="psicanalise" data-code="psych.analy.idenza.3"> Psicanálise</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuropsicologia e Avaliação Cognitiva" data-base="neuropsicologia" data-code="psych.neuro.idenza.4"> Neuropsicologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Desenvolvimento Humano" data-base="psicologia-desenvolvimento" data-code="psych.dev.idenza.5"> Psicologia do Desenvolvimento</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Social e Comunitária" data-base="psicologia-social" data-code="psych.soc.idenza.6"> Psicologia Social</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Organizacional e do Trabalho" data-base="psicologia-organizacional" data-code="psych.org.idenza.7"> Psicologia Organizacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia da Educação e Escolar" data-base="psicologia-educacao" data-code="psych.edu.idenza.8"> Psicologia da Educação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Forense e Criminal" data-base="psicologia-forense" data-code="psych.for.idenza.9"> Psicologia Forense</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Esporte e Performance" data-base="psicologia-esporte" data-code="psych.sport.idenza.10"> Psicologia do Esporte</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Positiva e Bem‑Estar" data-base="psicologia-positiva" data-code="psych.pos.idenza.11"> Psicologia Positiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Hospitalar e da Saúde" data-base="psicologia-hospitalar" data-code="psych.hosp.idenza.12"> Psicologia Hospitalar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Envelhecimento" data-base="psicologia-envelhecimento" data-code="psych.age.idenza.13"> Psicologia do Envelhecimento</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- ENGENHARIAS -->
-  <div class="expando">
-    <div class="expando-toggle">Engenharias (todas as modalidades) (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Civil e Estrutural" data-base="engenharia-civil" data-code="eng.civil.idenza.1"> Engenharia Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Mecânica" data-base="engenharia-mecanica" data-code="eng.mech.idenza.2"> Engenharia Mecânica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Elétrica e Eletrônica" data-base="engenharia-eletrica" data-code="eng.elec.idenza.3"> Engenharia Elétrica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Computação" data-base="engenharia-computacao" data-code="eng.comp.idenza.4"> Engenharia de Computação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Software e DevOps" data-base="engenharia-software" data-code="eng.sw.idenza.5"> Engenharia de Software</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Química e de Processos" data-base="engenharia-quimica" data-code="eng.chem.idenza.6"> Engenharia Química</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Alimentos" data-base="engenharia-alimentos" data-code="eng.food.idenza.7"> Engenharia de Alimentos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Ambiental e Sanitária" data-base="engenharia-ambiental" data-code="eng.env.idenza.8"> Engenharia Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Produção e Lean" data-base="engenharia-producao" data-code="eng.prod.idenza.9"> Engenharia de Produção</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Energia e Renováveis" data-base="engenharia-energia" data-code="eng.energy.idenza.10"> Engenharia de Energia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Aeronáutica e Aeroespacial" data-base="engenharia-aeronautica" data-code="eng.aero.idenza.11"> Engenharia Aeronáutica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Naval e Oceânica" data-base="engenharia-naval" data-code="eng.naval.idenza.12"> Engenharia Naval</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Materiais e Metalurgia" data-base="engenharia-materiais" data-code="eng.mat.idenza.13"> Engenharia de Materiais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Biomédica e Bioengenharia" data-base="engenharia-biomedica" data-code="eng.bio.idenza.14"> Engenharia Biomédica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Telecomunicações" data-base="engenharia-telecom" data-code="eng.telco.idenza.15"> Engenharia de Telecomunicações</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Controle e Automação" data-base="automacao" data-code="eng.auto.idenza.16"> Controle e Automação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Segurança do Trabalho" data-base="seguranca-trabalho" data-code="eng.safety.idenza.17"> Segurança do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Nuclear" data-base="engenharia-nuclear" data-code="eng.nuclear.idenza.18"> Engenharia Nuclear</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- TECNOLOGIA DA INFORMAÇÃO -->
-  <div class="expando">
-    <div class="expando-toggle">Tecnologia da Informação e Computação (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Front‑end" data-base="frontend" data-code="tech.fe.idenza.1"> Desenvolvimento Web Front‑end</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Back‑end" data-base="backend" data-code="tech.be.idenza.2"> Desenvolvimento Web Back‑end</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Mobile (iOS/Android)" data-base="mobile" data-code="tech.mob.idenza.3"> Desenvolvimento Mobile</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cloud Computing (AWS, Azure, GCP)" data-base="cloud" data-code="tech.cloud.idenza.4"> Cloud Computing</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cibersegurança e Ethical Hacking" data-base="ciberseguranca" data-code="tech.sec.idenza.5"> Cibersegurança</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Inteligência Artificial e Machine Learning" data-base="ia-ml" data-code="tech.ai.idenza.6"> IA e Machine Learning</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Deep Learning e Redes Neurais" data-base="deeplearning" data-code="tech.dl.idenza.7"> Deep Learning</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Processamento de Linguagem Natural (PLN)" data-base="pln" data-code="tech.nlp.idenza.8"> Processamento de Linguagem Natural</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Visão Computacional" data-base="visao-computacional" data-code="tech.cv.idenza.9"> Visão Computacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Robótica e Automação Inteligente" data-base="robotica" data-code="tech.rob.idenza.10"> Robótica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Internet das Coisas (IoT)" data-base="iot" data-code="tech.iot.idenza.11"> Internet das Coisas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Blockchain e Contratos Inteligentes" data-base="blockchain" data-code="tech.bc.idenza.12"> Blockchain e Smart Contracts</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Realidade Virtual e Aumentada" data-base="vr-ar" data-code="tech.vr.idenza.13"> Realidade Virtual e Aumentada</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de UI/UX Design e Experiência do Usuário" data-base="ux" data-code="tech.ux.idenza.14"> UI/UX Design</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Banco de Dados (SQL, NoSQL)" data-base="bancodados" data-code="tech.db.idenza.15"> Banco de Dados</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de QA e Testes de Software" data-base="qa" data-code="tech.qa.idenza.16"> Quality Assurance e Testes</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança de TI (ITIL, COBIT)" data-base="governanca-ti" data-code="tech.gov.idenza.17"> Governança de TI</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suporte Técnico e Service Desk" data-base="suporte-ti" data-code="tech.sup.idenza.18"> Suporte Técnico</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- CIÊNCIAS HUMANAS E SOCIAIS -->
-  <div class="expando">
-    <div class="expando-toggle">Ciências Humanas e Sociais (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Antiga" data-base="filosofia-antiga" data-code="hum.phil.anc.idenza.1"> Filosofia Antiga</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Moderna e Contemporânea" data-base="filosofia-moderna" data-code="hum.phil.mod.idenza.2"> Filosofia Moderna</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ética, Moral e Bioética" data-base="etica" data-code="hum.ethics.idenza.3"> Ética e Bioética</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Sociologia Geral e Urbana" data-base="sociologia" data-code="hum.soc.idenza.4"> Sociologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Antropologia Cultural e Social" data-base="antropologia" data-code="hum.anthro.idenza.5"> Antropologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ciência Política e Teoria do Estado" data-base="ciencia-politica" data-code="hum.pol.idenza.6"> Ciência Política</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geopolítica e Relações Internacionais" data-base="geopolitica" data-code="hum.geo.idenza.7"> Geopolítica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Antiga (Egito, Roma, Grécia)" data-base="historia-antiga" data-code="hum.hist.anc.idenza.8"> História Antiga</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Medieval" data-base="historia-medieval" data-code="hum.hist.med.idenza.9"> História Medieval</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Moderna e Contemporânea" data-base="historia-contemporanea" data-code="hum.hist.mod.idenza.10"> História Contemporânea</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arqueologia e Patrimônio Histórico" data-base="arqueologia" data-code="hum.arch.idenza.11"> Arqueologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geografia Humana e Física" data-base="geografia" data-code="hum.geog.idenza.12"> Geografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Linguística e Filologia" data-base="linguistica" data-code="hum.ling.idenza.13"> Linguística e Filologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teologia e Ciências da Religião" data-base="teologia" data-code="hum.theo.idenza.14"> Teologia</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- ARTES E CULTURA -->
-  <div class="expando">
-    <div class="expando-toggle">Artes, Cultura e Entretenimento (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Arte Mundial" data-base="historia-arte" data-code="art.hist.idenza.1"> História da Arte</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Brasileira" data-base="literatura-brasileira" data-code="art.lit.br.idenza.2"> Literatura Brasileira</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Portuguesa" data-base="literatura-portuguesa" data-code="art.lit.pt.idenza.3"> Literatura Portuguesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Inglesa e Norte‑Americana" data-base="literatura-inglesa" data-code="art.lit.en.idenza.4"> Literatura Inglesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Francesa" data-base="literatura-francesa" data-code="art.lit.fr.idenza.5"> Literatura Francesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Russa e Eslava" data-base="literatura-russa" data-code="art.lit.ru.idenza.6"> Literatura Russa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Clássica e Ópera" data-base="musica-classica" data-code="art.mus.class.idenza.7"> Música Clássica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Popular e Jazz" data-base="musica-popular" data-code="art.mus.pop.idenza.8"> Música Popular</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cinema Mundial (História e Análise)" data-base="cinema" data-code="art.film.idenza.9"> Cinema Mundial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teatro e Artes Cênicas" data-base="teatro" data-code="art.theatre.idenza.10"> Teatro e Artes Cênicas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arquitetura e Urbanismo" data-base="arquitetura" data-code="art.arch.idenza.11"> Arquitetura e Urbanismo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Gráfico e Comunicação Visual" data-base="design-grafico" data-code="art.design.idenza.12"> Design Gráfico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Moda e Indústria Têxtil" data-base="moda" data-code="art.fashion.idenza.13"> Moda e Indústria Têxtil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gastronomia e Culinária Internacional" data-base="gastronomia" data-code="art.food.idenza.14"> Gastronomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fotografia Digital e Analógica" data-base="fotografia" data-code="art.photo.idenza.15"> Fotografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Videogames, eSports e RPG" data-base="games" data-code="art.game.idenza.16"> Videogames e RPG</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- EDUCAÇÃO -->
-  <div class="expando">
-    <div class="expando-toggle">Educação e Pedagogia (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfabetização e Letramento" data-base="alfabetizacao" data-code="edu.lit.idenza.1"> Alfabetização e Letramento</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Infantil" data-base="educacao-infantil" data-code="edu.child.idenza.2"> Educação Infantil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Inclusiva e Especial" data-base="educacao-inclusiva" data-code="edu.incl.idenza.3"> Educação Inclusiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação a Distância (EaD)" data-base="ead" data-code="edu.ead.idenza.4"> Educação a Distância</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Metodologias Ativas (PBL, Sala Invertida)" data-base="metodologias-ativas" data-code="edu.active.idenza.5"> Metodologias Ativas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gamificação na Educação" data-base="gamificacao" data-code="edu.game.idenza.6"> Gamificação na Educação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuroeducação e Aprendizagem" data-base="neuroeducacao" data-code="edu.neuro.idenza.7"> Neuroeducação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão Escolar e Políticas Públicas" data-base="gestao-escolar" data-code="edu.mgmt.idenza.8"> Gestão Escolar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Matemática" data-base="ensino-matematica" data-code="edu.math.idenza.9"> Ensino de Matemática</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Ciências e Biologia" data-base="ensino-ciencias" data-code="edu.sci.idenza.10"> Ensino de Ciências</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de História e Geografia" data-base="ensino-historia" data-code="edu.hist.idenza.11"> Ensino de História e Geografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Línguas Estrangeiras" data-base="ensino-linguas" data-code="edu.lang.idenza.12"> Ensino de Línguas Estrangeiras</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUSTENTABILIDADE E MEIO AMBIENTE -->
-  <div class="expando">
-    <div class="expando-toggle">Sustentabilidade, Agricultura e Meio Ambiente (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agricultura de Precisão" data-base="agricultura-precisao" data-code="agri.prec.idenza.1"> Agricultura de Precisão</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cultivo Orgânico e Biodinâmico" data-base="cultivo-organico" data-code="agri.org.idenza.2"> Cultivo Orgânico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hidroponia e Aquaponia" data-base="hidroponia" data-code="agri.hydro.idenza.3"> Hidroponia e Aquaponia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Manejo de Pragas e Doenças Agrícolas" data-base="pragas" data-code="agri.pest.idenza.4"> Manejo de Pragas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Irrigação e Recursos Hídricos" data-base="irrigacao" data-code="agri.water.idenza.5"> Irrigação e Recursos Hídricos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fertilidade e Conservação do Solo" data-base="solo" data-code="agri.soil.idenza.6"> Fertilidade do Solo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Culturas Anuais (Soja, Milho, Trigo)" data-base="culturas-anuais" data-code="agri.crop.idenza.7"> Culturas Anuais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fruticultura e Culturas Perenes" data-base="fruticultura" data-code="agri.fruit.idenza.8"> Fruticultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cafeicultura e Cultivo de Cacau" data-base="cafeicultura" data-code="agri.coffee.idenza.9"> Cafeicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Viticultura e Enologia (Vinhos)" data-base="viticultura" data-code="agri.wine.idenza.10"> Viticultura e Enologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pecuária de Corte e Leite" data-base="pecuaria" data-code="agri.livestock.idenza.11"> Pecuária de Corte e Leite</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Avicultura e Produção de Ovos" data-base="avicultura" data-code="agri.poultry.idenza.12"> Avicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suinocultura Intensiva" data-base="suinocultura" data-code="agri.pig.idenza.13"> Suinocultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Aquicultura e Piscicultura" data-base="aquicultura" data-code="agri.fish.idenza.14"> Aquicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Apicultura e Meliponicultura" data-base="apicultura" data-code="agri.bee.idenza.15"> Apicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Silvicultura e Reflorestamento" data-base="silvicultura" data-code="agri.forest.idenza.16"> Silvicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agrofloresta e Sistemas Integrados" data-base="agrofloresta" data-code="agri.agrofor.idenza.17"> Agrofloresta</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Circular e Resíduos" data-base="economia-circular" data-code="sust.circ.idenza.18"> Economia Circular</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Solar Fotovoltaica" data-base="energia-solar" data-code="sust.solar.idenza.19"> Energia Solar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Eólica e Biomassa" data-base="energia-eolica" data-code="sust.wind.idenza.20"> Energia Eólica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Biogás, Biodigestores e Biocombustíveis" data-base="biogas" data-code="sust.biogas.idenza.21"> Biogás e Biocombustíveis</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mudanças Climáticas e IPCC" data-base="clima" data-code="sust.climate.idenza.22"> Mudanças Climáticas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Créditos de Carbono e Mercado Voluntário" data-base="creditos-carbono" data-code="sust.carbon.idenza.23"> Créditos de Carbono</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Certificações Agrícolas e Fair Trade" data-base="certificacoes" data-code="sust.cert.idenza.24"> Certificações Agrícolas</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- VEÍCULOS DE LUXO -->
-  <div class="expando">
-    <div class="expando-toggle">Veículos de Luxo e História Automotiva (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Ferrari" data-base="ferrari" data-code="lux.ferrari.idenza.1"> História da Ferrari</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Lamborghini" data-base="lamborghini" data-code="lux.lambo.idenza.2"> História da Lamborghini</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Porsche" data-base="porsche" data-code="lux.porsche.idenza.3"> História da Porsche</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Rolls‑Royce" data-base="rollsroyce" data-code="lux.rr.idenza.4"> História da Rolls‑Royce</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bentley" data-base="bentley" data-code="lux.bentley.idenza.5"> História da Bentley</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Aston Martin" data-base="astonmartin" data-code="lux.aston.idenza.6"> História da Aston Martin</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bugatti" data-base="bugatti" data-code="lux.bugatti.idenza.7"> História da Bugatti</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Maserati" data-base="maserati" data-code="lux.maserati.idenza.8"> História da Maserati</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da McLaren" data-base="mclaren" data-code="lux.mclaren.idenza.9"> História da McLaren</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carros Elétricos de Luxo (Tesla, Lucid, Rimac)" data-base="eletricos-luxo" data-code="lux.ev.idenza.10"> Carros Elétricos de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hipercarros e Supercarros" data-base="hipercarros" data-code="lux.hyper.idenza.11"> Hipercarros e Supercarros</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Automotivo de Luxo" data-base="design-luxo" data-code="lux.design.idenza.12"> Design Automotivo de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Colecionismo de Automóveis Clássicos" data-base="colecionismo" data-code="lux.collect.idenza.13"> Colecionismo de Clássicos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Leilões de Veículos de Luxo" data-base="leiloes-luxo" data-code="lux.auction.idenza.14"> Leilões de Veículos de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Relógios Automotivos de Luxo" data-base="relogios-luxo" data-code="lux.watch.idenza.15"> Relógios Automotivos</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROFISSÕES E OFÍCIOS -->
-  <div class="expando">
-    <div class="expando-toggle">Profissões, Ofícios e Carreiras (expandir)</div>
-    <div class="expando-body">
-      <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carpintaria e Marcenaria" data-base="carpintaria" data-code="trade.wood.idenza.1"> Carpintaria e Marcenaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Serralheria e Metalurgia" data-base="serralheria" data-code="trade.metal.idenza.2"> Serralheria e Metalurgia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Eletricidade Predial e Industrial" data-base="eletricidade" data-code="trade.elec.idenza.3"> Eletricidade Predial e Industrial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Canalização e Hidráulica" data-base="hidraulica" data-code="trade.plumb.idenza.4"> Canalização e Hidráulica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Soldadura e Caldeiraria" data-base="soldadura" data-code="trade.weld.idenza.5"> Soldadura e Caldeiraria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mecânica Automotiva" data-base="mecanica-auto" data-code="trade.auto.idenza.6"> Mecânica Automotiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pilotagem Profissional (Avião, Helicóptero)" data-base="pilotagem" data-code="trade.pilot.idenza.7"> Pilotagem Profissional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Navegação Marítima e Fluvial" data-base="navegacao" data-code="trade.nav.idenza.8"> Navegação Marítima</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Joalheria e Ourivesaria" data-base="joalheria" data-code="trade.jewel.idenza.9"> Joalheria e Ourivesaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfaiataria e Costura de Alta‑Costura" data-base="alfaiataria" data-code="trade.tailor.idenza.10"> Alfaiataria e Alta‑Costura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cerâmica e Olaria Artesanal" data-base="ceramica" data-code="trade.ceramic.idenza.11"> Cerâmica e Olaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Panificação e Confeitaria" data-base="panificacao" data-code="trade.bake.idenza.12"> Panificação e Confeitaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enologia e Sommelieria" data-base="enologia" data-code="trade.wine.idenza.13"> Enologia e Sommelieria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Bombeiros e Resgate" data-base="bombeiros" data-code="trade.fire.idenza.14"> Bombeiros e Resgate</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Civil e Investigação Criminal" data-base="policia-civil" data-code="trade.police.idenza.15"> Polícia Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Militar e Ordem Pública" data-base="policia-militar" data-code="trade.mil.idenza.16"> Polícia Militar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Perícia Criminal e Forense" data-base="pericia" data-code="trade.forensic.idenza.17"> Perícia Criminal</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Diplomacia e Relações Internacionais" data-base="diplomacia" data-code="trade.diplo.idenza.18"> Diplomacia</label>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SEÇÃO: EIXOS REDIS -->
-<div class="section">
-  <div class="section-title"><span>⚙️</span> Eixos Redis (Inserir Temas)</div>
-  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento.</p>
-  <div class="redis-axes" id="redisAxesContainer"></div>
-  <button class="btn btn-outline" id="btnNovoEixo" style="margin-top:6px;">Criar Novo Eixo</button>
-  <div class="eixo-form-container" id="eixoFormContainer"></div>
-  <div style="margin-top:10px; display:flex; gap:8px;">
-    <button class="btn btn-outline" id="btnCopiarDadosRedis">Copiar Dados Redis</button>
-    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">Enviar para Redis</button>
-  </div>
-  <div class="redis-feedback" id="redisFeedbackEixos"></div>
-  <div class="status-msg" id="redisStatusMsg"></div>
-</div>
-
-<div class="section" id="panelPesquisa" style="display:none;">
-  <div class="section-title"><span>🔬</span> Pesquisa para: <span id="nomeAgenteSelecionado"></span></div>
-  <p style="font-size:0.7rem; color:#666;">Código: <span class="hum-code-display" id="codigoAgenteDisplay"></span></p>
-  <div class="generated-question" id="generatedQuestion"></div>
-  <button class="btn btn-outline" id="btnCopyQuestion" style="margin-top:6px;">Copiar Pergunta</button>
-  <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..." style="margin-top:12px;"></textarea>
-  <button class="btn btn-petroleum" id="btnEstruturar" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
-  <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
-  <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
-  <button class="btn btn-petroleum" id="btnEnviarMotor" style="margin-top:8px; display:none;">Enviar para Redis</button>
-  <div class="redis-feedback" id="redisFeedbackAgente"></div>
-  <div class="status-msg" id="statusMsg"></div>
-</div>
-
-</div><!-- FIM TAB 1 -->
-
-<!-- ==================== TAB 2: TEMPLATE DE HUMANOIDES ==================== -->
-<div class="tab-content" id="tab-humanoides">
-  <div class="section">
-    <div class="section-title hum-title"><span>🤖</span> Template Universal de Humanoides IDEnza</div>
-    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
-      <strong>Estrutura base para criar QUALQUER humanoide.</strong> Selecione o tipo, insira o contexto,
-      processe nas 7 camadas cognitivas e obtenha o JSON completo com código de rastreio, métricas e alertas.
-    </p>
-    <div class="section-title hum-title" style="font-size:0.7rem;"><span>🎯</span> Selecione o Tipo de Humanoide</div>
-    <div class="hum-type-grid" id="humTypeGrid"></div>
-    <div id="humPanel" style="display:none; margin-top:16px;">
-      <div class="section-title hum-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
-      <p style="font-size:0.6rem; color:#888;">Código Base: <span class="hum-code-display" id="humCodigoBase"></span></p>
-      <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto da Interação:</label>
-        <textarea class="raw-textarea hum-textarea" id="humEntrada" placeholder="Descreva a situação, fala ou contexto..."></textarea>
-      </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
-        <button class="btn btn-petroleum" id="btnProcessarHum">Processar (7 Camadas)</button>
-        <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
-        <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
-        <button class="btn btn-petroleum" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
-      </div>
-      <div class="redis-feedback" id="redisFeedbackHum"></div>
-      <div class="hum-status-msg" id="humStatusMsg"></div>
-      <div id="humResultados" style="display:none;">
-        <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
-        <div class="section-title hum-title" style="margin-top:16px;"><span>📊</span> Métricas da Análise</div>
-        <p style="font-size:0.6rem; color:#888;">Código de Rastreio: <span class="hum-code-display" id="humCodigoRastreio"></span></p>
-        <div class="hum-metric-grid" id="humMetricGrid"></div>
-        <div class="section-title hum-title" style="margin-top:16px;"><span>💬</span> Resposta / Saída (Camada 7)</div>
-        <div class="hum-resposta-box" id="humResposta"></div>
-        <div class="section-title hum-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo (7 Camadas)</div>
-        <div class="hum-json-preview" id="humJsonCompleto"></div>
-      </div>
-    </div>
-  </div>
-  <div class="section">
-    <div class="section-title hum-title"><span>🏗️</span> Arquitetura Cognitiva Universal (7 Camadas)</div>
-    <div style="font-size:0.7rem; color:#555; line-height:1.7;">
-      <strong>Camada 1 — Emoções / Sinais Primários:</strong> Detecta o estado emocional ou sinal básico da entrada<br>
-      <strong>Camada 2 — Intenções / Motivações:</strong> O que o usuário realmente quer<br>
-      <strong>Camada 3 — Objetivos / Metas:</strong> Curto, médio e longo prazo<br>
-      <strong>Camada 4 — Competências / Habilidades:</strong> O que o usuário demonstra saber<br>
-      <strong>Camada 5 — Comportamentos / Padrões:</strong> Engajamento, resistência, risco<br>
-      <strong>Camada 6 — Eixo Semântico / Domínio:</strong> Classificação IDEnza<br>
-      <strong>Camada 7 — Resposta / Saída Humanizada:</strong> Resposta empática e contextual
-    </div>
-  </div>
-</div><!-- FIM TAB 2 -->
-
-<!-- ==================== TAB 3: ESTRUTURA DE DADOS UNIVERSAL ==================== -->
-<div class="tab-content" id="tab-dados">
-  <div class="section">
-    <div class="section-title data-title"><span>🗃️</span> Estrutura de Dados Universal — 7 Camadas IDEnza</div>
-    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Selecione uma categoria para gerar o prompt e estruturar o conhecimento.</p>
-    <div class="section-title data-title" style="font-size:0.7rem;"><span>📂</span> Categorias de Conhecimento</div>
-    <div class="data-category-grid" id="dataCategoryGrid"></div>
-    <div id="dataPanelCategoria" style="display:none; margin-top:16px;">
-      <div class="section-title data-title"><span>🎯</span> Categoria: <span id="dataCatNome"></span></div>
-      <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCatCode"></span></p>
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:8px;">📝 Tópico Específico:</label>
-      <input type="text" class="raw-textarea data-textarea" id="dataTopicoEspecifico" placeholder="Ex: Direito Constitucional — Controle de Constitucionalidade" style="min-height:40px;">
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">🔍 Prompt para Fontes Oficiais:</label>
-      <div class="generated-question" id="dataPromptOficial" style="border-left:4px solid #0d5c3a;"></div>
-      <button class="btn btn-outline" id="btnCopiarPromptData" style="margin-top:6px;">Copiar Prompt</button>
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">📥 Cole a resposta da IA:</label>
-      <textarea class="raw-textarea data-textarea" id="dataRespostaIA" placeholder="Cole o texto retornado pela IA com fontes oficiais..."></textarea>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
-        <button class="btn btn-data" id="btnEstruturarData">Estruturar nas 7 Camadas</button>
-        <button class="btn btn-outline" id="btnUsarFonteIDEnza">Usar Fonte IDEnza (Interna)</button>
-      </div>
-      <div id="dataResultados" style="display:none; margin-top:16px;">
-        <div class="section-title data-title"><span>📊</span> Conhecimento Estruturado</div>
-        <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCodigoRastreio"></span></p>
-        <p style="font-size:0.6rem; color:#888;">Fonte: <span id="dataFonte" style="font-weight:700;">—</span> | Revisão: <span id="dataAlertaRevisao" style="font-weight:700;">—</span></p>
-        <div class="camadas-preview" id="dataCamadasPreview" style="border-left:4px solid #0d5c3a;"></div>
-        <div class="data-json-preview" id="dataJsonPreview"></div>
-        <div style="display:flex; gap:10px; margin-top:8px;">
-          <button class="btn btn-outline" id="btnCopiarJSONData">Copiar JSON</button>
-          <button class="btn btn-data" id="btnEnviarWorkerData">Enviar para Redis</button>
+    <!-- SPLASH SCREEN -->
+    <div class="superia-splash" id="superiaSplash">
+        <div class="particles-container">
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
         </div>
-      </div>
-      <div class="redis-feedback" id="redisFeedbackData"></div>
-      <div class="data-status-msg" id="dataStatusMsg"></div>
+        <div class="golden-line"></div><div class="golden-line"></div><div class="golden-line"></div>
+        <div class="horizontal-line top"></div><div class="horizontal-line bottom"></div>
+        <div class="splash-content">
+            <div class="brand-tag">Super Agentes · Humanoides · Dados Universais</div>
+            <h1 class="splash-title">ID<span>Enza</span></h1>
+            <p class="splash-subtitle">Estação de Pesquisa Avançada</p>
+            <div class="splash-divider">
+                <div class="divider-wing"></div><div class="divider-diamond"></div><div class="divider-wing right"></div>
+            </div>
+            <button class="enter-btn" id="enterBtn">
+                <i class="fas fa-fingerprint" style="margin-right: 10px; font-size: 0.7rem;"></i>Acessar Sistema
+            </button>
+            <div class="splash-loader">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div class="version-tag">v1.0 · Arquitetura Cognitiva 7 Camadas</div>
     </div>
-  </div>
-  <div class="section">
-    <div class="section-title data-title"><span>🏗️</span> Estrutura das 7 Camadas (Universal)</div>
-    <div style="font-size:0.7rem; color:#555; line-height:1.7;">
-      <strong>Camada 7 — ESSÊNCIA:</strong> Definição fundamental, axiomas, conceitos basilares<br>
-      <strong>Camada 6 — TEORIA GERAL:</strong> Principais teorias, escolas de pensamento, evolução histórica<br>
-      <strong>Camada 5 — ESTRUTURAS ABSTRATAS:</strong> Modelos formais, classificações, frameworks<br>
-      <strong>Camada 4 — APLICAÇÕES ESPECÍFICAS:</strong> Casos de uso reais, exemplos práticos<br>
-      <strong>Camada 3 — PRÁTICAS PROFISSIONAIS:</strong> Métodos, protocolos, ferramentas<br>
-      <strong>Camada 2 — USO PESSOAL/COTIDIANO:</strong> Aplicação no dia a dia<br>
-      <strong>Camada 1 — COTIDIANO E DICAS RÁPIDAS:</strong> Curiosidades, macetes, recomendações
-    </div>
-  </div>
-</div><!-- FIM TAB 3 -->
 
-<script>
-  /* ==================== CONFIGURAÇÃO REDIS DIRETA ==================== */
-  const REDIS_CONFIG = {
-    url: 'https://your-redis.upstash.io',
-    token: 'your-token-here'
-  };
+    <script>
+        /* ============================================================
+           CONFIGURAÇÃO DE AUTENTICAÇÃO
+           A senha é verificada pelo Worker via variável de ambiente
+           ============================================================ */
+        
+        /* URL do endpoint de verificação no SEU Worker */
+        const AUTH_WORKER_URL = '/auth/verify';
+        
+        /* Chave de sessão no localStorage */
+        const SESSION_KEY = 'idenza_dashboard_authenticated_v2';
+        
+        /* Página de destino após autenticação */
+        const DESTINO = 'dashboard.html';
+        
+        /* Tempo de expiração da sessão (8 horas) */
+        const SESSAO_EXPIRACAO = 8 * 60 * 60 * 1000;
 
-  /* Tenta carregar de variáveis globais (se definidas no servidor) */
-  if (typeof window !== 'undefined') {
-    if (window.REDIS_URL) REDIS_CONFIG.url = window.REDIS_URL;
-    if (window.REDIS_TOKEN) REDIS_CONFIG.token = window.REDIS_TOKEN;
-  }
+        let overlay = null;
 
-  /* ==================== FUNÇÃO DE ENVIO DIRETO AO REDIS ==================== */
-  async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
-    const feedbackEl = document.getElementById(feedbackElementId);
-    
-    /* Atualiza status visual */
-    updateRedisStatus('sending');
-    
-    if (feedbackEl) {
-      feedbackEl.className = 'redis-feedback show loading';
-      feedbackEl.textContent = '⏳ Enviando diretamente para o Redis...';
-    }
+        /* ==================== VERIFICA SESSÃO EXISTENTE ==================== */
+        function verificarSessao() {
+            const sessionData = localStorage.getItem(SESSION_KEY);
+            if (sessionData) {
+                try {
+                    const { token, timestamp } = JSON.parse(sessionData);
+                    const agora = Date.now();
+                    
+                    /* Verifica se a sessão ainda é válida */
+                    if (agora - timestamp < SESSAO_EXPIRACAO) {
+                        /* Sessão válida - redireciona direto */
+                        window.location.href = DESTINO;
+                        return true;
+                    } else {
+                        /* Sessão expirada - limpa */
+                        localStorage.removeItem(SESSION_KEY);
+                    }
+                } catch (e) {
+                    localStorage.removeItem(SESSION_KEY);
+                }
+            }
+            return false;
+        }
 
-    try {
-      const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
-      const redisToken = REDIS_CONFIG.token;
-      
-      /* Monta a chave Redis */
-      const redisKey = `idenza:${tipo}:${codigo}`;
-      
-      console.log(`[REDIS DIRETO] Enviando para: ${redisUrl}`);
-      console.log(`[REDIS DIRETO] Chave: ${redisKey}`);
-      console.log(`[REDIS DIRETO] Payload:`, JSON.stringify(payload, null, 2));
-      
-      /* Envio direto via Upstash Redis REST API */
-      const response = await fetch(`${redisUrl}/set/${redisKey}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${redisToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+        /* ==================== ABRIR MODAL DE SENHA ==================== */
+        function abrir() {
+            if (overlay) overlay.remove();
+            
+            overlay = document.createElement('div');
+            overlay.className = 'password-overlay';
+            overlay.innerHTML = `
+                <div class="password-box">
+                    <h2>
+                        <i class="fas fa-shield-haltered" style="color: #b8860b; margin-right: 8px;"></i>
+                        Autenticação Requerida
+                    </h2>
+                    <div class="gold-line"></div>
+                    <p style="color: rgb(255 255 255 / .5); font-size: .65rem; margin-bottom: 1rem; letter-spacing: 1px;">
+                        Área restrita para pesquisa avançada
+                    </p>
+                    <input type="password" id="senha" placeholder="Digite a senha de acesso" autofocus>
+                    <div class="error-msg" id="erro"></div>
+                    <div class="btn-row">
+                        <button class="password-btn" id="cancelar">
+                            <i class="fas fa-times" style="margin-right: 6px;"></i>Cancelar
+                        </button>
+                        <button class="password-btn primary" id="acessar">
+                            <i class="fas fa-key" style="margin-right: 6px;"></i>Acessar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            /* Foco no campo de senha */
+            setTimeout(() => {
+                const campo = document.getElementById('senha');
+                if (campo) campo.focus();
+            }, 100);
+            
+            /* Event listeners */
+            document.getElementById('acessar').addEventListener('click', verificar);
+            document.getElementById('cancelar').addEventListener('click', fechar);
+            document.getElementById('senha').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') verificar();
+            });
+            document.addEventListener('keydown', esc);
+        }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
+        /* ==================== FECHAR MODAL ==================== */
+        function fechar() {
+            if (overlay) {
+                overlay.classList.add('fade-out');
+                setTimeout(() => { 
+                    if (overlay) overlay.remove(); 
+                    overlay = null; 
+                }, 300);
+            }
+            document.removeEventListener('keydown', esc);
+        }
 
-      const resultado = await response.json();
-      
-      console.log(`[REDIS DIRETO] ✅ Sucesso:`, resultado);
-      
-      updateRedisStatus('connected');
-      
-      if (feedbackEl) {
-        feedbackEl.className = 'redis-feedback show success';
-        feedbackEl.innerHTML = `
-          ✅ <strong>Enviado com sucesso!</strong><br>
-          📁 Chave Redis: <code>${redisKey}</code><br>
-          📏 Tamanho: ${JSON.stringify(payload).length} bytes<br>
-          🕐 Timestamp: ${new Date().toLocaleString('pt-BR')}
-        `;
-      }
-      
-      return { sucesso: true, redisKey, resultado };
-      
-    } catch (error) {
-      console.error(`[REDIS DIRETO] ❌ Erro:`, error);
-      
-      updateRedisStatus('disconnected');
-      
-      if (feedbackEl) {
-        feedbackEl.className = 'redis-feedback show error';
-        feedbackEl.innerHTML = `
-          ❌ <strong>Erro no envio!</strong><br>
-          📝 ${error.message}<br>
-          🔗 Verifique a URL e o Token do Redis.
-        `;
-      }
-      
-      return { sucesso: false, erro: error.message };
-    }
-  }
+        /* ==================== FECHAR COM ESC ==================== */
+        function esc(e) { 
+            if (e.key === 'Escape') fechar(); 
+        }
 
-  /* ==================== STATUS DA CONEXÃO REDIS ==================== */
-  function updateRedisStatus(status) {
-    const dot = document.getElementById('redisStatusDot');
-    const label = document.getElementById('redisStatusLabel');
-    const endpoint = document.getElementById('redisEndpointDisplay');
-    
-    dot.className = 'redis-status-dot';
-    
-    switch(status) {
-      case 'connected':
-        dot.classList.add('connected');
-        label.textContent = 'Redis: Conectado';
-        break;
-      case 'disconnected':
-        dot.classList.add('disconnected');
-        label.textContent = 'Redis: Desconectado';
-        break;
-      case 'sending':
-        dot.classList.add('sending');
-        label.textContent = 'Redis: Enviando...';
-        break;
-    }
-    
-    endpoint.textContent = REDIS_CONFIG.url ? REDIS_CONFIG.url.replace(/\/$/, '') : 'Não configurado';
-  }
+        /* ==================== VERIFICAR SENHA ==================== */
+        async function verificar() {
+            const campo = document.getElementById('senha');
+            const erro = document.getElementById('erro');
+            const senha = campo.value.trim();
 
-  /* Testa conexão ao carregar */
-  async function testarConexaoRedis() {
-    updateRedisStatus('sending');
-    try {
-      const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, {
-        headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` }
-      });
-      if (response.ok) {
-        updateRedisStatus('connected');
-      } else {
-        updateRedisStatus('disconnected');
-      }
-    } catch {
-      updateRedisStatus('disconnected');
-    }
-  }
+            if (!senha) {
+                erro.textContent = 'Por favor, digite a senha de acesso.';
+                campo.focus();
+                return;
+            }
 
-  /* Inicializa */
-  testarConexaoRedis();
+            const btn = document.getElementById('acessar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Verificando...';
 
-  /* ==================== REGRA FIXA ANTI-JOGO DA VELHA ==================== */
-  const REGRA_ANTI_HASHTAG = `\n\nREGRA FIXA E INABALÁVEL: Em todo o texto que você criar, NUNCA utilize o símbolo cerquilha (jogo da velha). Não use em títulos, não use em listas, não use em marcação nenhuma. Substitua por numeração simples, travessão ou qualquer outro caractere. Esta regra é permanente e não pode ser violada em hipótese alguma.\n`;
+            try {
+                const response = await fetch(AUTH_WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: senha })
+                });
 
-  /* ==================== TABS ==================== */
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
+                const data = await response.json();
 
-  /* ==================== UTILITÁRIOS ==================== */
-  function copiarTextoParaClipboard(texto) {
-    return new Promise((resolve) => {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto).then(resolve).catch(() => resolve());
-      } else {
-        const ta = document.createElement('textarea');
-        ta.value = texto;
-        ta.style.position = 'fixed'; ta.style.top = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        resolve();
-      }
-    });
-  }
+                if (data.success) {
+                    /* Salva sessão com timestamp */
+                    const sessionData = {
+                        token: data.token,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+                    
+                    /* Feedback visual de sucesso */
+                    erro.style.color = '#22c55e';
+                    erro.textContent = '✓ Acesso autorizado! Redirecionando...';
+                    
+                    /* Redireciona após breve delay */
+                    setTimeout(() => {
+                        window.location.href = DESTINO;
+                    }, 800);
+                    
+                } else {
+                    erro.style.color = '#c78b1a';
+                    erro.textContent = data.error || 'Senha incorreta. Tente novamente.';
+                    campo.value = '';
+                    campo.focus();
+                }
+            } catch (err) {
+                erro.style.color = '#c78b1a';
+                erro.textContent = 'Erro de conexão com o servidor. Verifique sua internet.';
+                console.error('[AUTH] Erro:', err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-key" style="margin-right: 6px;"></i>Acessar';
+            }
+        }
 
-  function gerarCodigoUnico(prefixo) {
-    return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
-  }
+        /* ==================== INICIALIZAÇÃO ==================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            /* Verifica se já existe sessão ativa */
+            if (!verificarSessao()) {
+                /* Se não tem sessão, espera o clique no botão */
+                document.getElementById('enterBtn').addEventListener('click', abrir);
+            }
+        });
 
-  /* ==================== EIXOS REDIS ==================== */
-  const eixosComHints = {
-    'STRING':'textos simples','LIST':'listas ordenadas','SET':'conjuntos únicos',
-    'ZSET':'rankings','HASH':'objetos','STREAM':'eventos','GEO':'coordenadas',
-    'BITMAP':'flags binárias','PUB/SUB':'canais de mensagens'
-  };
-  const defaultEixos = Object.keys(eixosComHints);
-  let customEixos = [], redisData = {};
-  defaultEixos.forEach(e => { redisData[e] = []; });
+        /* Atalho: tecla Enter na splash screen */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !overlay) {
+                abrir();
+            }
+        });
 
-  function renderizarChips() {
-    const container = document.getElementById('redisAxesContainer');
-    container.innerHTML = '';
-    [...defaultEixos, ...customEixos].forEach(eixo => {
-      const w = document.createElement('div'); w.className = 'redis-chip-wrapper';
-      const c = document.createElement('span'); c.className = 'redis-chip';
-      c.dataset.eixo = eixo; c.textContent = eixo;
-      c.addEventListener('click', () => {
-        document.querySelectorAll('.redis-chip').forEach(ch => ch.classList.remove('active-chip'));
-        c.classList.add('active-chip');
-        abrirFormularioEixo(eixo);
-      });
-      const h = document.createElement('span'); h.className = 'redis-chip-hint';
-      h.textContent = eixosComHints[eixo] || 'personalizado';
-      w.appendChild(c); w.appendChild(h); container.appendChild(w);
-    });
-  }
-
-  let eixoAtual = null;
-  function abrirFormularioEixo(eixo) {
-    eixoAtual = eixo;
-    const fc = document.getElementById('eixoFormContainer');
-    fc.innerHTML = `<div class="form-hint">📌 ${eixosComHints[eixo]||'personalizado'}</div>
-      <div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div>
-      <div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>
-      <div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-petroleum" id="btnInserirEixo">Inserir</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
-    fc.classList.add('open');
-    document.getElementById('btnInserirEixo').addEventListener('click', () => {
-      const k = document.getElementById('eixoKey').value.trim();
-      const v = document.getElementById('eixoValue').value.trim();
-      if(!k||!v) return;
-      redisData[eixoAtual].push({key:k,value:v,timestamp:new Date().toISOString()});
-      document.getElementById('redisStatusMsg').textContent = `Inserido: ${k}`;
-      setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
-      fc.classList.remove('open');
-    });
-    document.getElementById('btnCancelarEixo').addEventListener('click', ()=>fc.classList.remove('open'));
-  }
-
-  document.getElementById('btnNovoEixo').addEventListener('click', ()=>{
-    const nome = prompt('Nome do novo eixo (ex: HYPERLOGLOG):');
-    if(nome && ![...defaultEixos,...customEixos].includes(nome.toUpperCase())){
-      customEixos.push(nome.toUpperCase()); 
-      redisData[nome.toUpperCase()]=[]; 
-      renderizarChips();
-    }
-  });
-
-  document.getElementById('btnCopiarDadosRedis').addEventListener('click', ()=>{
-    copiarTextoParaClipboard(JSON.stringify(redisData,null,2));
-    document.getElementById('redisStatusMsg').textContent = 'Copiado.';
-    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
-  });
-
-  document.getElementById('btnEnviarRedisMotor').addEventListener('click', async ()=>{
-    document.getElementById('redisStatusMsg').textContent = 'Enviando...';
-    const codigo = gerarCodigoUnico('redis');
-    await enviarDiretoRedis({redisData},'redis-data',codigo,'redisFeedbackEixos');
-    document.getElementById('redisStatusMsg').textContent = 'Concluído.';
-    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},5000);
-  });
-
-  renderizarChips();
-
-  /* ==================== TAB 1: AGENTES ==================== */
-  let agenteSelecionado = null, conhecimentoEstruturado = null;
-  document.querySelectorAll('.expando-toggle').forEach(t => {
-    t.addEventListener('click', ()=>{
-      const e = t.parentElement;
-      e.classList.toggle('open');
-      t.textContent = e.classList.contains('open') ? t.textContent.replace('(expandir)','(recolher)') : t.textContent.replace('(recolher)','(expandir)');
-    });
-  });
-  document.querySelectorAll('input[name="agentRadio"]').forEach(r => {
-    r.addEventListener('change', ()=>{
-      if(r.checked){
-        agenteSelecionado = { nome: r.value, base: r.dataset.base, codigo: r.dataset.code };
-        document.getElementById('panelPesquisa').style.display = 'block';
-        document.getElementById('nomeAgenteSelecionado').textContent = agenteSelecionado.nome;
-        document.getElementById('codigoAgenteDisplay').textContent = agenteSelecionado.codigo;
-        document.getElementById('generatedQuestion').textContent = 
-          `Você é um especialista em ${agenteSelecionado.base}. Forneça conhecimento completo sobre "${agenteSelecionado.nome}" em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO E DICAS\nUse fontes oficiais.${REGRA_ANTI_HASHTAG}`;
-        document.getElementById('respostaIA').value = '';
-        document.getElementById('camadasPreview').style.display = 'none';
-        document.getElementById('jsonFinalPreview').style.display = 'none';
-        document.getElementById('btnEnviarMotor').style.display = 'none';
-        document.getElementById('redisFeedbackAgente').className = 'redis-feedback';
-      }
-    });
-  });
-  document.getElementById('btnCopyQuestion').addEventListener('click', ()=>{
-    copiarTextoParaClipboard(document.getElementById('generatedQuestion').textContent);
-    document.getElementById('statusMsg').textContent = 'Copiado.';
-    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},3000);
-  });
-  document.getElementById('btnEstruturar').addEventListener('click', ()=>{
-    const texto = document.getElementById('respostaIA').value.trim();
-    if(!texto) return;
-    const camadas = extrairCamadas(texto);
-    conhecimentoEstruturado = {
-      codigo: agenteSelecionado.codigo,
-      agente: agenteSelecionado.nome,
-      base: agenteSelecionado.base,
-      fonte: 'externa',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now()+90*86400000).toISOString().split('T')[0],
-      camadas
-    };
-    document.getElementById('camadasPreview').textContent = camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
-    document.getElementById('camadasPreview').style.display = 'block';
-    document.getElementById('jsonFinalPreview').textContent = JSON.stringify(conhecimentoEstruturado,null,2);
-    document.getElementById('jsonFinalPreview').style.display = 'block';
-    document.getElementById('btnEnviarMotor').style.display = 'inline-flex';
-    document.getElementById('redisFeedbackAgente').className = 'redis-feedback';
-  });
-  document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
-    if(!conhecimentoEstruturado) return;
-    document.getElementById('statusMsg').textContent = 'Enviando...';
-    await enviarDiretoRedis(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo,'redisFeedbackAgente');
-    document.getElementById('statusMsg').textContent = 'Concluído.';
-    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
-  });
-
-  function extrairCamadas(texto) {
-    const linhas = texto.split('\n'), camadas = [];
-    let current = null;
-    for(const l of linhas){
-      const m = l.match(/(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i);
-      if(m){ current = { nivel: parseInt(m[1]), nome: m[2].trim(), titulo: m[2].trim(), subtemas: [] }; camadas.push(current); }
-      else if(current){ const p = l.split(/[,;]| - /).map(s=>s.trim()).filter(s=>s.length>5); if(p.length) current.subtemas.push(...p); }
-    }
-    if(!camadas.length){
-      const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
-      for(let i=1;i<=7;i++) camadas.push({nivel:i,nome:nomes[i-1],titulo:nomes[i-1],subtemas:[texto.substring(0,100)]});
-    }
-    return camadas;
-  }
-
-  /* ==================== TAB 2: TEMPLATE DE HUMANOIDES ==================== */
-  const tiposHumanoides = [
-    { icone: '💼', nome: 'RH / Escuta Organizacional', codigo: 'hum.rh', desc: 'Análise de clima, feedback, reconhecimento, conflitos', exemplo: 'Estou há 3 anos na empresa e ninguém reconhece meu trabalho.' },
-    { icone: '🎓', nome: 'Educador / Mentor', codigo: 'hum.edu', desc: 'Ensino, mentoria, avaliação de aprendizagem', exemplo: 'Tenho dificuldade em aprender cálculo diferencial.' },
-    { icone: '🏥', nome: 'Saúde / Acolhimento', codigo: 'hum.health', desc: 'Triagem emocional, apoio psicológico, bem-estar', exemplo: 'Ando muito ansioso e não consigo dormir direito.' },
-    { icone: '⚖️', nome: 'Jurídico / Compliance', codigo: 'hum.law', desc: 'Orientações legais, denúncias, due diligence', exemplo: 'Acredito que meu contrato tem cláusulas abusivas.' },
-    { icone: '💻', nome: 'Suporte Técnico / TI', codigo: 'hum.tech', desc: 'Diagnóstico de problemas, tutoriais, troubleshooting', exemplo: 'Meu computador não liga e tenho um prazo urgente.' },
-    { icone: '📈', nome: 'Financeiro / Investimentos', codigo: 'hum.fin', desc: 'Consultoria financeira, análise de risco, planejamento', exemplo: 'Quero investir mas não sei por onde começar.' },
-    { icone: '🎯', nome: 'Coach / Desenvolvimento Pessoal', codigo: 'hum.coach', desc: 'Metas, produtividade, equilíbrio vida-trabalho', exemplo: 'Sinto que estou estagnado na carreira.' },
-    { icone: '🛒', nome: 'Atendimento ao Cliente', codigo: 'hum.cx', desc: 'Suporte, reclamações, fidelização', exemplo: 'Comprei um produto com defeito e não consigo trocar.' },
-    { icone: '🔍', nome: 'Investigação / Análise Forense', codigo: 'hum.forensic', desc: 'Análise de evidências, padrões, detecção de anomalias', exemplo: 'Encontrei inconsistências nos relatórios financeiros.' },
-    { icone: '🌍', nome: 'Geopolítica / Internacional', codigo: 'hum.geo', desc: 'Análise de cenários, riscos geopolíticos', exemplo: 'Como a guerra comercial afeta meus investimentos?' },
-    { icone: '🎨', nome: 'Criativo / Artes', codigo: 'hum.art', desc: 'Feedback criativo, bloqueios artísticos, direção', exemplo: 'Estou com bloqueio criativo para terminar minha obra.' },
-    { icone: '⚽', nome: 'Esportes / Performance', codigo: 'hum.sport', desc: 'Análise de desempenho, motivação esportiva', exemplo: 'Meu rendimento caiu muito nos últimos jogos.' },
-    { icone: '🔧', nome: 'Customizado', codigo: 'hum.custom', desc: 'Defina seu próprio domínio e camadas semânticas', exemplo: 'Descreva seu contexto personalizado aqui.' }
-  ];
-
-  let humanoideSelecionado = null, resultadoHum = null;
-  const humTypeGrid = document.getElementById('humTypeGrid');
-
-  tiposHumanoides.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'hum-type-card';
-    card.innerHTML = `<span class="type-icon">${t.icone}</span><span class="type-name">${t.nome}</span><span class="type-code">${t.codigo}.idenza.*</span>`;
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      humanoideSelecionado = t;
-      abrirPainelHumanoide(t);
-    });
-    humTypeGrid.appendChild(card);
-  });
-
-  function abrirPainelHumanoide(t) {
-    document.getElementById('humPanel').style.display = 'block';
-    document.getElementById('humIcone').textContent = t.icone;
-    document.getElementById('humNome').textContent = t.nome;
-    document.getElementById('humCodigoBase').textContent = t.codigo + '.idenza.*';
-    document.getElementById('humDescricao').textContent = t.desc;
-    document.getElementById('humEntrada').value = '';
-    document.getElementById('humEntrada').placeholder = 'Ex: "' + t.exemplo + '"';
-    document.getElementById('humResultados').style.display = 'none';
-    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
-    document.getElementById('humStatusMsg').textContent = '';
-    document.getElementById('redisFeedbackHum').className = 'redis-feedback';
-    resultadoHum = null;
-  }
-
-  document.getElementById('btnProcessarHum').addEventListener('click', () => {
-    if(!humanoideSelecionado) return;
-    const entrada = document.getElementById('humEntrada').value.trim();
-    if(!entrada || entrada.length < 5) {
-      document.getElementById('humStatusMsg').textContent = 'Insira uma descrição mais detalhada.';
-      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
-      return;
-    }
-    document.getElementById('humStatusMsg').textContent = 'Processando...';
-    setTimeout(() => {
-      resultadoHum = processarHumanoide(entrada, humanoideSelecionado);
-      exibirResultadosHum(resultadoHum);
-      document.getElementById('humStatusMsg').textContent = 'Concluído.';
-      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},4000);
-    }, 500);
-  });
-
-  function processarHumanoide(entrada, tipo) {
-    const texto = entrada.toLowerCase();
-    const codigo = gerarCodigoUnico(tipo.codigo);
-    
-    const temFrustracao = /frustr|decepcion|desanim|difícil|problema|não.*consigo/i.test(texto);
-    const temSatisfacao = /satisfeit|feliz|grato|bom|obrigad|funcionou/i.test(texto);
-    const temUrgencia = /urgente|rápido|prazo|agora|imediato/i.test(texto);
-    const temConfusao = /confuso|não.*entendo|dúvida|perdid/i.test(texto);
-    
-    const emocoes = {
-      frustracao: temFrustracao ? 0.80 : 0.20,
-      urgencia: temUrgencia ? 0.75 : 0.25,
-      satisfacao: temSatisfacao ? 0.80 : 0.30,
-      confusao: temConfusao ? 0.70 : 0.20,
-      esperanca: /esperan|acredit|tentar|vou.*conseguir/i.test(texto) ? 0.65 : 0.35,
-      confianca: /confio|seguro|certo|claro/i.test(texto) ? 0.60 : 0.30
-    };
-
-    const intencoes = {
-      resolver_problema: temFrustracao || temConfusao ? 0.85 : 0.30,
-      aprender: /aprender|entender|explica|como.*faz/i.test(texto) ? 0.80 : 0.25,
-      ser_ouvido: /ouvir|atenção|ninguém.*liga|ignor/i.test(texto) ? 0.85 : 0.30,
-      receber_orientacao: /orienta|ajuda|guia|conselho/i.test(texto) ? 0.78 : 0.28,
-      expressar: /quero.*dizer|preciso.*falar|desabafar/i.test(texto) ? 0.72 : 0.22
-    };
-
-    const comportamentos = {
-      engajamento: temSatisfacao ? 0.70 : 0.40,
-      urgencia: temUrgencia ? 0.80 : 0.25,
-      proatividade: /fiz|tentei|busquei|procurei/i.test(texto) ? 0.60 : 0.35,
-      risco_abandono: temFrustracao && /desist|abandon|sair/i.test(texto) ? 0.70 : 0.20
-    };
-
-    let alertaNivel = 'baixo', alertaTipo = null, alertaUrgencia = 'monitorar';
-    if(comportamentos.urgencia > 0.7) { alertaNivel = 'alto'; alertaTipo = 'urgencia'; alertaUrgencia = 'imediata'; }
-    if(comportamentos.risco_abandono > 0.6) { alertaNivel = 'medio'; alertaTipo = 'risco_abandono'; alertaUrgencia = 'esta_semana'; }
-
-    let resposta = '';
-    if(temFrustracao) resposta = `Compreendo sua situação com "${tipo.nome}". Pelo que descreveu, identifico pontos importantes que merecem atenção. Vamos explorar isso juntos com calma.`;
-    else if(temSatisfacao) resposta = `Que bom receber esse retorno positivo! Fico feliz em saber que as coisas estão fluindo bem no contexto de ${tipo.nome}.`;
-    else resposta = `Obrigado por compartilhar. Como ${tipo.nome}, estou aqui para ajudar. Podemos analisar sua situação com mais profundidade.`;
-    
-    if(alertaNivel === 'alto') resposta += '\n\nNoto um senso de urgência importante. Recomendo priorizarmos este caso.';
-
-    return {
-      codigo,
-      tipo: tipo.nome,
-      dominio: tipo.codigo,
-      analise_cognitiva: {
-        camada1_emocoes: emocoes,
-        camada2_intencoes: intencoes,
-        camada3_objetivos: { resolver: 0.80, aprender: intencoes.aprender, expressar: intencoes.expressar },
-        camada4_competencias: { comunicacao: 0.55, autonomia: 0.40, colaboracao: 0.35 },
-        camada5_comportamentos: comportamentos,
-        camada6_eixo: tipo.codigo,
-        scores: { [tipo.codigo]: 0.90 }
-      },
-      alerta: { nivel: alertaNivel, tipo: alertaTipo, urgencia: alertaUrgencia },
-      camada7_resposta: resposta,
-      fonte: 'IDEnza',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now()+30*86400000).toISOString().split('T')[0]
-    };
-  }
-
-  function exibirResultadosHum(r) {
-    document.getElementById('humResultados').style.display = 'block';
-    document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
-    document.getElementById('humCodigoRastreio').textContent = r.codigo;
-    const ab = document.getElementById('humAlertaBox');
-    ab.style.display = 'block';
-    ab.className = 'hum-alert-box ' + r.alerta.nivel;
-    ab.innerHTML = `<strong>Alerta: ${r.alerta.nivel.toUpperCase()}</strong><br>Tipo: ${r.alerta.tipo||'N/A'} | Urgência: ${r.alerta.urgencia.replace('_',' ')}`;
-    const emocoes = r.analise_cognitiva.camada1_emocoes;
-    let m = '';
-    Object.entries(emocoes).sort((a,b)=>b[1]-a[1]).slice(0,4).forEach(([k,v])=>{
-      m += `<div class="hum-metric-item"><div class="label">${k}</div><div class="value">${(v*100).toFixed(0)}%</div></div>`;
-    });
-    document.getElementById('humMetricGrid').innerHTML = m;
-    document.getElementById('humResposta').textContent = r.camada7_resposta;
-    document.getElementById('humJsonCompleto').textContent = JSON.stringify(r,null,2);
-  }
-
-  document.getElementById('btnLimparHum').addEventListener('click', ()=>{
-    document.getElementById('humEntrada').value = '';
-    document.getElementById('humResultados').style.display = 'none';
-    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
-    document.getElementById('redisFeedbackHum').className = 'redis-feedback';
-    resultadoHum = null;
-  });
-
-  document.getElementById('btnCopiarJSONHum').addEventListener('click', ()=>{
-    if(!resultadoHum) return;
-    copiarTextoParaClipboard(JSON.stringify(resultadoHum,null,2));
-    document.getElementById('humStatusMsg').textContent = 'JSON copiado.';
-    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
-  });
-
-  document.getElementById('btnEnviarWorkerHum').addEventListener('click', async ()=>{
-    if(!resultadoHum) return;
-    document.getElementById('humStatusMsg').textContent = 'Enviando...';
-    await enviarDiretoRedis(resultadoHum,'humanoide',resultadoHum.codigo,'redisFeedbackHum');
-    document.getElementById('humStatusMsg').textContent = 'Concluído.';
-    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},5000);
-  });
-
-  /* ==================== TAB 3: DADOS UNIVERSAIS ==================== */
-  const categorias = [
-    {nome:'Direito',codigo:'law',desc:'Todos os ramos jurídicos',icone:'⚖️'},
-    {nome:'Medicina & Saúde',codigo:'med',desc:'Anatomia, especialidades',icone:'🏥'},
-    {nome:'Economia',codigo:'econ',desc:'Micro, macro, econometria',icone:'📈'},
-    {nome:'Matemática',codigo:'math',desc:'Álgebra, cálculo, estatística',icone:'🔢'},
-    {nome:'Física',codigo:'phys',desc:'Mecânica, quântica, termodinâmica',icone:'⚛️'},
-    {nome:'Química',codigo:'chem',desc:'Orgânica, inorgânica',icone:'🧪'},
-    {nome:'Biologia',codigo:'bio',desc:'Genética, ecologia, evolução',icone:'🧬'},
-    {nome:'Geografia',codigo:'geo',desc:'Física, humana, geopolítica',icone:'🌍'},
-    {nome:'História',codigo:'hist',desc:'Antiga, medieval, contemporânea',icone:'📜'},
-    {nome:'Filosofia',codigo:'phil',desc:'Ética, lógica, metafísica',icone:'🏛️'},
-    {nome:'Psicologia',codigo:'psych',desc:'Clínica, social, cognitiva',icone:'🧠'},
-    {nome:'Engenharias',codigo:'eng',desc:'Civil, mecânica, software',icone:'⚙️'},
-    {nome:'Tecnologia & IA',codigo:'tech',desc:'ML, NLP, visão computacional',icone:'💻'},
-    {nome:'Artes & Literatura',codigo:'art',desc:'Pintura, música, cinema',icone:'🎨'},
-    {nome:'Celebridades',codigo:'celeb',desc:'Personalidades históricas',icone:'⭐'},
-    {nome:'Esportes',codigo:'sport',desc:'Futebol, atletismo, eSports',icone:'⚽'},
-    {nome:'Religião',codigo:'rel',desc:'Cristianismo, islamismo, budismo',icone:'🕉️'},
-    {nome:'Gastronomia',codigo:'food',desc:'Culinária mundial, vinhos',icone:'🍽️'},
-    {nome:'Astronomia',codigo:'astro',desc:'Planetas, estrelas, cosmologia',icone:'🔭'},
-    {nome:'Sociologia',codigo:'soc',desc:'Estruturas sociais, cultura',icone:'👥'}
-  ];
-
-  let catSelecionada = null, dadosData = null;
-  const dcg = document.getElementById('dataCategoryGrid');
-  categorias.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'data-category-card';
-    card.innerHTML = `<div class="cat-code">${c.icone} ${c.codigo}.idenza.*</div><div class="cat-name">${c.nome}</div><div class="cat-desc">${c.desc}</div>`;
-    card.addEventListener('click', ()=>{
-      document.querySelectorAll('.data-category-card').forEach(x=>x.classList.remove('selected'));
-      card.classList.add('selected');
-      catSelecionada = c;
-      document.getElementById('dataPanelCategoria').style.display = 'block';
-      document.getElementById('dataCatNome').textContent = c.nome;
-      document.getElementById('dataCatCode').textContent = c.codigo+'.idenza.*';
-      document.getElementById('dataPromptOficial').textContent = 
-        `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais. Cite todas.${REGRA_ANTI_HASHTAG}`;
-      document.getElementById('dataResultados').style.display = 'none';
-      document.getElementById('redisFeedbackData').className = 'redis-feedback';
-      dadosData = null;
-    });
-    dcg.appendChild(card);
-  });
-
-  document.getElementById('btnCopiarPromptData').addEventListener('click', ()=>{
-    copiarTextoParaClipboard(document.getElementById('dataPromptOficial').textContent);
-    document.getElementById('dataStatusMsg').textContent = 'Prompt copiado.';
-    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
-  });
-
-  document.getElementById('btnEstruturarData').addEventListener('click', ()=>{
-    const texto = document.getElementById('dataRespostaIA').value.trim();
-    if(!texto||!catSelecionada) return;
-    const codigo = gerarCodigoUnico(catSelecionada.codigo);
-    dadosData = {
-      codigo,
-      categoria: catSelecionada.nome,
-      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
-      fonte: 'externa',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
-      camadas: extrairCamadas(texto)
-    };
-    exibirData();
-  });
-
-  document.getElementById('btnUsarFonteIDEnza').addEventListener('click', ()=>{
-    if(!catSelecionada) return;
-    const codigo = gerarCodigoUnico(catSelecionada.codigo);
-    const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
-    dadosData = {
-      codigo,
-      categoria: catSelecionada.nome,
-      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
-      fonte: 'IDEnza',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
-      camadas: nomes.map((n,i)=>({nivel:i+1,nome:n,titulo:n,subtemas:['Conhecimento interno IDEnza']}))
-    };
-    exibirData();
-  });
-
-  function exibirData() {
-    document.getElementById('dataResultados').style.display = 'block';
-    document.getElementById('dataCodigoRastreio').textContent = dadosData.codigo;
-    document.getElementById('dataFonte').textContent = dadosData.fonte==='IDEnza'?'IDEnza (Interno)':'Fontes Oficiais Externas';
-    document.getElementById('dataAlertaRevisao').textContent = dadosData.alertaRevisao;
-    document.getElementById('dataCamadasPreview').textContent = dadosData.camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
-    document.getElementById('dataCamadasPreview').style.display = 'block';
-    document.getElementById('dataJsonPreview').textContent = JSON.stringify(dadosData,null,2);
-  }
-
-  document.getElementById('btnCopiarJSONData').addEventListener('click', ()=>{
-    if(!dadosData) return;
-    copiarTextoParaClipboard(JSON.stringify(dadosData,null,2));
-    document.getElementById('dataStatusMsg').textContent = 'JSON copiado.';
-    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
-  });
-
-  document.getElementById('btnEnviarWorkerData').addEventListener('click', async ()=>{
-    if(!dadosData) return;
-    document.getElementById('dataStatusMsg').textContent = 'Enviando...';
-    await enviarDiretoRedis(dadosData,'data',dadosData.codigo,'redisFeedbackData');
-    document.getElementById('dataStatusMsg').textContent = 'Concluído.';
-    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},5000);
-  });
-
-</script>
+        /* Previne clique acidental na splash */
+        document.getElementById('superiaSplash').addEventListener('click', (e) => { 
+            if (e.target === e.currentTarget) e.stopPropagation(); 
+        });
+    </script>
 </body>
 </html>

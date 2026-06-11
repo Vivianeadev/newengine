@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Estação de Pesquisa • Montagem de Super Agentes + Eixos Redis + Humanoides RH + Estrutura Universal</title>
+  <title>Estação de Pesquisa • Montagem de Super Agentes + Humanoides + Estrutura Universal</title>
   <style>
     :root {
       --bg: #f8f9fa;
@@ -59,7 +59,7 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .badge-rh {
+    .badge-hum {
       background: var(--petroleum);
       color: white;
       font-size: 0.6rem;
@@ -90,14 +90,14 @@
       flex-wrap: wrap;
     }
     .tab-btn {
-      padding: 12px 18px;
+      padding: 12px 14px;
       border: none;
       background: #f0f0f0;
       cursor: pointer;
       font-weight: 700;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1px;
       transition: all 0.2s;
       color: #666;
       border-right: 1px solid var(--border);
@@ -110,7 +110,7 @@
       border-bottom: 3px solid var(--gold-dark);
       box-shadow: inset 0 -3px 0 var(--gold-dark);
     }
-    .tab-btn.active.rh-tab {
+    .tab-btn.active.hum-tab {
       color: var(--petroleum);
       border-bottom: 3px solid var(--petroleum-light);
       box-shadow: inset 0 -3px 0 var(--petroleum-light);
@@ -148,7 +148,7 @@
       align-items: center;
       gap: 8px;
     }
-    .section-title.rh-title { color: var(--petroleum); }
+    .section-title.hum-title { color: var(--petroleum); }
     .section-title.data-title { color: #0d5c3a; }
     .btn {
       padding: 8px 18px;
@@ -262,7 +262,7 @@
       color: var(--text);
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
     }
-    .raw-textarea.rh-textarea {
+    .raw-textarea.hum-textarea {
       min-height: 120px;
       border-left: 4px solid var(--petroleum-light);
     }
@@ -296,7 +296,7 @@
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
       color: #1e1e1e;
     }
-    .rh-json-preview {
+    .hum-json-preview {
       background: #f0f8f9;
       border: 1px solid #b0d4d9;
       padding: 16px;
@@ -327,7 +327,7 @@
       color: var(--petroleum-light);
       margin-top: 6px;
     }
-    .rh-status-msg {
+    .hum-status-msg {
       font-size: 0.7rem;
       color: var(--petroleum-light);
       margin-top: 6px;
@@ -452,48 +452,48 @@
       margin-bottom: 16px;
     }
 
-    /* RH ALERT STYLES */
-    .rh-alert-box {
+    /* HUMANOIDE STYLES */
+    .hum-alert-box {
       padding: 12px 16px;
       margin: 8px 0;
       border-left: 5px solid #ccc;
       background: #f9f9f9;
       font-size: 0.75rem;
     }
-    .rh-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
-    .rh-alert-box.medio { border-color: #eab308; background: #fefce8; }
-    .rh-alert-box.alto { border-color: #f97316; background: #fff7ed; }
-    .rh-alert-box.critico { border-color: #ef4444; background: #fef2f2; animation: pulse-alert 1.5s infinite; }
+    .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
+    .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
+    .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
+    .hum-alert-box.critico { border-color: #ef4444; background: #fef2f2; animation: pulse-alert 1.5s infinite; }
     @keyframes pulse-alert {
       0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
       70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
       100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
     }
-    .rh-metric-grid {
+    .hum-metric-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 8px;
       margin-top: 8px;
     }
-    .rh-metric-item {
+    .hum-metric-item {
       background: #f0f8f9;
       padding: 8px;
       border: 1px solid #cde2e5;
       text-align: center;
     }
-    .rh-metric-item .label {
+    .hum-metric-item .label {
       font-size: 0.55rem;
       text-transform: uppercase;
       color: #888;
       letter-spacing: 1px;
     }
-    .rh-metric-item .value {
+    .hum-metric-item .value {
       font-size: 1.1rem;
       font-weight: 700;
       color: var(--petroleum);
       font-family: var(--font-mono);
     }
-    .rh-resposta-box {
+    .hum-resposta-box {
       background: #fff;
       border: 1px solid var(--petroleum-light);
       padding: 16px;
@@ -555,6 +555,57 @@
       display: inline-block;
       margin: 4px 0;
     }
+    .hum-code-display {
+      background: var(--petroleum);
+      color: #b0e0e8;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin: 4px 0;
+    }
+
+    /* HUMANOIDE TYPE SELECTOR */
+    .hum-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hum-type-card {
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafdfd;
+      text-align: center;
+    }
+    .hum-type-card:hover {
+      border-color: var(--petroleum);
+      box-shadow: var(--shadow-md);
+      background: #f0f8f9;
+    }
+    .hum-type-card.selected {
+      border-color: var(--petroleum);
+      background: #d8eff3;
+      box-shadow: var(--shadow-md);
+    }
+    .hum-type-card .type-icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .hum-type-card .type-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--petroleum);
+    }
+    .hum-type-card .type-code {
+      font-size: 0.5rem;
+      color: #888;
+      font-family: var(--font-mono);
+    }
 
     @media (max-width: 600px) {
       body { padding: 8px; }
@@ -562,9 +613,10 @@
       .eixo-form-container label { min-width: auto; }
       .modal-box { width: 90vw; }
       .redis-chip-hint { max-width: 60px; font-size: 0.45rem; }
-      .tab-btn { padding: 8px 10px; font-size: 0.6rem; }
-      .rh-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
+      .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
       .data-category-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .hum-type-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     }
   </style>
 </head>
@@ -573,8 +625,8 @@
 <header>
   <h1>🧠 Estação de Pesquisa • Super Agentes + Humanoides + Dados Universais</h1>
   <div style="display:flex; gap:8px; flex-wrap:wrap;">
-    <span class="badge">Montagem 7 Camadas + Redis</span>
-    <span class="badge-rh">Humanoides RH</span>
+    <span class="badge">Montagem 7 Camadas</span>
+    <span class="badge-hum">Humanoides Template</span>
     <span class="badge-data">Estrutura Universal</span>
   </div>
 </header>
@@ -582,14 +634,13 @@
 <!-- TABS NAVIGATION -->
 <div class="tab-nav">
   <button class="tab-btn active" data-tab="tab-agentes">📋 Catálogo de Agentes</button>
-  <button class="tab-btn rh-tab" data-tab="tab-humanoides">🤖 Humanoides RH</button>
+  <button class="tab-btn hum-tab" data-tab="tab-humanoides">🤖 Template de Humanoides</button>
   <button class="tab-btn data-tab" data-tab="tab-dados">🗃️ Estrutura de Dados Universal</button>
 </div>
 
-<!-- ==================== TAB 1: CATÁLOGO DE AGENTES (CONTEÚDO ORIGINAL INTACTO) ==================== -->
+<!-- ==================== TAB 1: CATÁLOGO DE AGENTES (INTACTO) ==================== -->
 <div class="tab-content active" id="tab-agentes">
 
-<!-- CATÁLOGO DE AGENTES (MASSIVAMENTE EXPANDIDO) -->
 <div class="section">
   <div class="section-title"><span>📋</span> Catálogo de Agentes (Universo do Conhecimento)</div>
   <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">Selecione um agente para gerar a pergunta de pesquisa e montar o conhecimento.</p>
@@ -936,26 +987,25 @@
   </div>
 </div>
 
-<!-- SEÇÃO: EIXOS REDIS (COM GUIAS DE PREENCHIMENTO) -->
+<!-- SEÇÃO: EIXOS REDIS -->
 <div class="section">
   <div class="section-title"><span>⚙️</span> Eixos Redis (Inserir Temas)</div>
-  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento. As dicas em baixo de cada botão indicam o que preencher, seguindo as 7 camadas de abstração.</p>
+  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento.</p>
   <div class="redis-axes" id="redisAxesContainer"></div>
   <button class="btn btn-outline" id="btnNovoEixo" style="margin-top:6px;">➕ Criar Novo Eixo</button>
   <div class="eixo-form-container" id="eixoFormContainer"></div>
   <div class="eixos-custom-list" id="eixosCustomList"></div>
   <div style="margin-top:10px; display:flex; gap:8px;">
     <button class="btn btn-outline" id="btnCopiarDadosRedis">📋 Copiar Dados Redis</button>
-    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">🚀 Enviar Redis via Worker</button>
+    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">🚀 Enviar via Worker</button>
   </div>
   <div class="status-msg" id="redisStatusMsg"></div>
 </div>
 
-<!-- MODAL LUXO PARA CRIAR EIXO -->
 <div class="modal-overlay" id="modalNovoEixo">
   <div class="modal-box">
     <h3>✨ Criar Novo Eixo</h3>
-    <input type="text" id="inputNovoEixo" placeholder="Nome do eixo (ex: XML, GRAPH)">
+    <input type="text" id="inputNovoEixo" placeholder="Nome do eixo">
     <div class="modal-actions">
       <button class="btn btn-outline" id="btnCancelarModal">Cancelar</button>
       <button class="btn btn-petroleum" id="btnConfirmarModal">Criar Eixo</button>
@@ -963,15 +1013,12 @@
   </div>
 </div>
 
-<!-- PAINEL DO AGENTE SELECIONADO -->
 <div class="section" id="panelPesquisa" style="display:none;">
   <div class="section-title"><span>🔬</span> Pesquisa para: <span id="nomeAgenteSelecionado"></span></div>
-  <p style="font-size:0.7rem; color:#666;">Código IDEnza: <span class="data-code-display" id="codigoAgenteDisplay"></span></p>
-  <p style="font-size:0.7rem; color:#666;">Pergunta ultra detalhada (copie e cole em qualquer IA):</p>
+  <p style="font-size:0.7rem; color:#666;">Código: <span class="hum-code-display" id="codigoAgenteDisplay"></span></p>
   <div class="generated-question" id="generatedQuestion"></div>
   <button class="btn btn-outline" id="btnCopyQuestion" style="margin-top:6px;">📋 Copiar Pergunta</button>
-  <p style="font-size:0.7rem; color:#666; margin-top:12px;">Cole aqui a resposta da IA:</p>
-  <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..."></textarea>
+  <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..." style="margin-top:12px;"></textarea>
   <button class="btn btn-petroleum" id="btnEstruturar" style="margin-top:8px;">⚙️ Estruturar nas 7 Camadas</button>
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
@@ -981,59 +1028,78 @@
 
 </div><!-- FIM TAB 1 -->
 
-<!-- ==================== TAB 2: HUMANOIDES RH (INTACTO, SEM ENDPOINTS) ==================== -->
+<!-- ==================== TAB 2: TEMPLATE DE HUMANOIDES (UNIVERSAL) ==================== -->
 <div class="tab-content" id="tab-humanoides">
 
   <div class="section">
-    <div class="section-title rh-title"><span>🤖</span> Humanoide RH — IDEnza (Escuta Organizacional)</div>
+    <div class="section-title hum-title"><span>🤖</span> Template Universal de Humanoides IDEnza</div>
     <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
-      Especialista em Escuta Organizacional com arquitetura cognitiva de 7 camadas. 
-      Processa falas de colaboradores, extrai vetores emocionais, intenções, objetivos, 
-      competências, comportamentos, eixos semânticos e gera resposta humanizada com alertas.
-      <br><strong>⚡ Envio seguro via Worker (credenciais no backend).</strong>
+      <strong>Estrutura base para criar QUALQUER humanoide.</strong> Selecione o tipo de humanoide,
+      insira o contexto da interação, processe nas 7 camadas cognitivas e obtenha o JSON 
+      completo com código de rastreio, métricas e alertas. 
+      <br>⚡ Envio seguro via Worker (credenciais no backend).
     </p>
 
-    <div style="margin-bottom:16px;">
-      <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">
-        📝 Entrada do Colaborador:
-      </label>
-      <textarea class="raw-textarea rh-textarea" id="rhEntradaColaborador" 
-        placeholder="Ex: &quot;Estou há 3 anos na empresa e ninguém reconhece meu trabalho. Meu chefe nem olha na minha cara.&quot;"></textarea>
+    <!-- SELEÇÃO DO TIPO DE HUMANOIDE -->
+    <div class="section-title hum-title" style="font-size:0.7rem;"><span>🎯</span> Selecione o Tipo de Humanoide</div>
+    <div class="hum-type-grid" id="humTypeGrid">
+      <!-- Preenchido via JS -->
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
-      <button class="btn btn-petroleum" id="btnProcessarRH">🧠 Processar com IDEnza (7 Camadas)</button>
-      <button class="btn btn-outline" id="btnLimparRH">🔄 Limpar</button>
-      <button class="btn btn-outline" id="btnExemploRH">📥 Carregar Exemplo</button>
-      <button class="btn btn-outline" id="btnCopiarJSONRH">📋 Copiar JSON</button>
-      <button class="btn btn-petroleum" id="btnEnviarRedisRH" style="display:none;">🚀 Enviar via Worker</button>
-    </div>
+    <!-- PAINEL DO HUMANOIDE SELECIONADO -->
+    <div id="humPanel" style="display:none; margin-top:16px;">
+      <div class="section-title hum-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código Base: <span class="hum-code-display" id="humCodigoBase"></span></p>
+      <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
 
-    <div class="rh-status-msg" id="rhStatusMsg"></div>
+      <!-- ENTRADA DO USUÁRIO -->
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">
+          📝 Entrada / Contexto da Interação:
+        </label>
+        <textarea class="raw-textarea hum-textarea" id="humEntrada" 
+          placeholder="Descreva a situação, fala ou contexto..."></textarea>
+      </div>
 
-    <div id="rhResultados" style="display:none;">
-      <div class="rh-alert-box" id="rhAlertaBox" style="display:none;"></div>
-      <div class="section-title rh-title" style="margin-top:16px;"><span>📊</span> Métricas Cognitivas</div>
-      <p style="font-size:0.6rem; color:#888;">ID: <span id="rhCodeDisplay" style="font-family:var(--font-mono);">—</span></p>
-      <div class="rh-metric-grid" id="rhMetricGrid"></div>
-      <div class="section-title rh-title" style="margin-top:16px;"><span>💬</span> Resposta Humanizada (Camada 7)</div>
-      <div class="rh-resposta-box" id="rhRespostaHumanizada"></div>
-      <div class="section-title rh-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo (7 Camadas)</div>
-      <div class="rh-json-preview" id="rhJsonCompleto"></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-petroleum" id="btnProcessarHum">🧠 Processar (7 Camadas)</button>
+        <button class="btn btn-outline" id="btnLimparHum">🔄 Limpar</button>
+        <button class="btn btn-outline" id="btnCopiarJSONHum">📋 Copiar JSON</button>
+        <button class="btn btn-petroleum" id="btnEnviarWorkerHum" style="display:none;">🚀 Enviar via Worker</button>
+      </div>
+
+      <div class="hum-status-msg" id="humStatusMsg"></div>
+
+      <!-- RESULTADOS -->
+      <div id="humResultados" style="display:none;">
+        <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>📊</span> Métricas da Análise</div>
+        <p style="font-size:0.6rem; color:#888;">Código de Rastreio: <span class="hum-code-display" id="humCodigoRastreio"></span></p>
+        <div class="hum-metric-grid" id="humMetricGrid"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>💬</span> Resposta / Saída (Camada 7)</div>
+        <div class="hum-resposta-box" id="humResposta"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo (7 Camadas)</div>
+        <div class="hum-json-preview" id="humJsonCompleto"></div>
+      </div>
     </div>
   </div>
 
+  <!-- ARQUITETURA DAS 7 CAMADAS -->
   <div class="section">
-    <div class="section-title rh-title"><span>🏗️</span> Arquitetura Cognitiva do IDEnza</div>
+    <div class="section-title hum-title"><span>🏗️</span> Arquitetura Cognitiva Universal (7 Camadas)</div>
     <div style="font-size:0.7rem; color:#555; line-height:1.7;">
-      <strong>Camada 1 — Emoções Primárias:</strong> frustração, ansiedade, esperança, raiva, tristeza, satisfação, medo, confiança<br>
-      <strong>Camada 2 — Intenções:</strong> ser_ouvido, receber_reconhecimento, crescer_na_carreira, resolver_conflito, receber_feedback, melhorar_condicoes, ser_valorizado, pedir_ajuda<br>
-      <strong>Camada 3 — Objetivos Profissionais:</strong> promoção, desenvolvimento, mudança_de_área, equilíbrio_vida_trabalho, aumento_salarial, permanência, saída<br>
-      <strong>Camada 4 — Competências Percebidas:</strong> liderança, comunicação, técnica, colaboração, autonomia, inovação<br>
-      <strong>Camada 5 — Comportamentos Organizacionais:</strong> engajamento, isolamento, proatividade, resistência, pertencimento, risco_rotatividade<br>
-      <strong>Camada 6 — Eixo Semântico:</strong> feedback, promoção, burnout, liderança, assédio, plano_de_carreira, engajamento, desligamento, reconhecimento, treinamento, clima_organizacional, conflito, comunicação, benefícios, diversidade_inclusão<br>
-      <strong>Camada 7 — Resposta Humanizada:</strong> acolhimento empático + encaminhamento quando necessário
+      <strong>Camada 1 — Emoções / Sinais Primários:</strong> Detecta o estado emocional ou sinal básico da entrada<br>
+      <strong>Camada 2 — Intenções / Motivações:</strong> O que o usuário realmente quer (ser ouvido, resolver, aprender, etc.)<br>
+      <strong>Camada 3 — Objetivos / Metas:</strong> Objetivos de curto, médio e longo prazo detectados<br>
+      <strong>Camada 4 — Competências / Habilidades Percebidas:</strong> O que o usuário demonstra saber ou reivindica<br>
+      <strong>Camada 5 — Comportamentos / Padrões:</strong> Engajamento, resistência, risco, proatividade<br>
+      <strong>Camada 6 — Eixo Semântico / Domínio:</strong> Classificação nos eixos de conhecimento IDEnza<br>
+      <strong>Camada 7 — Resposta / Saída Humanizada:</strong> Resposta empática, acionável e contextual
     </div>
+    <p style="font-size:0.6rem; color:#888; margin-top:8px;">
+      <strong>Fontes:</strong> IDEnza (processamento interno) ou Externa (IA externa). 
+      Todo registro inclui código de rastreio único e data de alerta para revisão.
+    </p>
   </div>
 
 </div><!-- FIM TAB 2 -->
@@ -1045,37 +1111,24 @@
     <div class="section-title data-title"><span>🗃️</span> Estrutura de Dados Universal — 7 Camadas IDEnza</div>
     <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
       Selecione uma categoria para gerar o prompt de fontes oficiais e estruturar o conhecimento 
-      em 7 camadas com código de rastreio único. Todos os registros seguem o padrão 
-      <code style="background:#e0f5e8;padding:2px 6px;">dominio.sub.idenza.N</code>.
+      em 7 camadas com código de rastreio único.
     </p>
 
-    <!-- CATEGORIAS UNIVERSAIS -->
     <div class="section-title data-title" style="font-size:0.7rem;"><span>📂</span> Categorias de Conhecimento</div>
-    <div class="data-category-grid" id="dataCategoryGrid">
-      <!-- Preenchido via JS -->
-    </div>
+    <div class="data-category-grid" id="dataCategoryGrid"></div>
 
-    <!-- CATEGORIA SELECIONADA -->
     <div id="dataPanelCategoria" style="display:none; margin-top:16px;">
       <div class="section-title data-title"><span>🎯</span> Categoria: <span id="dataCatNome"></span></div>
       <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCatCode"></span></p>
       
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:8px;">
-        📝 Tópico Específico:
-      </label>
-      <input type="text" class="raw-textarea data-textarea" id="dataTopicoEspecifico" 
-        placeholder="Ex: &quot;Direito Constitucional Brasileiro — Controle de Constitucionalidade&quot; ou &quot;Matemática — Cálculo Diferencial Integral&quot;" 
-        style="min-height:40px;">
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:8px;">📝 Tópico Específico:</label>
+      <input type="text" class="raw-textarea data-textarea" id="dataTopicoEspecifico" placeholder="Ex: &quot;Direito Constitucional — Controle de Constitucionalidade&quot;" style="min-height:40px;">
 
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">
-        🔍 Prompt para Fontes Oficiais (gerado automaticamente):
-      </label>
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">🔍 Prompt para Fontes Oficiais:</label>
       <div class="generated-question" id="dataPromptOficial" style="border-left:4px solid #0d5c3a;"></div>
       <button class="btn btn-outline" id="btnCopiarPromptData" style="margin-top:6px;">📋 Copiar Prompt</button>
 
-      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">
-        📥 Cole aqui a resposta da IA (ou use fonte IDEnza interna):
-      </label>
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">📥 Cole a resposta da IA:</label>
       <textarea class="raw-textarea data-textarea" id="dataRespostaIA" placeholder="Cole o texto retornado pela IA com fontes oficiais..."></textarea>
       
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
@@ -1083,11 +1136,10 @@
         <button class="btn btn-outline" id="btnUsarFonteIDEnza">📚 Usar Fonte IDEnza (Interna)</button>
       </div>
 
-      <!-- RESULTADOS -->
       <div id="dataResultados" style="display:none; margin-top:16px;">
         <div class="section-title data-title"><span>📊</span> Conhecimento Estruturado</div>
-        <p style="font-size:0.6rem; color:#888;">Código de Rastreio: <span class="data-code-display" id="dataCodigoRastreio"></span></p>
-        <p style="font-size:0.6rem; color:#888;">Fonte: <span id="dataFonte" style="font-weight:700;">—</span> | Alerta de Revisão: <span id="dataAlertaRevisao" style="font-weight:700;">—</span></p>
+        <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCodigoRastreio"></span></p>
+        <p style="font-size:0.6rem; color:#888;">Fonte: <span id="dataFonte" style="font-weight:700;">—</span> | Revisão: <span id="dataAlertaRevisao" style="font-weight:700;">—</span></p>
         <div class="camadas-preview" id="dataCamadasPreview" style="border-left:4px solid #0d5c3a;"></div>
         <div class="data-json-preview" id="dataJsonPreview"></div>
         <div style="display:flex; gap:10px; margin-top:8px;">
@@ -1095,44 +1147,31 @@
           <button class="btn btn-data" id="btnEnviarWorkerData">🚀 Enviar via Worker</button>
         </div>
       </div>
-
       <div class="data-status-msg" id="dataStatusMsg"></div>
     </div>
   </div>
 
-  <!-- LEGENDA DAS 7 CAMADAS -->
   <div class="section">
     <div class="section-title data-title"><span>🏗️</span> Estrutura das 7 Camadas (Universal)</div>
     <div style="font-size:0.7rem; color:#555; line-height:1.7;">
       <strong>Camada 7 — ESSÊNCIA:</strong> Definição fundamental, axiomas, conceitos basilares<br>
       <strong>Camada 6 — TEORIA GERAL:</strong> Principais teorias, escolas de pensamento, evolução histórica<br>
-      <strong>Camada 5 — ESTRUTURAS ABSTRATAS:</strong> Modelos formais, classificações, frameworks conceituais<br>
-      <strong>Camada 4 — APLICAÇÕES ESPECÍFICAS:</strong> Casos de uso reais, exemplos práticos, áreas de atuação<br>
-      <strong>Camada 3 — PRÁTICAS PROFISSIONAIS:</strong> Métodos, protocolos, ferramentas utilizadas por especialistas<br>
-      <strong>Camada 2 — USO PESSOAL/COTIDIANO:</strong> Como uma pessoa comum aplica esse conhecimento no dia a dia<br>
-      <strong>Camada 1 — COTIDIANO E DICAS RÁPIDAS:</strong> Curiosidades, macetes, recomendações práticas
+      <strong>Camada 5 — ESTRUTURAS ABSTRATAS:</strong> Modelos formais, classificações, frameworks<br>
+      <strong>Camada 4 — APLICAÇÕES ESPECÍFICAS:</strong> Casos de uso reais, exemplos práticos<br>
+      <strong>Camada 3 — PRÁTICAS PROFISSIONAIS:</strong> Métodos, protocolos, ferramentas<br>
+      <strong>Camada 2 — USO PESSOAL/COTIDIANO:</strong> Aplicação no dia a dia<br>
+      <strong>Camada 1 — COTIDIANO E DICAS RÁPIDAS:</strong> Curiosidades, macetes, recomendações
     </div>
-    <p style="font-size:0.6rem; color:#888; margin-top:8px;">
-      <strong>Fontes:</strong> IDEnza (conhecimento interno validado) ou Externa (fontes oficiais verificadas). 
-      Todo registro inclui data de criação e alerta para revisão periódica.
-    </p>
   </div>
 
 </div><!-- FIM TAB 3 -->
 
 <script>
-  // ==================== WORKER SIMULATOR (SUBSTITUI ENDPOINTS REAIS) ====================
-  // Em produção, estas funções chamariam um Cloudflare Worker ou API backend
-  // que contém as credenciais do Redis de forma segura.
-  const WORKER_ENDPOINT = '/api/redis-ingest'; // Será substituído pelo Worker real
+  // ==================== WORKER SIMULATOR ====================
+  const WORKER_ENDPOINT = '/api/redis-ingest';
 
   async function enviarViaWorker(payload, tipo, codigo) {
-    // Simula envio para Worker que gerencia o Redis
-    console.log(`[WORKER] Enviando payload tipo=${tipo} código=${codigo}`);
-    console.log(`[WORKER] Endpoint: ${WORKER_ENDPOINT}`);
-    console.log(`[WORKER] Payload:`, JSON.stringify(payload).substring(0, 200) + '...');
-    
-    // Simula resposta do Worker
+    console.log(`[WORKER] Enviando tipo=${tipo} código=${codigo}`);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -1145,736 +1184,463 @@
     });
   }
 
-  // ==================== TABS NAVIGATION ====================
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  tabBtns.forEach(btn => {
+  // ==================== TABS ====================
+  document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const targetTab = btn.dataset.tab;
-      tabBtns.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById(targetTab).classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
     });
   });
 
-  // ==================== FUNÇÃO AUXILIAR DE CÓPIA ROBUSTA ====================
+  // ==================== UTILITÁRIOS ====================
   function copiarTextoParaClipboard(texto) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto).then(resolve).catch(() => { fallbackCopiar(texto) ? resolve() : reject(); });
+        navigator.clipboard.writeText(texto).then(resolve).catch(() => resolve());
       } else {
-        fallbackCopiar(texto) ? resolve() : reject();
+        const ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.style.position = 'fixed'; ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        resolve();
       }
     });
   }
 
-  function fallbackCopiar(texto) {
-    try {
-      const textarea = document.createElement('textarea');
-      textarea.value = texto;
-      textarea.style.position = 'fixed'; textarea.style.top = '-9999px'; textarea.style.left = '-9999px'; textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select(); textarea.setSelectionRange(0, 99999);
-      const resultado = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return resultado;
-    } catch (e) { return false; }
-  }
-
-  // ==================== GERADOR DE CÓDIGOS IDENZA ====================
   function gerarCodigoUnico(prefixo) {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substring(2, 6);
-    return `${prefixo}.${timestamp}.${random}`;
+    return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
   }
 
-  // ==================== GERENCIAMENTO DE EIXOS REDIS ====================
+  // ==================== EIXOS REDIS ====================
   const eixosComHints = {
-    'STRING': 'guarde textos simples: nomes, status, configurações',
-    'LIST': 'guarde listas ordenadas: histórico de alterações, sequências',
-    'SET': 'guarde conjuntos únicos: tags, categorias, palavras-chave',
-    'ZSET': 'guarde rankings: pontuações, scores de relevância',
-    'HASH': 'guarde objetos: campos de um registro, atributos',
-    'STREAM': 'guarde eventos: logs, mensagens em tempo real',
-    'GEO': 'guarde coordenadas: localização de agentes, regiões',
-    'BITMAP': 'guarde flags binárias: status ativo/inativo, permissões',
-    'PUB/SUB': 'guarde mensagens de canais: notificações, alertas'
+    'STRING':'textos simples','LIST':'listas ordenadas','SET':'conjuntos únicos',
+    'ZSET':'rankings','HASH':'objetos','STREAM':'eventos','GEO':'coordenadas',
+    'BITMAP':'flags binárias','PUB/SUB':'canais de mensagens'
   };
-
   const defaultEixos = Object.keys(eixosComHints);
-  let customEixos = [];
-  let redisData = {};
-  defaultEixos.forEach(eixo => { redisData[eixo] = []; });
-
-  const redisAxesContainer = document.getElementById('redisAxesContainer');
-  const eixoFormContainer = document.getElementById('eixoFormContainer');
-  const btnNovoEixo = document.getElementById('btnNovoEixo');
-  const redisStatusMsg = document.getElementById('redisStatusMsg');
-  const modalNovoEixo = document.getElementById('modalNovoEixo');
-  const inputNovoEixo = document.getElementById('inputNovoEixo');
-  const btnCancelarModal = document.getElementById('btnCancelarModal');
-  const btnConfirmarModal = document.getElementById('btnConfirmarModal');
-  let eixoAtual = null;
+  let customEixos = [], redisData = {};
+  defaultEixos.forEach(e => { redisData[e] = []; });
 
   function renderizarChips() {
-    redisAxesContainer.innerHTML = '';
-    const todosEixos = [...defaultEixos, ...customEixos];
-    todosEixos.forEach(eixo => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'redis-chip-wrapper';
-      const chip = document.createElement('span');
-      chip.className = 'redis-chip';
-      chip.dataset.eixo = eixo;
-      chip.textContent = eixo;
-      chip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (eixoFormContainer.classList.contains('open') && eixoAtual === eixo) {
-          fecharFormularioEixo();
-        } else {
-          abrirFormularioEixo(eixo);
-        }
+    const container = document.getElementById('redisAxesContainer');
+    container.innerHTML = '';
+    [...defaultEixos, ...customEixos].forEach(eixo => {
+      const w = document.createElement('div'); w.className = 'redis-chip-wrapper';
+      const c = document.createElement('span'); c.className = 'redis-chip';
+      c.dataset.eixo = eixo; c.textContent = eixo;
+      c.addEventListener('click', () => {
+        document.querySelectorAll('.redis-chip').forEach(ch => ch.classList.remove('active-chip'));
+        c.classList.add('active-chip');
+        abrirFormularioEixo(eixo);
       });
-      const hint = document.createElement('span');
-      hint.className = 'redis-chip-hint';
-      hint.textContent = eixosComHints[eixo] || 'eixo personalizado';
-      wrapper.appendChild(chip);
-      wrapper.appendChild(hint);
-      redisAxesContainer.appendChild(wrapper);
+      const h = document.createElement('span'); h.className = 'redis-chip-hint';
+      h.textContent = eixosComHints[eixo] || 'personalizado';
+      w.appendChild(c); w.appendChild(h); container.appendChild(w);
     });
   }
 
+  let eixoAtual = null;
   function abrirFormularioEixo(eixo) {
     eixoAtual = eixo;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-    const chipAtivo = document.querySelector(`.redis-chip[data-eixo="${eixo}"]`);
-    if (chipAtivo) chipAtivo.classList.add('active-chip');
-    const hintGeral = eixosComHints[eixo] || 'eixo personalizado — insira chave e valor livremente';
-    let formHTML = `<div class="form-hint">📌 ${hintGeral}. Exemplo de chave: use o formato "dominio:assunto:nivel" (ex: conhecimento:economia:essencia)</div>`;
-    switch (eixo) {
-      case 'STRING': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="config:agente:status" placeholder="ex: config:app"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" value="ativo" placeholder="ex: ativo"></div>`; break;
-      case 'LIST': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="historico:leis:sequencia" placeholder="ex: historico:leis"></div><div class="form-row"><label>Elemento:</label><input id="eixoValue" value="lei_14.620_2026" placeholder="ex: lei_14.620"></div>`; break;
-      case 'SET': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="tags:economia:categoria" placeholder="ex: tags:economia"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="macroeconomia" placeholder="ex: macroeconomia"></div>`; break;
-      case 'ZSET': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="ranking:confianca:fontes" placeholder="ex: ranking:confianca"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="artigo_científico_123" placeholder="ex: artigo_123"></div><div class="form-row"><label>Score:</label><input id="eixoScore" value="0.95" placeholder="ex: 0.95"></div>`; break;
-      case 'HASH': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="conhecimento:economia:essencia" placeholder="ex: conhecimento:base"></div><div class="form-row"><label>Campo:</label><input id="eixoField" value="titulo_definicao" placeholder="ex: titulo"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" value="Definição de Economia" placeholder="ex: Economia"></div>`; break;
-      case 'STREAM': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="eventos:atualizacao:diaria" placeholder="ex: eventos:atualizacao"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" value="atualizacao_disponivel_2026" placeholder="ex: atualizacao_disponivel"></div>`; break;
-      case 'GEO': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="localizacao:agentes:sede" placeholder="ex: localizacao:agentes"></div><div class="form-row"><label>Longitude:</label><input id="eixoLong" value="-46.6333" placeholder="ex: -46.6333"></div><div class="form-row"><label>Latitude:</label><input id="eixoLat" value="-23.5505" placeholder="ex: -23.5505"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="agente_sede_brasil" placeholder="ex: agente_sede"></div>`; break;
-      case 'BITMAP': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="flags:status:agentes" placeholder="ex: flags:status"></div><div class="form-row"><label>Offset:</label><input id="eixoOffset" value="5" placeholder="ex: 5"></div><div class="form-row"><label>Valor (0/1):</label><input id="eixoValue" value="1" placeholder="ex: 1"></div>`; break;
-      case 'PUB/SUB': formHTML += `<div class="form-row"><label>Canal:</label><input id="eixoKey" value="canal:noticias:economia" placeholder="ex: canal:noticias"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" value="publicacao_lei_14.620" placeholder="ex: publicacao_lei"></div>`; break;
-      default: formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>`;
-    }
-    eixoFormContainer.innerHTML = formHTML + `<div style="display:flex; gap:8px; margin-top:8px;"><button class="btn btn-petroleum" id="btnInserirEixo">📥 Inserir Tema</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
-    eixoFormContainer.classList.add('open');
-    document.getElementById('btnInserirEixo').addEventListener('click', inserirDadosEixo);
-    document.getElementById('btnCancelarEixo').addEventListener('click', fecharFormularioEixo);
-  }
-
-  function fecharFormularioEixo() {
-    eixoFormContainer.classList.remove('open');
-    eixoAtual = null;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-  }
-
-  function inserirDadosEixo() {
-    const key = document.getElementById('eixoKey')?.value.trim();
-    const value = document.getElementById('eixoValue')?.value.trim();
-    if (!key || !value) { alert('Preencha ao menos chave e valor.'); return; }
-    if (!redisData[eixoAtual]) redisData[eixoAtual] = [];
-    const entry = { key, value, timestamp: new Date().toISOString() };
-    if (eixoAtual === 'ZSET') { const score = document.getElementById('eixoScore')?.value.trim(); if (!score) { alert('Score obrigatório para ZSET.'); return; } entry.score = score; }
-    else if (eixoAtual === 'HASH') { const field = document.getElementById('eixoField')?.value.trim(); if (!field) { alert('Campo obrigatório para HASH.'); return; } entry.field = field; }
-    else if (eixoAtual === 'GEO') { const lon = document.getElementById('eixoLong')?.value.trim(); const lat = document.getElementById('eixoLat')?.value.trim(); if (!lon || !lat) { alert('Longitude e Latitude obrigatórios para GEO.'); return; } entry.longitude = lon; entry.latitude = lat; }
-    else if (eixoAtual === 'BITMAP') { const offset = document.getElementById('eixoOffset')?.value.trim(); if (!offset) { alert('Offset obrigatório para BITMAP.'); return; } entry.offset = offset; }
-    redisData[eixoAtual].push(entry);
-    redisStatusMsg.textContent = `📥 Tema inserido no eixo ${eixoAtual}: ${key} → ${value}`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-    fecharFormularioEixo();
-  }
-
-  function abrirModalNovoEixo() { modalNovoEixo.classList.add('open'); inputNovoEixo.value = ''; inputNovoEixo.focus(); }
-  function fecharModalNovoEixo() { modalNovoEixo.classList.remove('open'); }
-  function confirmarNovoEixo() {
-    const nomeEixo = inputNovoEixo.value.trim();
-    if (!nomeEixo) return;
-    const nomeLimpo = nomeEixo.toUpperCase();
-    if (defaultEixos.includes(nomeLimpo) || customEixos.includes(nomeLimpo)) { alert('Esse eixo já existe.'); return; }
-    customEixos.push(nomeLimpo); redisData[nomeLimpo] = []; renderizarChips(); fecharModalNovoEixo();
-    redisStatusMsg.textContent = `✅ Eixo "${nomeLimpo}" criado com sucesso.`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-  }
-  btnNovoEixo.addEventListener('click', abrirModalNovoEixo);
-  btnCancelarModal.addEventListener('click', fecharModalNovoEixo);
-  btnConfirmarModal.addEventListener('click', confirmarNovoEixo);
-  modalNovoEixo.addEventListener('click', (e) => { if (e.target === modalNovoEixo) fecharModalNovoEixo(); });
-
-  document.getElementById('btnCopiarDadosRedis').addEventListener('click', () => {
-    copiarTextoParaClipboard(JSON.stringify(redisData, null, 2)).then(() => {
-      redisStatusMsg.textContent = '📋 Dados Redis copiados.';
-      setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
+    const fc = document.getElementById('eixoFormContainer');
+    fc.innerHTML = `<div class="form-hint">📌 ${eixosComHints[eixo]||'personalizado'}</div>
+      <div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div>
+      <div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-petroleum" id="btnInserirEixo">📥 Inserir</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
+    fc.classList.add('open');
+    document.getElementById('btnInserirEixo').addEventListener('click', () => {
+      const k = document.getElementById('eixoKey').value.trim();
+      const v = document.getElementById('eixoValue').value.trim();
+      if(!k||!v) return;
+      redisData[eixoAtual].push({key:k,value:v,timestamp:new Date().toISOString()});
+      document.getElementById('redisStatusMsg').textContent = `📥 Inserido: ${k}`;
+      setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
+      fc.classList.remove('open');
     });
+    document.getElementById('btnCancelarEixo').addEventListener('click', ()=>fc.classList.remove('open'));
+  }
+
+  document.getElementById('btnNovoEixo').addEventListener('click', ()=>{
+    document.getElementById('modalNovoEixo').classList.add('open');
   });
-  
-  document.getElementById('btnEnviarRedisMotor').addEventListener('click', async () => {
-    redisStatusMsg.textContent = '🚀 Enviando para Worker...';
-    try {
-      const codigo = gerarCodigoUnico('redis');
-      await enviarViaWorker({ redisData, timestamp: new Date().toISOString() }, 'redis-data', codigo);
-      redisStatusMsg.textContent = '✅ Dados enviados ao Worker com sucesso!';
-    } catch (err) {
-      redisStatusMsg.textContent = '❌ Erro: ' + err.message;
+  document.getElementById('btnCancelarModal').addEventListener('click', ()=>{
+    document.getElementById('modalNovoEixo').classList.remove('open');
+  });
+  document.getElementById('btnConfirmarModal').addEventListener('click', ()=>{
+    const nome = document.getElementById('inputNovoEixo').value.trim().toUpperCase();
+    if(nome && ![...defaultEixos,...customEixos].includes(nome)){
+      customEixos.push(nome); redisData[nome]=[]; renderizarChips();
     }
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 5000);
+    document.getElementById('modalNovoEixo').classList.remove('open');
   });
-  
+  document.getElementById('btnCopiarDadosRedis').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(JSON.stringify(redisData,null,2));
+    document.getElementById('redisStatusMsg').textContent = '📋 Copiado.';
+    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
+  });
+  document.getElementById('btnEnviarRedisMotor').addEventListener('click', async ()=>{
+    document.getElementById('redisStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker({redisData},'redis-data',gerarCodigoUnico('redis'));
+    document.getElementById('redisStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},5000);
+  });
   renderizarChips();
 
-  // ==================== LÓGICA DO CATÁLOGO DE AGENTES ====================
-  const panelPesquisa = document.getElementById('panelPesquisa');
-  const nomeAgenteEl = document.getElementById('nomeAgenteSelecionado');
-  const codigoAgenteDisplay = document.getElementById('codigoAgenteDisplay');
-  const generatedQuestionEl = document.getElementById('generatedQuestion');
-  const respostaIA = document.getElementById('respostaIA');
-  const camadasPreview = document.getElementById('camadasPreview');
-  const jsonFinalPreview = document.getElementById('jsonFinalPreview');
-  const btnEstruturar = document.getElementById('btnEstruturar');
-  const btnEnviarMotor = document.getElementById('btnEnviarMotor');
-  const statusMsg = document.getElementById('statusMsg');
-  const btnCopyQuestion = document.getElementById('btnCopyQuestion');
-  let agenteSelecionado = null;
-  let conhecimentoEstruturado = null;
-
-  document.querySelectorAll('.expando-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const expando = toggle.parentElement;
-      expando.classList.toggle('open');
-      const label = toggle.textContent.trim();
-      toggle.textContent = expando.classList.contains('open') ? label.replace('(expandir)', '(recolher)') : label.replace('(recolher)', '(expandir)');
+  // ==================== TAB 1: AGENTES ====================
+  let agenteSelecionado = null, conhecimentoEstruturado = null;
+  document.querySelectorAll('.expando-toggle').forEach(t => {
+    t.addEventListener('click', ()=>{
+      const e = t.parentElement;
+      e.classList.toggle('open');
+      t.textContent = e.classList.contains('open') ? t.textContent.replace('(expandir)','(recolher)') : t.textContent.replace('(recolher)','(expandir)');
     });
   });
-
-  document.querySelectorAll('input[type="radio"][name="agentRadio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      if (radio.checked) {
-        agenteSelecionado = { 
-          nome: radio.value, 
-          base: radio.dataset.base,
-          codigo: radio.dataset.code || gerarCodigoUnico(radio.dataset.base)
-        };
-        abrirPainelPesquisa();
+  document.querySelectorAll('input[name="agentRadio"]').forEach(r => {
+    r.addEventListener('change', ()=>{
+      if(r.checked){
+        agenteSelecionado = { nome: r.value, base: r.dataset.base, codigo: r.dataset.code };
+        document.getElementById('panelPesquisa').style.display = 'block';
+        document.getElementById('nomeAgenteSelecionado').textContent = agenteSelecionado.nome;
+        document.getElementById('codigoAgenteDisplay').textContent = agenteSelecionado.codigo;
+        document.getElementById('generatedQuestion').textContent = 
+          `Você é um especialista em ${agenteSelecionado.base}. Forneça conhecimento completo sobre "${agenteSelecionado.nome}" em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO E DICAS\nUse fontes oficiais.`;
+        document.getElementById('respostaIA').value = '';
+        document.getElementById('camadasPreview').style.display = 'none';
+        document.getElementById('jsonFinalPreview').style.display = 'none';
+        document.getElementById('btnEnviarMotor').style.display = 'none';
       }
     });
   });
-
-  function abrirPainelPesquisa() {
-    if (!agenteSelecionado) return;
-    panelPesquisa.style.display = 'block';
-    nomeAgenteEl.textContent = agenteSelecionado.nome;
-    codigoAgenteDisplay.textContent = agenteSelecionado.codigo;
-    generatedQuestionEl.textContent = gerarPerguntaDetalhada(agenteSelecionado.nome, agenteSelecionado.base);
-    respostaIA.value = ''; camadasPreview.style.display = 'none'; camadasPreview.textContent = '';
-    jsonFinalPreview.style.display = 'none'; jsonFinalPreview.textContent = '';
-    btnEnviarMotor.style.display = 'none'; statusMsg.textContent = '';
-  }
-
-  function gerarPerguntaDetalhada(nomeAgente, base) {
-    return `Você é um especialista em ${base}. Por favor, forneça um conhecimento completo e estruturado sobre "${nomeAgente}", utilizando exclusivamente fontes oficiais e confiáveis (livros técnicos, artigos científicos, normas, legislação, manuais de referência). 
-
-Organize a resposta nos seguintes níveis (7 camadas semânticas):
-
-7. ESSÊNCIA: Definição fundamental, axiomas, conceitos basilares do tema.
-6. TEORIA GERAL: Principais teorias, escolas de pensamento, evolução histórica.
-5. ESTRUTURAS ABSTRATAS: Modelos formais, classificações, frameworks conceituais.
-4. APLICAÇÕES ESPECÍFICAS: Casos de uso reais, exemplos práticos, áreas de atuação.
-3. PRÁTICAS PROFISSIONAIS: Métodos, protocolos, ferramentas utilizadas por especialistas.
-2. USO PESSOAL/COTIDIANO: Como uma pessoa comum aplica esse conhecimento no dia a dia.
-1. COTIDIANO E DICAS RÁPIDAS: Curiosidades, macetes, recomendações práticas.
-
-Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição de X. Subtemas: A, B, C". Seja exaustivo e rigoroso. Cite as fontes ao final.`;
-  }
-
-  btnCopyQuestion.addEventListener('click', () => {
-    const pergunta = generatedQuestionEl.textContent.trim();
-    if (!pergunta || pergunta.length < 10) { statusMsg.textContent = '⚠️ Selecione um agente primeiro.'; setTimeout(() => { statusMsg.textContent = ''; }, 3000); return; }
-    copiarTextoParaClipboard(pergunta).then(() => {
-      statusMsg.textContent = '📋 Pergunta copiada! Cole na IA de sua preferência.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-    });
+  document.getElementById('btnCopyQuestion').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(document.getElementById('generatedQuestion').textContent);
+    document.getElementById('statusMsg').textContent = '📋 Copiado.';
+    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},3000);
   });
-
-  btnEstruturar.addEventListener('click', () => {
-    const texto = respostaIA.value.trim();
-    if (!texto) { statusMsg.textContent = '⚠️ Cole a resposta da IA antes de estruturar.'; setTimeout(() => { statusMsg.textContent = ''; }, 3000); return; }
-    const camadasExtraidas = extrairCamadas(texto, agenteSelecionado.base);
+  document.getElementById('btnEstruturar').addEventListener('click', ()=>{
+    const texto = document.getElementById('respostaIA').value.trim();
+    if(!texto) return;
+    const camadas = extrairCamadas(texto);
     conhecimentoEstruturado = {
-      ...camadasExtraidas,
       codigo: agenteSelecionado.codigo,
-      fonte: 'externa',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-    exibirPreVisualizacao(camadasExtraidas);
-    gerarJSONFinal(conhecimentoEstruturado);
-    btnEnviarMotor.style.display = 'inline-flex';
-  });
-
-  function extrairCamadas(texto, base) {
-    const linhas = texto.split('\n'); const camadas = []; let current = null;
-    const regexNivel = /(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i;
-    for (const linha of linhas) {
-      const match = linha.match(regexNivel);
-      if (match) { const nivel = parseInt(match[1]); const nome = match[2].trim(); current = { nivel, nome, titulo: nome, subtemas: [] }; camadas.push(current); }
-      else if (current) { const partes = linha.split(/[,;]| - /).map(s => s.trim()).filter(s => s.length > 5); if (partes.length > 0) current.subtemas.push(...partes); }
-    }
-    if (camadas.length === 0) { const nomesPadrao = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência']; for (let i = 1; i <= 7; i++) { camadas.push({ nivel: i, nome: nomesPadrao[i-1], titulo: nomesPadrao[i-1], subtemas: [texto.substring(0,100)] }); } }
-    return { base, camadas };
-  }
-
-  function exibirPreVisualizacao({ camadas }) {
-    let html = ''; camadas.forEach(c => { html += `<strong>Camada ${c.nivel}: ${c.nome}</strong> — ${c.subtemas.join(', ')}\n`; });
-    camadasPreview.textContent = html || 'Estruturação concluída.'; camadasPreview.style.display = 'block';
-  }
-
-  function gerarJSONFinal(dados) {
-    const temaPrincipal = agenteSelecionado.nome.replace('Agente de ', '');
-    const jsonFinal = {
-      codigo: dados.codigo,
       agente: agenteSelecionado.nome,
-      base: dados.base,
-      fonte: dados.fonte,
-      dataCriacao: dados.dataCriacao,
-      alertaRevisao: dados.alertaRevisao,
-      camadas: dados.camadas.map(c => ({ 
-        nivel: c.nivel, 
-        nome: c.nome, 
-        temas: [{ titulo: c.titulo || temaPrincipal, subtemas: c.subtemas.length > 0 ? c.subtemas : ['A definir'] }] 
-      }))
-    };
-    jsonFinalPreview.textContent = JSON.stringify(jsonFinal, null, 2);
-    jsonFinalPreview.style.display = 'block';
-    conhecimentoEstruturado = jsonFinal;
-  }
-
-  btnEnviarMotor.addEventListener('click', async () => {
-    if (!conhecimentoEstruturado) return;
-    statusMsg.textContent = '🚀 Enviando conhecimento para Worker...';
-    try {
-      const resultado = await enviarViaWorker(conhecimentoEstruturado, 'agente', conhecimentoEstruturado.codigo);
-      statusMsg.textContent = '✅ Conhecimento enviado ao Worker! Key: ' + resultado.redisKey;
-    } catch (err) {
-      statusMsg.textContent = '❌ Erro: ' + err.message;
-    }
-    setTimeout(() => { statusMsg.textContent = ''; }, 5000);
-  });
-
-  panelPesquisa.style.display = 'none';
-
-  // ==================== HUMANOIDE RH — IDEnza ====================
-  const rhEntradaColaborador = document.getElementById('rhEntradaColaborador');
-  const rhStatusMsg = document.getElementById('rhStatusMsg');
-  const rhResultados = document.getElementById('rhResultados');
-  const rhAlertaBox = document.getElementById('rhAlertaBox');
-  const rhMetricGrid = document.getElementById('rhMetricGrid');
-  const rhRespostaHumanizada = document.getElementById('rhRespostaHumanizada');
-  const rhJsonCompleto = document.getElementById('rhJsonCompleto');
-  const rhCodeDisplay = document.getElementById('rhCodeDisplay');
-  const btnEnviarRedisRH = document.getElementById('btnEnviarRedisRH');
-  let ultimoResultadoRH = null;
-
-  function processarComIDEnza(entrada) {
-    const texto = entrada.toLowerCase().trim();
-    const temReconhecimento = /reconhec|valoriz|ninguém.*vê|ninguém.*olha|ignor/i.test(texto);
-    const temFrustracao = /frustr|decepcion|desanim| cansad|esgot/i.test(texto);
-    const temRaiva = /raiva|ódio|revolt|injust|absurd/i.test(texto);
-    const temTristeza = /trist|chatead|magoad|desapont/i.test(texto);
-    const temAnsiedade = /ansio|nervos|preocup|insegur|medo/i.test(texto);
-    const temEsperanca = /esperan|acredit|confian|fé|otimis/i.test(texto);
-    const temSatisfacao = /satisfeit|contente|feliz|grato|bom/i.test(texto);
-    const temMedo = /medo|assust|pavor|terror|insegur/i.test(texto);
-    const temConfianca = /confian|confio|segur|estável|tranquil/i.test(texto);
-    const tempoMatch = texto.match(/(\d+)\s*(ano|mes|meses|semana)/i);
-    const tempoValor = tempoMatch ? parseInt(tempoMatch[1]) : 0;
-    
-    const emocoes = {
-      frustracao: temFrustracao ? 0.85 : temReconhecimento ? 0.78 : 0.25,
-      ansiedade: temAnsiedade ? 0.65 : temMedo ? 0.55 : 0.30,
-      esperanca: temEsperanca ? 0.60 : 0.25,
-      raiva: temRaiva ? 0.70 : temReconhecimento ? 0.35 : 0.15,
-      tristeza: temTristeza ? 0.75 : temFrustracao ? 0.55 : 0.20,
-      satisfacao: temSatisfacao ? 0.80 : 0.12,
-      medo: temMedo ? 0.60 : 0.25,
-      confianca: temConfianca ? 0.65 : 0.18
-    };
-    if (tempoValor >= 3) {
-      emocoes.frustracao = Math.min(1.0, emocoes.frustracao + 0.15);
-      emocoes.tristeza = Math.min(1.0, emocoes.tristeza + 0.10);
-    }
-
-    const intencoes = {
-      ser_ouvido: temReconhecimento || temFrustracao ? 0.88 : 0.40,
-      receber_reconhecimento: temReconhecimento ? 0.95 : 0.35,
-      crescer_na_carreira: /crescer|cargo|promo|oportun/i.test(texto) ? 0.70 : 0.30,
-      resolver_conflito: /conflito|briga|discuss|chefe.*não|gerente.*não/i.test(texto) ? 0.70 : 0.25,
-      receber_feedback: /feedback|retorno|avalia|saber.*como.*estou/i.test(texto) ? 0.75 : 0.40,
-      melhorar_condicoes: /salário|condiç|bene|horári|home.*office/i.test(texto) ? 0.65 : 0.30,
-      ser_valorizado: temReconhecimento ? 0.96 : 0.40,
-      pedir_ajuda: /ajuda|socorro|não.*aguento|preciso/i.test(texto) ? 0.80 : 0.20
-    };
-
-    const objetivos = {
-      promocao: /promo|cargo.*maior|lider/i.test(texto) ? 0.55 : 0.20,
-      desenvolvimento: /crescer|aprender|curso|desenvol/i.test(texto) ? 0.60 : 0.30,
-      mudanca_de_area: /mudar.*área|trocar.*setor|outra.*área/i.test(texto) ? 0.65 : 0.15,
-      equilibrio_vida_trabalho: /equilíb|vida.*trabalho|burnout|cansad/i.test(texto) ? 0.55 : 0.20,
-      aumento_salarial: /aumento|salário|remunera/i.test(texto) ? 0.60 : 0.18,
-      permanencia: temSatisfacao ? 0.70 : temFrustracao ? 0.22 : 0.40,
-      saida: /sair|deslig|demiss|outra.*empresa|mercado/i.test(texto) ? 0.70 : temFrustracao && tempoValor >= 2 ? 0.65 : 0.25
-    };
-
-    const competencias = {
-      lideranca: /líder|gerenc|coordenei|time|equipe/i.test(texto) ? 0.60 : 0.15,
-      comunicacao: /falei|conversei|comuniqu|feedback/i.test(texto) ? 0.55 : 0.30,
-      tecnica: /técnic|sistema|ferramenta|skill/i.test(texto) ? 0.65 : 0.40,
-      colaboracao: /ajudei|colaborei|time|junto/i.test(texto) ? 0.55 : 0.35,
-      autonomia: /sozinho|autônom|independ|por.*conta/i.test(texto) ? 0.60 : 0.30,
-      inovacao: /inovei|criei|melhorei|ideia/i.test(texto) ? 0.50 : 0.20
-    };
-
-    const comportamentos = {
-      engajamento: temSatisfacao ? 0.70 : temFrustracao ? 0.25 : 0.45,
-      isolamento: /sozinho|isolad|ninguém.*fala|ignor/i.test(texto) ? 0.60 : 0.25,
-      proatividade: /fiz|busquei|procurei|iniciei/i.test(texto) ? 0.55 : 0.30,
-      resistencia: /não.*quero|não.*vou|recuso|resisti/i.test(texto) ? 0.50 : 0.20,
-      pertencimento: temSatisfacao ? 0.65 : temFrustracao ? 0.22 : 0.40,
-      risco_rotatividade: objetivos.saida > 0.6 ? 0.82 : temFrustracao && tempoValor >= 3 ? 0.75 : 0.30
-    };
-
-    const eixosScores = {
-      reconhecimento: temReconhecimento ? 0.94 : 0.30,
-      lideranca: /chefe|líder|gestor|gerente/i.test(texto) ? 0.72 : 0.20,
-      feedback: /feedback|retorno|avalia/i.test(texto) ? 0.68 : 0.25,
-      clima_organizacional: temFrustracao ? 0.60 : 0.30,
-      engajamento: temSatisfacao ? 0.70 : 0.35,
-      burnout: /burnout|esgot|exausto|não.*aguento/i.test(texto) ? 0.85 : 0.10,
-      plano_de_carreira: /carreira|crescer|promo|plano/i.test(texto) ? 0.55 : 0.25,
-      comunicacao: /comunic|diálogo|conversa|transpar/i.test(texto) ? 0.50 : 0.30,
-      desligamento: objetivos.saida > 0.6 ? 0.70 : 0.20,
-      conflito: /conflito|briga|discussão|tensão/i.test(texto) ? 0.65 : 0.15
-    };
-
-    const eixosOrdenados = Object.entries(eixosScores).sort((a, b) => b[1] - a[1]);
-    const eixoPrincipal = eixosOrdenados[0][0];
-    const eixoSecundario = eixosOrdenados.length > 1 ? eixosOrdenados[1][0] : 'clima_organizacional';
-
-    let alertaNivel = 'baixo', alertaTipo = null, alertaUrgencia = 'monitorar';
-    if (comportamentos.risco_rotatividade > 0.75) { alertaNivel = 'alto'; alertaTipo = 'rotatividade'; alertaUrgencia = 'esta_semana'; }
-    if (eixosScores.burnout > 0.7) { alertaNivel = 'critico'; alertaTipo = 'burnout'; alertaUrgencia = 'imediata'; }
-    if (/assédio|assedio|abuso|humilh|ofens/i.test(texto)) { alertaNivel = 'critico'; alertaTipo = 'assedio'; alertaUrgencia = 'imediata'; }
-    if (comportamentos.risco_rotatividade > 0.5 && alertaNivel === 'baixo') { alertaNivel = 'medio'; alertaTipo = 'rotatividade'; alertaUrgencia = 'este_mes'; }
-
-    let respostaHumanizada = '';
-    if (temReconhecimento && tempoValor >= 3) {
-      respostaHumanizada = 'Entendo profundamente como você se sente. Dedicar ' + (tempoValor || 'vários') + ' anos a uma empresa e sentir que seu trabalho não é visto é realmente frustrante. Seu sentimento é válido e importa. Gostaria de conversar mais sobre como podemos garantir que suas contribuições sejam reconhecidas? Podemos marcar um momento para entender melhor sua situação e pensar juntos nos próximos passos.';
-    } else if (temFrustracao) {
-      respostaHumanizada = 'Sinto muito que você esteja passando por essa situação. A frustração que você está sentindo é completamente compreensível. Quero que saiba que estou aqui para ouvi-lo(a) com toda a atenção. Podemos explorar juntos o que está causando esse desconforto e buscar caminhos que façam sentido para você?';
-    } else if (temSatisfacao) {
-      respostaHumanizada = 'Que bom ouvir isso! Fico genuinamente feliz em saber que as coisas estão caminhando bem para você. Continue compartilhando suas percepções — elas são muito valiosas para mantermos um ambiente positivo.';
-    } else {
-      respostaHumanizada = 'Obrigado por compartilhar. Quero que saiba que sua voz é muito importante. Estou aqui para ouvir com atenção tudo o que você tem a dizer. Podemos conversar com mais calma sobre o que está acontecendo?';
-    }
-    if (alertaTipo === 'burnout') respostaHumanizada += '\n\n⚠️ Percebo sinais importantes de esgotamento. Recomendo conversarmos com urgência e, se necessário, acionarmos o programa de apoio psicológico da empresa. Sua saúde mental é prioridade.';
-    if (alertaTipo === 'assedio') respostaHumanizada += '\n\n🚨 Agradeço a coragem de relatar isso. Situações de assédio ou abuso são tratadas com total seriedade e sigilo. Posso orientá-lo(a) sobre os canais oficiais de denúncia e o suporte disponível. Você não está sozinho(a).';
-
-    const codigo = gerarCodigoUnico('rh');
-    return {
-      codigo: codigo,
-      analise_cognitiva: {
-        camada1_emocoes: emocoes,
-        camada2_intencoes: intencoes,
-        camada3_objetivos: objetivos,
-        camada4_competencias: competencias,
-        camada5_comportamentos: comportamentos,
-        camada6_eixos: [eixoPrincipal, eixoSecundario],
-        scores_eixos: { [eixoPrincipal]: eixosScores[eixoPrincipal], [eixoSecundario]: eixosScores[eixoSecundario] }
-      },
-      alerta: { nivel: alertaNivel, tipo: alertaTipo, urgencia: alertaUrgencia },
-      camada7_resposta: respostaHumanizada,
-      fonte: 'IDEnza',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-  }
-
-  function exibirResultadosRH(resultado) {
-    ultimoResultadoRH = resultado;
-    rhResultados.style.display = 'block';
-    btnEnviarRedisRH.style.display = 'inline-flex';
-    rhCodeDisplay.textContent = resultado.codigo;
-
-    const alerta = resultado.alerta;
-    rhAlertaBox.style.display = 'block';
-    rhAlertaBox.className = 'rh-alert-box ' + alerta.nivel;
-    rhAlertaBox.innerHTML = `<strong>🚨 Nível de Alerta: ${alerta.nivel.toUpperCase()}</strong><br><span>Tipo: ${alerta.tipo ? alerta.tipo.replace('_', ' ') : 'N/A'} | Urgência: ${alerta.urgencia.replace('_', ' ')}</span>`;
-
-    const emocoes = resultado.analise_cognitiva.camada1_emocoes;
-    const comportamentos = resultado.analise_cognitiva.camada5_comportamentos;
-    const topEmocoes = Object.entries(emocoes).sort((a, b) => b[1] - a[1]).slice(0, 4);
-    let metricHTML = '';
-    topEmocoes.forEach(([nome, valor]) => { metricHTML += `<div class="rh-metric-item"><div class="label">${nome}</div><div class="value">${(valor * 100).toFixed(0)}%</div></div>`; });
-    metricHTML += `<div class="rh-metric-item"><div class="label">Risco Rotatividade</div><div class="value">${(comportamentos.risco_rotatividade * 100).toFixed(0)}%</div></div>`;
-    metricHTML += `<div class="rh-metric-item"><div class="label">Engajamento</div><div class="value">${(comportamentos.engajamento * 100).toFixed(0)}%</div></div>`;
-    rhMetricGrid.innerHTML = metricHTML;
-    rhRespostaHumanizada.textContent = resultado.camada7_resposta;
-    rhJsonCompleto.textContent = JSON.stringify(resultado, null, 2);
-  }
-
-  document.getElementById('btnProcessarRH').addEventListener('click', () => {
-    const entrada = rhEntradaColaborador.value.trim();
-    if (!entrada || entrada.length < 5) { rhStatusMsg.textContent = '⚠️ Por favor, insira uma descrição mais detalhada.'; setTimeout(() => { rhStatusMsg.textContent = ''; }, 3000); return; }
-    rhStatusMsg.textContent = '🧠 Processando com IDEnza (7 camadas)...';
-    setTimeout(() => {
-      const resultado = processarComIDEnza(entrada);
-      exibirResultadosRH(resultado);
-      rhStatusMsg.textContent = '✅ Processamento concluído.';
-      setTimeout(() => { rhStatusMsg.textContent = ''; }, 4000);
-    }, 500);
-  });
-
-  document.getElementById('btnLimparRH').addEventListener('click', () => {
-    rhEntradaColaborador.value = '';
-    rhResultados.style.display = 'none';
-    btnEnviarRedisRH.style.display = 'none';
-    rhStatusMsg.textContent = '';
-    ultimoResultadoRH = null;
-  });
-
-  document.getElementById('btnExemploRH').addEventListener('click', () => {
-    rhEntradaColaborador.value = 'Estou há 3 anos na empresa e ninguém reconhece meu trabalho. Meu chefe nem olha na minha cara.';
-    rhStatusMsg.textContent = '📥 Exemplo carregado.';
-    setTimeout(() => { rhStatusMsg.textContent = ''; }, 3000);
-  });
-
-  document.getElementById('btnCopiarJSONRH').addEventListener('click', () => {
-    if (!ultimoResultadoRH) { rhStatusMsg.textContent = '⚠️ Nenhum resultado para copiar.'; setTimeout(() => { rhStatusMsg.textContent = ''; }, 3000); return; }
-    copiarTextoParaClipboard(JSON.stringify(ultimoResultadoRH, null, 2)).then(() => {
-      rhStatusMsg.textContent = '📋 JSON copiado.';
-      setTimeout(() => { rhStatusMsg.textContent = ''; }, 3000);
-    });
-  });
-
-  btnEnviarRedisRH.addEventListener('click', async () => {
-    if (!ultimoResultadoRH) return;
-    rhStatusMsg.textContent = '🚀 Enviando para Worker...';
-    try {
-      const resultado = await enviarViaWorker(ultimoResultadoRH, 'rh', ultimoResultadoRH.codigo);
-      rhStatusMsg.textContent = '✅ Análise enviada ao Worker! Key: ' + resultado.redisKey;
-    } catch (err) {
-      rhStatusMsg.textContent = '❌ Erro: ' + err.message;
-    }
-    setTimeout(() => { rhStatusMsg.textContent = ''; }, 5000);
-  });
-
-  // ==================== TAB 3: ESTRUTURA DE DADOS UNIVERSAL ====================
-  const categoriasUniversais = [
-    { nome: 'Direito', codigo: 'law', desc: 'Todos os ramos jurídicos', icone: '⚖️' },
-    { nome: 'Medicina & Saúde', codigo: 'med', desc: 'Anatomia, fisiologia, especialidades', icone: '🏥' },
-    { nome: 'Economia', codigo: 'econ', desc: 'Micro, macro, econometria', icone: '📈' },
-    { nome: 'Matemática', codigo: 'math', desc: 'Álgebra, cálculo, estatística, geometria', icone: '🔢' },
-    { nome: 'Física', codigo: 'phys', desc: 'Mecânica, termodinâmica, quântica', icone: '⚛️' },
-    { nome: 'Química', codigo: 'chem', desc: 'Orgânica, inorgânica, físico-química', icone: '🧪' },
-    { nome: 'Biologia', codigo: 'bio', desc: 'Genética, ecologia, evolução', icone: '🧬' },
-    { nome: 'Geografia', codigo: 'geo', desc: 'Física, humana, geopolítica', icone: '🌍' },
-    { nome: 'História', codigo: 'hist', desc: 'Antiga, medieval, moderna, contemporânea', icone: '📜' },
-    { nome: 'Filosofia', codigo: 'phil', desc: 'Ética, lógica, metafísica, epistemologia', icone: '🏛️' },
-    { nome: 'Psicologia', codigo: 'psych', desc: 'Clínica, social, cognitiva, forense', icone: '🧠' },
-    { nome: 'Sociologia & Antropologia', codigo: 'soc', desc: 'Estruturas sociais, cultura', icone: '👥' },
-    { nome: 'Engenharias', codigo: 'eng', desc: 'Civil, mecânica, elétrica, software', icone: '⚙️' },
-    { nome: 'Tecnologia & IA', codigo: 'tech', desc: 'Machine Learning, NLP, visão computacional', icone: '💻' },
-    { nome: 'Artes & Literatura', codigo: 'art', desc: 'Pintura, música, cinema, literatura mundial', icone: '🎨' },
-    { nome: 'Celebridades & Biografias', codigo: 'celeb', desc: 'Personalidades históricas e contemporâneas', icone: '⭐' },
-    { nome: 'Esportes', codigo: 'sport', desc: 'Futebol, atletismo, artes marciais, eSports', icone: '⚽' },
-    { nome: 'Religião & Teologia', codigo: 'rel', desc: 'Cristianismo, islamismo, budismo, hinduísmo', icone: '🕉️' },
-    { nome: 'Culinária & Gastronomia', codigo: 'food', desc: 'Técnicas culinárias, vinhos, culinária mundial', icone: '🍽️' },
-    { nome: 'Astronomia & Espaço', codigo: 'astro', desc: 'Planetas, estrelas, cosmologia, exploração espacial', icone: '🔭' }
-  ];
-
-  const dataCategoryGrid = document.getElementById('dataCategoryGrid');
-  const dataPanelCategoria = document.getElementById('dataPanelCategoria');
-  const dataCatNome = document.getElementById('dataCatNome');
-  const dataCatCode = document.getElementById('dataCatCode');
-  const dataTopicoEspecifico = document.getElementById('dataTopicoEspecifico');
-  const dataPromptOficial = document.getElementById('dataPromptOficial');
-  const dataRespostaIA = document.getElementById('dataRespostaIA');
-  const dataStatusMsg = document.getElementById('dataStatusMsg');
-  let categoriaSelecionada = null;
-  let dadosEstruturadosData = null;
-
-  // Renderizar categorias
-  categoriasUniversais.forEach(cat => {
-    const card = document.createElement('div');
-    card.className = 'data-category-card';
-    card.innerHTML = `
-      <div class="cat-code">${cat.icone} ${cat.codigo}.idenza.*</div>
-      <div class="cat-name">${cat.nome}</div>
-      <div class="cat-desc">${cat.desc}</div>
-    `;
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.data-category-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      categoriaSelecionada = cat;
-      abrirPainelCategoria(cat);
-    });
-    dataCategoryGrid.appendChild(card);
-  });
-
-  function abrirPainelCategoria(cat) {
-    dataPanelCategoria.style.display = 'block';
-    dataCatNome.textContent = cat.nome;
-    dataCatCode.textContent = cat.codigo + '.idenza.' + (categoriasUniversais.indexOf(cat) + 1);
-    dataTopicoEspecifico.value = '';
-    dataRespostaIA.value = '';
-    document.getElementById('dataResultados').style.display = 'none';
-    dataStatusMsg.textContent = '';
-
-    // Gerar prompt de fontes oficiais
-    dataPromptOficial.textContent = gerarPromptFontesOficiais(cat);
-  }
-
-  function gerarPromptFontesOficiais(cat) {
-    return `Você é um especialista renomado em ${cat.nome}. Por favor, forneça um conhecimento COMPLETO e ESTRUTURADO sobre o tópico que o usuário especificar, utilizando EXCLUSIVAMENTE fontes oficiais e confiáveis.
-
-FONTES OBRIGATÓRIAS (use APENAS estas categorias de fontes):
-• Livros técnicos e acadêmicos de referência na área
-• Artigos científicos publicados em journals peer-reviewed
-• Normas técnicas oficiais (ISO, ABNT, IEEE, etc.)
-• Legislação oficial e jurisprudência consolidada (para Direito)
-• Manuais de organizações oficiais (OMS, UNESCO, IPCC, etc.)
-• Documentos históricos primários (para História)
-• Biografias autorizadas e fontes primárias (para Celebridades)
-
-NÃO USE: Wikipedia, blogs, sites não verificados, conteúdo gerado por IA sem curadoria.
-
-ORGANIZE A RESPOSTA EM 7 CAMADAS:
-
-7. ESSÊNCIA: Definição fundamental, axiomas, conceitos basilares.
-6. TEORIA GERAL: Principais teorias, escolas de pensamento, evolução histórica.
-5. ESTRUTURAS ABSTRATAS: Modelos formais, classificações, frameworks.
-4. APLICAÇÕES ESPECÍFICAS: Casos de uso reais, exemplos práticos.
-3. PRÁTICAS PROFISSIONAIS: Métodos, protocolos, ferramentas de especialistas.
-2. USO PESSOAL/COTIDIANO: Aplicação no dia a dia de uma pessoa comum.
-1. COTIDIANO E DICAS RÁPIDAS: Curiosidades, macetes, recomendações.
-
-Para cada camada: "Título: [nome]. Subtemas: [lista separada por vírgula]". Cite TODAS as fontes ao final com referência completa.`;
-  }
-
-  document.getElementById('btnCopiarPromptData').addEventListener('click', () => {
-    const prompt = dataPromptOficial.textContent.trim();
-    if (!prompt) return;
-    copiarTextoParaClipboard(prompt).then(() => {
-      dataStatusMsg.textContent = '📋 Prompt copiado! Cole na IA de sua preferência.';
-      setTimeout(() => { dataStatusMsg.textContent = ''; }, 3000);
-    });
-  });
-
-  document.getElementById('btnEstruturarData').addEventListener('click', () => {
-    const texto = dataRespostaIA.value.trim();
-    if (!texto) { dataStatusMsg.textContent = '⚠️ Cole a resposta da IA primeiro.'; setTimeout(() => { dataStatusMsg.textContent = ''; }, 3000); return; }
-    if (!categoriaSelecionada) return;
-
-    const topico = dataTopicoEspecifico.value.trim() || categoriaSelecionada.nome;
-    const codigoRastreio = `${categoriaSelecionada.codigo}.idenza.${Date.now().toString(36)}`;
-    const camadas = extrairCamadasUniversais(texto);
-    
-    dadosEstruturadosData = {
-      codigo: codigoRastreio,
-      categoria: categoriaSelecionada.nome,
-      topico: topico,
+      base: agenteSelecionado.base,
       fonte: 'externa',
       dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      camadas: camadas
+      alertaRevisao: new Date(Date.now()+90*86400000).toISOString().split('T')[0],
+      camadas
     };
-
-    exibirResultadosData(dadosEstruturadosData);
+    document.getElementById('camadasPreview').textContent = camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+    document.getElementById('camadasPreview').style.display = 'block';
+    document.getElementById('jsonFinalPreview').textContent = JSON.stringify(conhecimentoEstruturado,null,2);
+    document.getElementById('jsonFinalPreview').style.display = 'block';
+    document.getElementById('btnEnviarMotor').style.display = 'inline-flex';
+  });
+  document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
+    if(!conhecimentoEstruturado) return;
+    document.getElementById('statusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo);
+    document.getElementById('statusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
   });
 
-  document.getElementById('btnUsarFonteIDEnza').addEventListener('click', () => {
-    if (!categoriaSelecionada) return;
-    const topico = dataTopicoEspecifico.value.trim() || categoriaSelecionada.nome;
-    const codigoRastreio = `${categoriaSelecionada.codigo}.idenza.${Date.now().toString(36)}`;
-    
-    // Simula conhecimento interno IDEnza
-    const camadasSimuladas = [
-      { nivel: 7, nome: 'ESSÊNCIA', titulo: `Definição fundamental de ${topico}`, subtemas: ['Conceito basilar', 'Axiomas', 'Princípios fundamentais'] },
-      { nivel: 6, nome: 'TEORIA GERAL', titulo: `Teorias de ${topico}`, subtemas: ['Escola clássica', 'Abordagem moderna', 'Evolução histórica'] },
-      { nivel: 5, nome: 'ESTRUTURAS ABSTRATAS', titulo: `Modelos de ${topico}`, subtemas: ['Framework conceitual', 'Classificações', 'Taxonomia'] },
-      { nivel: 4, nome: 'APLICAÇÕES ESPECÍFICAS', titulo: `${topico} na prática`, subtemas: ['Casos de uso reais', 'Exemplos documentados', 'Áreas de atuação'] },
-      { nivel: 3, nome: 'PRÁTICAS PROFISSIONAIS', titulo: `Métodos de ${topico}`, subtemas: ['Protocolos padrão', 'Ferramentas', 'Melhores práticas'] },
-      { nivel: 2, nome: 'USO PESSOAL/COTIDIANO', titulo: `${topico} no dia a dia`, subtemas: ['Aplicações cotidianas', 'Dicas práticas', 'Exemplos simples'] },
-      { nivel: 1, nome: 'COTIDIANO E DICAS RÁPIDAS', titulo: `Curiosidades de ${topico}`, subtemas: ['Fatos interessantes', 'Macetes', 'Recomendações rápidas'] }
-    ];
-
-    dadosEstruturadosData = {
-      codigo: codigoRastreio,
-      categoria: categoriaSelecionada.nome,
-      topico: topico,
-      fonte: 'IDEnza',
-      dataCriacao: new Date().toISOString(),
-      alertaRevisao: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      camadas: camadasSimuladas
-    };
-
-    exibirResultadosData(dadosEstruturadosData);
-    dataStatusMsg.textContent = '📚 Conhecimento IDEnza carregado (fonte interna).';
-    setTimeout(() => { dataStatusMsg.textContent = ''; }, 3000);
-  });
-
-  function extrairCamadasUniversais(texto) {
-    const linhas = texto.split('\n'); const camadas = []; let current = null;
-    const regexNivel = /(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i;
-    for (const linha of linhas) {
-      const match = linha.match(regexNivel);
-      if (match) { const nivel = parseInt(match[1]); const nome = match[2].trim(); current = { nivel, nome, titulo: nome, subtemas: [] }; camadas.push(current); }
-      else if (current) { const partes = linha.split(/[,;]| - /).map(s => s.trim()).filter(s => s.length > 5); if (partes.length > 0) current.subtemas.push(...partes); }
+  function extrairCamadas(texto) {
+    const linhas = texto.split('\n'), camadas = [];
+    let current = null;
+    for(const l of linhas){
+      const m = l.match(/(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i);
+      if(m){ current = { nivel: parseInt(m[1]), nome: m[2].trim(), titulo: m[2].trim(), subtemas: [] }; camadas.push(current); }
+      else if(current){ const p = l.split(/[,;]| - /).map(s=>s.trim()).filter(s=>s.length>5); if(p.length) current.subtemas.push(...p); }
     }
-    if (camadas.length === 0) {
-      const nomesPadrao = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
-      for (let i = 1; i <= 7; i++) { camadas.push({ nivel: i, nome: nomesPadrao[i-1], titulo: nomesPadrao[i-1], subtemas: [texto.substring(0,100)] }); }
+    if(!camadas.length){
+      const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
+      for(let i=1;i<=7;i++) camadas.push({nivel:i,nome:nomes[i-1],titulo:nomes[i-1],subtemas:[texto.substring(0,100)]});
     }
     return camadas;
   }
 
-  function exibirResultadosData(dados) {
-    document.getElementById('dataResultados').style.display = 'block';
-    document.getElementById('dataCodigoRastreio').textContent = dados.codigo;
-    document.getElementById('dataFonte').textContent = dados.fonte === 'IDEnza' ? 'IDEnza (Conhecimento Interno)' : 'Fontes Oficiais Externas';
-    document.getElementById('dataAlertaRevisao').textContent = dados.alertaRevisao;
+  // ==================== TAB 2: TEMPLATE DE HUMANOIDES ====================
+  const tiposHumanoides = [
+    { icone: '💼', nome: 'RH / Escuta Organizacional', codigo: 'hum.rh', desc: 'Análise de clima, feedback, reconhecimento, conflitos', exemplo: 'Estou há 3 anos na empresa e ninguém reconhece meu trabalho.' },
+    { icone: '🎓', nome: 'Educador / Mentor', codigo: 'hum.edu', desc: 'Ensino, mentoria, avaliação de aprendizagem', exemplo: 'Tenho dificuldade em aprender cálculo diferencial.' },
+    { icone: '🏥', nome: 'Saúde / Acolhimento', codigo: 'hum.health', desc: 'Triagem emocional, apoio psicológico, bem-estar', exemplo: 'Ando muito ansioso e não consigo dormir direito.' },
+    { icone: '⚖️', nome: 'Jurídico / Compliance', codigo: 'hum.law', desc: 'Orientações legais, denúncias, due diligence', exemplo: 'Acredito que meu contrato tem cláusulas abusivas.' },
+    { icone: '💻', nome: 'Suporte Técnico / TI', codigo: 'hum.tech', desc: 'Diagnóstico de problemas, tutoriais, troubleshooting', exemplo: 'Meu computador não liga e tenho um prazo urgente.' },
+    { icone: '📈', nome: 'Financeiro / Investimentos', codigo: 'hum.fin', desc: 'Consultoria financeira, análise de risco, planejamento', exemplo: 'Quero investir mas não sei por onde começar.' },
+    { icone: '🎯', nome: 'Coach / Desenvolvimento Pessoal', codigo: 'hum.coach', desc: 'Metas, produtividade, equilíbrio vida-trabalho', exemplo: 'Sinto que estou estagnado na carreira.' },
+    { icone: '🛒', nome: 'Atendimento ao Cliente', codigo: 'hum.cx', desc: 'Suporte, reclamações, fidelização', exemplo: 'Comprei um produto com defeito e não consigo trocar.' },
+    { icone: '🔍', nome: 'Investigação / Análise Forense', codigo: 'hum.forensic', desc: 'Análise de evidências, padrões, detecção de anomalias', exemplo: 'Encontrei inconsistências nos relatórios financeiros.' },
+    { icone: '🌍', nome: 'Geopolítica / Internacional', codigo: 'hum.geo', desc: 'Análise de cenários, riscos geopolíticos', exemplo: 'Como a guerra comercial afeta meus investimentos?' },
+    { icone: '🎨', nome: 'Criativo / Artes', codigo: 'hum.art', desc: 'Feedback criativo, bloqueios artísticos, direção', exemplo: 'Estou com bloqueio criativo para terminar minha obra.' },
+    { icone: '⚽', nome: 'Esportes / Performance', codigo: 'hum.sport', desc: 'Análise de desempenho, motivação esportiva', exemplo: 'Meu rendimento caiu muito nos últimos jogos.' },
+    { icone: '🔧', nome: 'Customizado', codigo: 'hum.custom', desc: 'Defina seu próprio domínio e camadas semânticas', exemplo: 'Descreva seu contexto personalizado aqui.' }
+  ];
 
-    let html = '';
-    dados.camadas.forEach(c => { html += `<strong>Camada ${c.nivel}: ${c.nome}</strong> — ${c.subtemas.join(', ')}\n`; });
-    document.getElementById('dataCamadasPreview').textContent = html || 'Estruturação concluída.';
-    document.getElementById('dataCamadasPreview').style.display = 'block';
-    document.getElementById('dataJsonPreview').textContent = JSON.stringify(dados, null, 2);
-  }
+  let humanoideSelecionado = null, resultadoHum = null;
+  const humTypeGrid = document.getElementById('humTypeGrid');
 
-  document.getElementById('btnCopiarJSONData').addEventListener('click', () => {
-    if (!dadosEstruturadosData) return;
-    copiarTextoParaClipboard(JSON.stringify(dadosEstruturadosData, null, 2)).then(() => {
-      dataStatusMsg.textContent = '📋 JSON copiado.';
-      setTimeout(() => { dataStatusMsg.textContent = ''; }, 3000);
+  tiposHumanoides.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'hum-type-card';
+    card.innerHTML = `<span class="type-icon">${t.icone}</span><span class="type-name">${t.nome}</span><span class="type-code">${t.codigo}.idenza.*</span>`;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      humanoideSelecionado = t;
+      abrirPainelHumanoide(t);
     });
+    humTypeGrid.appendChild(card);
   });
 
-  document.getElementById('btnEnviarWorkerData').addEventListener('click', async () => {
-    if (!dadosEstruturadosData) return;
-    dataStatusMsg.textContent = '🚀 Enviando para Worker...';
-    try {
-      const resultado = await enviarViaWorker(dadosEstruturadosData, 'data', dadosEstruturadosData.codigo);
-      dataStatusMsg.textContent = '✅ Dados enviados ao Worker! Key: ' + resultado.redisKey;
-    } catch (err) {
-      dataStatusMsg.textContent = '❌ Erro: ' + err.message;
+  function abrirPainelHumanoide(t) {
+    document.getElementById('humPanel').style.display = 'block';
+    document.getElementById('humIcone').textContent = t.icone;
+    document.getElementById('humNome').textContent = t.nome;
+    document.getElementById('humCodigoBase').textContent = t.codigo + '.idenza.*';
+    document.getElementById('humDescricao').textContent = t.desc;
+    document.getElementById('humEntrada').value = '';
+    document.getElementById('humEntrada').placeholder = 'Ex: "' + t.exemplo + '"';
+    document.getElementById('humResultados').style.display = 'none';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+    document.getElementById('humStatusMsg').textContent = '';
+    resultadoHum = null;
+  }
+
+  document.getElementById('btnProcessarHum').addEventListener('click', () => {
+    if(!humanoideSelecionado) return;
+    const entrada = document.getElementById('humEntrada').value.trim();
+    if(!entrada || entrada.length < 5) {
+      document.getElementById('humStatusMsg').textContent = '⚠️ Insira uma descrição mais detalhada.';
+      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
+      return;
     }
-    setTimeout(() => { dataStatusMsg.textContent = ''; }, 5000);
+    document.getElementById('humStatusMsg').textContent = '🧠 Processando...';
+    setTimeout(() => {
+      resultadoHum = processarHumanoide(entrada, humanoideSelecionado);
+      exibirResultadosHum(resultadoHum);
+      document.getElementById('humStatusMsg').textContent = '✅ Concluído.';
+      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},4000);
+    }, 500);
+  });
+
+  function processarHumanoide(entrada, tipo) {
+    const texto = entrada.toLowerCase();
+    const codigo = gerarCodigoUnico(tipo.codigo);
+    
+    // Análise léxica genérica
+    const temFrustracao = /frustr|decepcion|desanim|difícil|problema|não.*consigo/i.test(texto);
+    const temSatisfacao = /satisfeit|feliz|grato|bom|obrigad|funcionou/i.test(texto);
+    const temUrgencia = /urgente|rápido|prazo|agora|imediato/i.test(texto);
+    const temConfusao = /confuso|não.*entendo|dúvida|perdid/i.test(texto);
+    
+    const emocoes = {
+      frustracao: temFrustracao ? 0.80 : 0.20,
+      urgencia: temUrgencia ? 0.75 : 0.25,
+      satisfacao: temSatisfacao ? 0.80 : 0.30,
+      confusao: temConfusao ? 0.70 : 0.20,
+      esperanca: /esperan|acredit|tentar|vou.*conseguir/i.test(texto) ? 0.65 : 0.35,
+      confianca: /confio|seguro|certo|claro/i.test(texto) ? 0.60 : 0.30
+    };
+
+    const intencoes = {
+      resolver_problema: temFrustracao || temConfusao ? 0.85 : 0.30,
+      aprender: /aprender|entender|explica|como.*faz/i.test(texto) ? 0.80 : 0.25,
+      ser_ouvido: /ouvir|atenção|ninguém.*liga|ignor/i.test(texto) ? 0.85 : 0.30,
+      receber_orientacao: /orienta|ajuda|guia|conselho/i.test(texto) ? 0.78 : 0.28,
+      expressar: /quero.*dizer|preciso.*falar|desabafar/i.test(texto) ? 0.72 : 0.22
+    };
+
+    const comportamentos = {
+      engajamento: temSatisfacao ? 0.70 : 0.40,
+      urgencia: temUrgencia ? 0.80 : 0.25,
+      proatividade: /fiz|tentei|busquei|procurei/i.test(texto) ? 0.60 : 0.35,
+      risco_abandono: temFrustracao && /desist|abandon|sair/i.test(texto) ? 0.70 : 0.20
+    };
+
+    let alertaNivel = 'baixo', alertaTipo = null, alertaUrgencia = 'monitorar';
+    if(comportamentos.urgencia > 0.7) { alertaNivel = 'alto'; alertaTipo = 'urgencia'; alertaUrgencia = 'imediata'; }
+    if(comportamentos.risco_abandono > 0.6) { alertaNivel = 'medio'; alertaTipo = 'risco_abandono'; alertaUrgencia = 'esta_semana'; }
+
+    let resposta = '';
+    if(temFrustracao) resposta = `Compreendo sua situação com "${tipo.nome}". Pelo que descreveu, identifico pontos importantes que merecem atenção. Vamos explorar isso juntos com calma.`;
+    else if(temSatisfacao) resposta = `Que bom receber esse retorno positivo! Fico feliz em saber que as coisas estão fluindo bem no contexto de ${tipo.nome}.`;
+    else resposta = `Obrigado por compartilhar. Como ${tipo.nome}, estou aqui para ajudar. Podemos analisar sua situação com mais profundidade.`;
+    
+    if(alertaNivel === 'alto') resposta += '\n\n⚠️ Noto um senso de urgência importante. Recomendo priorizarmos este caso.';
+
+    return {
+      codigo,
+      tipo: tipo.nome,
+      dominio: tipo.codigo,
+      analise_cognitiva: {
+        camada1_emocoes: emocoes,
+        camada2_intencoes: intencoes,
+        camada3_objetivos: { resolver: 0.80, aprender: intencoes.aprender, expressar: intencoes.expressar },
+        camada4_competencias: { comunicacao: 0.55, autonomia: 0.40, colaboracao: 0.35 },
+        camada5_comportamentos: comportamentos,
+        camada6_eixo: tipo.codigo,
+        scores: { [tipo.codigo]: 0.90 }
+      },
+      alerta: { nivel: alertaNivel, tipo: alertaTipo, urgencia: alertaUrgencia },
+      camada7_resposta: resposta,
+      fonte: 'IDEnza',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+30*86400000).toISOString().split('T')[0]
+    };
+  }
+
+  function exibirResultadosHum(r) {
+    document.getElementById('humResultados').style.display = 'block';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+    document.getElementById('humCodigoRastreio').textContent = r.codigo;
+
+    const ab = document.getElementById('humAlertaBox');
+    ab.style.display = 'block';
+    ab.className = 'hum-alert-box ' + r.alerta.nivel;
+    ab.innerHTML = `<strong>🚨 Alerta: ${r.alerta.nivel.toUpperCase()}</strong><br>Tipo: ${r.alerta.tipo||'N/A'} | Urgência: ${r.alerta.urgencia.replace('_',' ')}`;
+
+    const emocoes = r.analise_cognitiva.camada1_emocoes;
+    let m = '';
+    Object.entries(emocoes).sort((a,b)=>b[1]-a[1]).slice(0,4).forEach(([k,v])=>{
+      m += `<div class="hum-metric-item"><div class="label">${k}</div><div class="value">${(v*100).toFixed(0)}%</div></div>`;
+    });
+    document.getElementById('humMetricGrid').innerHTML = m;
+    document.getElementById('humResposta').textContent = r.camada7_resposta;
+    document.getElementById('humJsonCompleto').textContent = JSON.stringify(r,null,2);
+  }
+
+  document.getElementById('btnLimparHum').addEventListener('click', ()=>{
+    document.getElementById('humEntrada').value = '';
+    document.getElementById('humResultados').style.display = 'none';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+    resultadoHum = null;
+  });
+
+  document.getElementById('btnCopiarJSONHum').addEventListener('click', ()=>{
+    if(!resultadoHum) return;
+    copiarTextoParaClipboard(JSON.stringify(resultadoHum,null,2));
+    document.getElementById('humStatusMsg').textContent = '📋 JSON copiado.';
+    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEnviarWorkerHum').addEventListener('click', async ()=>{
+    if(!resultadoHum) return;
+    document.getElementById('humStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(resultadoHum,'humanoide',resultadoHum.codigo);
+    document.getElementById('humStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},5000);
+  });
+
+  // ==================== TAB 3: DADOS UNIVERSAIS ====================
+  const categorias = [
+    {nome:'Direito',codigo:'law',desc:'Todos os ramos jurídicos',icone:'⚖️'},
+    {nome:'Medicina & Saúde',codigo:'med',desc:'Anatomia, especialidades',icone:'🏥'},
+    {nome:'Economia',codigo:'econ',desc:'Micro, macro, econometria',icone:'📈'},
+    {nome:'Matemática',codigo:'math',desc:'Álgebra, cálculo, estatística',icone:'🔢'},
+    {nome:'Física',codigo:'phys',desc:'Mecânica, quântica, termodinâmica',icone:'⚛️'},
+    {nome:'Química',codigo:'chem',desc:'Orgânica, inorgânica',icone:'🧪'},
+    {nome:'Biologia',codigo:'bio',desc:'Genética, ecologia, evolução',icone:'🧬'},
+    {nome:'Geografia',codigo:'geo',desc:'Física, humana, geopolítica',icone:'🌍'},
+    {nome:'História',codigo:'hist',desc:'Antiga, medieval, contemporânea',icone:'📜'},
+    {nome:'Filosofia',codigo:'phil',desc:'Ética, lógica, metafísica',icone:'🏛️'},
+    {nome:'Psicologia',codigo:'psych',desc:'Clínica, social, cognitiva',icone:'🧠'},
+    {nome:'Engenharias',codigo:'eng',desc:'Civil, mecânica, software',icone:'⚙️'},
+    {nome:'Tecnologia & IA',codigo:'tech',desc:'ML, NLP, visão computacional',icone:'💻'},
+    {nome:'Artes & Literatura',codigo:'art',desc:'Pintura, música, cinema',icone:'🎨'},
+    {nome:'Celebridades',codigo:'celeb',desc:'Personalidades históricas',icone:'⭐'},
+    {nome:'Esportes',codigo:'sport',desc:'Futebol, atletismo, eSports',icone:'⚽'},
+    {nome:'Religião',codigo:'rel',desc:'Cristianismo, islamismo, budismo',icone:'🕉️'},
+    {nome:'Gastronomia',codigo:'food',desc:'Culinária mundial, vinhos',icone:'🍽️'},
+    {nome:'Astronomia',codigo:'astro',desc:'Planetas, estrelas, cosmologia',icone:'🔭'},
+    {nome:'Sociologia',codigo:'soc',desc:'Estruturas sociais, cultura',icone:'👥'}
+  ];
+
+  let catSelecionada = null, dadosData = null;
+  const dcg = document.getElementById('dataCategoryGrid');
+  categorias.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'data-category-card';
+    card.innerHTML = `<div class="cat-code">${c.icone} ${c.codigo}.idenza.*</div><div class="cat-name">${c.nome}</div><div class="cat-desc">${c.desc}</div>`;
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.data-category-card').forEach(x=>x.classList.remove('selected'));
+      card.classList.add('selected');
+      catSelecionada = c;
+      document.getElementById('dataPanelCategoria').style.display = 'block';
+      document.getElementById('dataCatNome').textContent = c.nome;
+      document.getElementById('dataCatCode').textContent = c.codigo+'.idenza.*';
+      document.getElementById('dataPromptOficial').textContent = 
+        `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais (livros, journals, normas, legislação). Cite todas.`;
+      document.getElementById('dataResultados').style.display = 'none';
+      dadosData = null;
+    });
+    dcg.appendChild(card);
+  });
+
+  document.getElementById('btnCopiarPromptData').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(document.getElementById('dataPromptOficial').textContent);
+    document.getElementById('dataStatusMsg').textContent = '📋 Prompt copiado.';
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEstruturarData').addEventListener('click', ()=>{
+    const texto = document.getElementById('dataRespostaIA').value.trim();
+    if(!texto||!catSelecionada) return;
+    const codigo = gerarCodigoUnico(catSelecionada.codigo);
+    dadosData = {
+      codigo,
+      categoria: catSelecionada.nome,
+      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
+      fonte: 'externa',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
+      camadas: extrairCamadas(texto)
+    };
+    exibirData();
+  });
+
+  document.getElementById('btnUsarFonteIDEnza').addEventListener('click', ()=>{
+    if(!catSelecionada) return;
+    const codigo = gerarCodigoUnico(catSelecionada.codigo);
+    const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
+    dadosData = {
+      codigo,
+      categoria: catSelecionada.nome,
+      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
+      fonte: 'IDEnza',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
+      camadas: nomes.map((n,i)=>({nivel:i+1,nome:n,titulo:n,subtemas:['Conhecimento interno IDEnza']}))
+    };
+    exibirData();
+  });
+
+  function exibirData() {
+    document.getElementById('dataResultados').style.display = 'block';
+    document.getElementById('dataCodigoRastreio').textContent = dadosData.codigo;
+    document.getElementById('dataFonte').textContent = dadosData.fonte==='IDEnza'?'IDEnza (Interno)':'Fontes Oficiais Externas';
+    document.getElementById('dataAlertaRevisao').textContent = dadosData.alertaRevisao;
+    document.getElementById('dataCamadasPreview').textContent = dadosData.camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+    document.getElementById('dataCamadasPreview').style.display = 'block';
+    document.getElementById('dataJsonPreview').textContent = JSON.stringify(dadosData,null,2);
+  }
+
+  document.getElementById('btnCopiarJSONData').addEventListener('click', ()=>{
+    if(!dadosData) return;
+    copiarTextoParaClipboard(JSON.stringify(dadosData,null,2));
+    document.getElementById('dataStatusMsg').textContent = '📋 JSON copiado.';
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEnviarWorkerData').addEventListener('click', async ()=>{
+    if(!dadosData) return;
+    document.getElementById('dataStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(dadosData,'data',dadosData.codigo);
+    document.getElementById('dataStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},5000);
   });
 
 </script>

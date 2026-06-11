@@ -19,14 +19,13 @@
       --shadow-sm: 2px 2px 6px rgba(0,0,0,0.08);
       --shadow-md: 3px 3px 10px rgba(0,0,0,0.10);
       --shadow-lg: 4px 4px 16px rgba(0,0,0,0.12);
-      --radius: 0px;
-      --font-mono: 'Fira Code', 'Courier New', monospace;
       --success: #0d5c3a;
       --success-bg: #e0f5e8;
       --warning: #b8860b;
       --warning-bg: #fefce8;
       --error: #b91c1c;
       --error-bg: #fef2f2;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
     body {
@@ -84,7 +83,35 @@
       text-transform: uppercase;
     }
 
-    /* TABS NAVIGATION */
+    /* CONEXÃO REDIS STATUS */
+    .redis-connection-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      box-shadow: var(--shadow-sm);
+    }
+    .redis-status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50% !important;
+      display: inline-block;
+    }
+    .redis-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+    .redis-status-dot.disconnected { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+    .redis-status-dot.sending { background: #eab308; animation: pulse 0.8s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* TABS */
     .tab-nav {
       display: flex;
       gap: 0;
@@ -169,41 +196,20 @@
       box-shadow: var(--shadow-sm);
     }
     .btn:active { transform: translateY(1px); box-shadow: none; }
-    .btn-gold {
-      background: var(--gold-dark);
-      color: white;
-      border: 1px solid #9a6f0a;
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
     }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--petroleum-light);
-      color: var(--petroleum);
-    }
-    .btn-petroleum {
-      background: var(--petroleum);
-      color: white;
-      border: 1px solid #0a3a44;
-    }
-    .btn-data {
-      background: #0d5c3a;
-      color: white;
-      border: 1px solid #064025;
-    }
+    .btn-gold { background: var(--gold-dark); color: white; border: 1px solid #9a6f0a; }
+    .btn-outline { background: transparent; border: 1px solid var(--petroleum-light); color: var(--petroleum); }
+    .btn-petroleum { background: var(--petroleum); color: white; border: 1px solid #0a3a44; }
+    .btn-data { background: #0d5c3a; color: white; border: 1px solid #064025; }
     .btn-gold:hover { opacity: 0.9; }
     .btn-outline:hover { background: #f0f8f9; }
     .btn-petroleum:hover { opacity: 0.9; }
     .btn-data:hover { opacity: 0.9; }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-    .btn-outline.active {
-      background: var(--petroleum);
-      color: white;
-      border-color: var(--petroleum);
-      box-shadow: var(--shadow-md);
-    }
+
     .expando {
       border: 1px solid var(--border);
       background: white;
@@ -213,10 +219,7 @@
       transition: max-height 0.3s ease;
       max-height: 32px;
     }
-    .expando.open {
-      max-height: 600px;
-      overflow-y: auto;
-    }
+    .expando.open { max-height: 600px; overflow-y: auto; }
     .expando-toggle {
       padding: 6px 14px;
       font-size: 0.65rem;
@@ -229,17 +232,9 @@
       background: #fafafa;
       border-bottom: 1px solid transparent;
     }
-    .expando.open .expando-toggle {
-      border-bottom-color: var(--border);
-    }
-    .expando-body {
-      padding: 10px 14px;
-      font-size: 0.7rem;
-      display: none;
-    }
-    .expando.open .expando-body {
-      display: block;
-    }
+    .expando.open .expando-toggle { border-bottom-color: var(--border); }
+    .expando-body { padding: 10px 14px; font-size: 0.7rem; display: none; }
+    .expando.open .expando-body { display: block; }
     .agent-select-list {
       display: flex;
       flex-direction: column;
@@ -273,14 +268,8 @@
       color: var(--text);
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
     }
-    .raw-textarea.hum-textarea {
-      min-height: 120px;
-      border-left: 4px solid var(--petroleum-light);
-    }
-    .raw-textarea.data-textarea {
-      min-height: 120px;
-      border-left: 4px solid #0d5c3a;
-    }
+    .raw-textarea.hum-textarea { min-height: 120px; border-left: 4px solid var(--petroleum-light); }
+    .raw-textarea.data-textarea { min-height: 120px; border-left: 4px solid #0d5c3a; }
     .generated-question {
       background: #f4f7f8;
       border: 1px solid var(--border);
@@ -307,7 +296,7 @@
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
       color: #1e1e1e;
     }
-    .hum-json-preview {
+    .hum-json-preview, .data-json-preview {
       background: #f0f8f9;
       border: 1px solid #b0d4d9;
       padding: 16px;
@@ -317,64 +306,27 @@
       max-height: 500px;
       overflow-y: auto;
       margin-top: 12px;
-      box-shadow: inset 1px 1px 4px rgba(13,79,92,0.08);
       color: #1e1e1e;
     }
-    .data-json-preview {
-      background: #f0f9f4;
-      border: 1px solid #a0d4b8;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      white-space: pre-wrap;
-      max-height: 500px;
-      overflow-y: auto;
-      margin-top: 12px;
-      box-shadow: inset 1px 1px 4px rgba(13,92,58,0.08);
-      color: #1e1e1e;
-    }
-    .status-msg {
-      font-size: 0.7rem;
-      color: var(--petroleum-light);
-      margin-top: 6px;
-    }
-    .hum-status-msg {
-      font-size: 0.7rem;
-      color: var(--petroleum-light);
-      margin-top: 6px;
-    }
-    .data-status-msg {
-      font-size: 0.7rem;
-      color: #0d5c3a;
-      margin-top: 6px;
-    }
-    
-    /* FEEDBACK DE ENVIO REDIS */
+    .data-json-preview { background: #f0f9f4; border-color: #a0d4b8; }
+    .status-msg { font-size: 0.7rem; color: var(--petroleum-light); margin-top: 6px; }
     .redis-feedback {
-      padding: 8px 12px;
-      margin-top: 8px;
+      padding: 10px 14px;
+      margin-top: 10px;
       font-size: 0.65rem;
       font-family: var(--font-mono);
-      border-left: 3px solid var(--petroleum-light);
+      border-left: 4px solid var(--petroleum-light);
       background: #f0f8f9;
       display: none;
+      line-height: 1.6;
     }
     .redis-feedback.show { display: block; }
-    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); }
-    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); }
-    
-    .redis-axes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 8px 0;
-    }
-    .redis-chip-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
+    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); color: var(--error); }
+    .redis-feedback.loading { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+
+    .redis-axes { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    .redis-chip-wrapper { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .redis-chip {
       background: #eef7f8;
       color: var(--petroleum);
@@ -387,98 +339,26 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .redis-chip:hover {
-      background: var(--petroleum);
-      color: white;
-      border-color: var(--petroleum);
-      box-shadow: var(--shadow-md);
-    }
-    .redis-chip.active-chip {
-      background: var(--petroleum);
-      color: white;
-      border-color: var(--petroleum);
-      box-shadow: var(--shadow-md);
-    }
-    .redis-chip-hint {
-      font-size: 0.5rem;
-      color: #888;
-      text-align: center;
-      max-width: 80px;
-      line-height: 1.2;
-      text-transform: lowercase;
-    }
+    .redis-chip:hover { background: var(--petroleum); color: white; border-color: var(--petroleum); }
+    .redis-chip.active-chip { background: var(--petroleum); color: white; border-color: var(--petroleum); }
+    .redis-chip-hint { font-size: 0.5rem; color: #888; text-align: center; max-width: 80px; line-height: 1.2; }
     .eixo-form-container {
       background: #f9fbfc;
       border: 1px solid var(--border);
       padding: 12px;
       margin-top: 10px;
-      box-shadow: var(--shadow-sm);
       display: none;
     }
     .eixo-form-container.open { display: block; }
-    .eixo-form-container .form-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-    .eixo-form-container label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      min-width: 60px;
-      color: var(--petroleum);
-    }
+    .eixo-form-container .form-row { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+    .eixo-form-container label { font-size: 0.7rem; font-weight: 600; min-width: 60px; color: var(--petroleum); }
     .eixo-form-container input {
       flex: 1;
       border: 1px solid var(--border);
       padding: 6px 8px;
       font-family: var(--font-mono);
       font-size: 0.7rem;
-      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05);
     }
-    .eixo-form-container .form-hint {
-      font-size: 0.55rem;
-      color: #999;
-      margin-top: 2px;
-      margin-bottom: 8px;
-      font-style: italic;
-    }
-    .eixos-custom-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 1000;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: white;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      padding: 24px;
-      width: 400px;
-      max-width: 90vw;
-      position: relative;
-    }
-    .modal-box h3 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--petroleum);
-      margin-bottom: 16px;
-    }
-
-    /* HUMANOIDE STYLES */
     .hum-alert-box {
       padding: 12px 16px;
       margin: 8px 0;
@@ -489,36 +369,11 @@
     .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
     .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
     .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
-    .hum-alert-box.critico { border-color: #ef4444; background: #fef2f2; animation: pulse-alert 1.5s infinite; }
-    @keyframes pulse-alert {
-      0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
-      70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
-      100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-    }
-    .hum-metric-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .hum-metric-item {
-      background: #f0f8f9;
-      padding: 8px;
-      border: 1px solid #cde2e5;
-      text-align: center;
-    }
-    .hum-metric-item .label {
-      font-size: 0.55rem;
-      text-transform: uppercase;
-      color: #888;
-      letter-spacing: 1px;
-    }
-    .hum-metric-item .value {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--petroleum);
-      font-family: var(--font-mono);
-    }
+    .hum-alert-box.critico { border-color: #ef4444; background: #fef2f2; }
+    .hum-metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
+    .hum-metric-item { background: #f0f8f9; padding: 8px; border: 1px solid #cde2e5; text-align: center; }
+    .hum-metric-item .label { font-size: 0.55rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+    .hum-metric-item .value { font-size: 1.1rem; font-weight: 700; color: var(--petroleum); font-family: var(--font-mono); }
     .hum-resposta-box {
       background: #fff;
       border: 1px solid var(--petroleum-light);
@@ -527,16 +382,8 @@
       font-size: 0.85rem;
       line-height: 1.6;
       color: #333;
-      box-shadow: var(--shadow-sm);
     }
-
-    /* DATA STRUCTURE STYLES */
-    .data-category-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
-      margin-top: 8px;
-    }
+    .data-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
     .data-category-card {
       border: 1px solid var(--border);
       padding: 10px;
@@ -544,33 +391,11 @@
       transition: all 0.2s;
       background: #fafdfb;
     }
-    .data-category-card:hover {
-      border-color: #0d5c3a;
-      box-shadow: var(--shadow-md);
-      background: #f0f9f4;
-    }
-    .data-category-card.selected {
-      border-color: #0d5c3a;
-      background: #e0f5e8;
-      box-shadow: var(--shadow-md);
-    }
-    .data-category-card .cat-code {
-      font-size: 0.55rem;
-      color: #0d5c3a;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-    .data-category-card .cat-name {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #1e1e1e;
-    }
-    .data-category-card .cat-desc {
-      font-size: 0.6rem;
-      color: #888;
-      margin-top: 2px;
-    }
+    .data-category-card:hover { border-color: #0d5c3a; box-shadow: var(--shadow-md); background: #f0f9f4; }
+    .data-category-card.selected { border-color: #0d5c3a; background: #e0f5e8; box-shadow: var(--shadow-md); }
+    .data-category-card .cat-code { font-size: 0.55rem; color: #0d5c3a; font-family: var(--font-mono); font-weight: 700; }
+    .data-category-card .cat-name { font-size: 0.75rem; font-weight: 600; color: #1e1e1e; }
+    .data-category-card .cat-desc { font-size: 0.6rem; color: #888; margin-top: 2px; }
     .data-code-display {
       background: #0d5c3a;
       color: #a0f0c0;
@@ -591,14 +416,7 @@
       display: inline-block;
       margin: 4px 0;
     }
-
-    /* HUMANOIDE TYPE SELECTOR */
-    .hum-type-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 8px;
-      margin-top: 8px;
-    }
+    .hum-type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-top: 8px; }
     .hum-type-card {
       border: 1px solid var(--border);
       padding: 10px;
@@ -607,38 +425,14 @@
       background: #fafdfd;
       text-align: center;
     }
-    .hum-type-card:hover {
-      border-color: var(--petroleum);
-      box-shadow: var(--shadow-md);
-      background: #f0f8f9;
-    }
-    .hum-type-card.selected {
-      border-color: var(--petroleum);
-      background: #d8eff3;
-      box-shadow: var(--shadow-md);
-    }
-    .hum-type-card .type-icon {
-      font-size: 1.5rem;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .hum-type-card .type-name {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--petroleum);
-    }
-    .hum-type-card .type-code {
-      font-size: 0.5rem;
-      color: #888;
-      font-family: var(--font-mono);
-    }
+    .hum-type-card:hover { border-color: var(--petroleum); box-shadow: var(--shadow-md); background: #f0f8f9; }
+    .hum-type-card.selected { border-color: var(--petroleum); background: #d8eff3; box-shadow: var(--shadow-md); }
+    .hum-type-card .type-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .hum-type-card .type-name { font-size: 0.7rem; font-weight: 700; color: var(--petroleum); }
+    .hum-type-card .type-code { font-size: 0.5rem; color: #888; font-family: var(--font-mono); }
 
     @media (max-width: 600px) {
       body { padding: 8px; }
-      .eixo-form-container .form-row { flex-direction: column; align-items: stretch; }
-      .eixo-form-container label { min-width: auto; }
-      .modal-box { width: 90vw; }
-      .redis-chip-hint { max-width: 60px; font-size: 0.45rem; }
       .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
       .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
       .data-category-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
@@ -647,6 +441,13 @@
   </style>
 </head>
 <body>
+
+<!-- BARRA DE STATUS DA CONEXÃO REDIS -->
+<div class="redis-connection-bar">
+  <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+  <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+  <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+</div>
 
 <header>
   <h1>Estação de Pesquisa: Super Agentes, Humanoides e Dados Universais</h1>
@@ -1020,24 +821,12 @@
   <div class="redis-axes" id="redisAxesContainer"></div>
   <button class="btn btn-outline" id="btnNovoEixo" style="margin-top:6px;">Criar Novo Eixo</button>
   <div class="eixo-form-container" id="eixoFormContainer"></div>
-  <div class="eixos-custom-list" id="eixosCustomList"></div>
   <div style="margin-top:10px; display:flex; gap:8px;">
     <button class="btn btn-outline" id="btnCopiarDadosRedis">Copiar Dados Redis</button>
-    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">Enviar via Worker</button>
+    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">Enviar para Redis</button>
   </div>
-  <div class="redis-feedback" id="redisFeedback"></div>
+  <div class="redis-feedback" id="redisFeedbackEixos"></div>
   <div class="status-msg" id="redisStatusMsg"></div>
-</div>
-
-<div class="modal-overlay" id="modalNovoEixo">
-  <div class="modal-box">
-    <h3>Criar Novo Eixo</h3>
-    <input type="text" id="inputNovoEixo" placeholder="Nome do eixo">
-    <div class="modal-actions">
-      <button class="btn btn-outline" id="btnCancelarModal">Cancelar</button>
-      <button class="btn btn-petroleum" id="btnConfirmarModal">Criar Eixo</button>
-    </div>
-  </div>
 </div>
 
 <div class="section" id="panelPesquisa" style="display:none;">
@@ -1049,7 +838,7 @@
   <button class="btn btn-petroleum" id="btnEstruturar" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
-  <button class="btn btn-petroleum" id="btnEnviarMotor" style="margin-top:8px; display:none;">Enviar via Worker</button>
+  <button class="btn btn-petroleum" id="btnEnviarMotor" style="margin-top:8px; display:none;">Enviar para Redis</button>
   <div class="redis-feedback" id="redisFeedbackAgente"></div>
   <div class="status-msg" id="statusMsg"></div>
 </div>
@@ -1058,48 +847,30 @@
 
 <!-- ==================== TAB 2: TEMPLATE DE HUMANOIDES ==================== -->
 <div class="tab-content" id="tab-humanoides">
-
   <div class="section">
     <div class="section-title hum-title"><span>🤖</span> Template Universal de Humanoides IDEnza</div>
     <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
-      <strong>Estrutura base para criar QUALQUER humanoide.</strong> Selecione o tipo de humanoide,
-      insira o contexto da interação, processe nas 7 camadas cognitivas e obtenha o JSON 
-      completo com código de rastreio, métricas e alertas. 
-      <br>Envio seguro via Worker (credenciais no backend).
+      <strong>Estrutura base para criar QUALQUER humanoide.</strong> Selecione o tipo, insira o contexto,
+      processe nas 7 camadas cognitivas e obtenha o JSON completo com código de rastreio, métricas e alertas.
     </p>
-
-    <!-- SELEÇÃO DO TIPO DE HUMANOIDE -->
     <div class="section-title hum-title" style="font-size:0.7rem;"><span>🎯</span> Selecione o Tipo de Humanoide</div>
-    <div class="hum-type-grid" id="humTypeGrid">
-      <!-- Preenchido via JS -->
-    </div>
-
-    <!-- PAINEL DO HUMANOIDE SELECIONADO -->
+    <div class="hum-type-grid" id="humTypeGrid"></div>
     <div id="humPanel" style="display:none; margin-top:16px;">
       <div class="section-title hum-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
       <p style="font-size:0.6rem; color:#888;">Código Base: <span class="hum-code-display" id="humCodigoBase"></span></p>
       <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
-
-      <!-- ENTRADA DO USUÁRIO -->
       <div style="margin-bottom:16px;">
-        <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">
-          📝 Entrada / Contexto da Interação:
-        </label>
-        <textarea class="raw-textarea hum-textarea" id="humEntrada" 
-          placeholder="Descreva a situação, fala ou contexto..."></textarea>
+        <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto da Interação:</label>
+        <textarea class="raw-textarea hum-textarea" id="humEntrada" placeholder="Descreva a situação, fala ou contexto..."></textarea>
       </div>
-
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
         <button class="btn btn-petroleum" id="btnProcessarHum">Processar (7 Camadas)</button>
         <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
         <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
-        <button class="btn btn-petroleum" id="btnEnviarWorkerHum" style="display:none;">Enviar via Worker</button>
+        <button class="btn btn-petroleum" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
       </div>
-
-      <div class="hum-status-msg" id="humStatusMsg"></div>
       <div class="redis-feedback" id="redisFeedbackHum"></div>
-
-      <!-- RESULTADOS -->
+      <div class="hum-status-msg" id="humStatusMsg"></div>
       <div id="humResultados" style="display:none;">
         <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
         <div class="section-title hum-title" style="margin-top:16px;"><span>📊</span> Métricas da Análise</div>
@@ -1112,59 +883,41 @@
       </div>
     </div>
   </div>
-
-  <!-- ARQUITETURA DAS 7 CAMADAS -->
   <div class="section">
     <div class="section-title hum-title"><span>🏗️</span> Arquitetura Cognitiva Universal (7 Camadas)</div>
     <div style="font-size:0.7rem; color:#555; line-height:1.7;">
       <strong>Camada 1 — Emoções / Sinais Primários:</strong> Detecta o estado emocional ou sinal básico da entrada<br>
-      <strong>Camada 2 — Intenções / Motivações:</strong> O que o usuário realmente quer (ser ouvido, resolver, aprender, etc.)<br>
-      <strong>Camada 3 — Objetivos / Metas:</strong> Objetivos de curto, médio e longo prazo detectados<br>
-      <strong>Camada 4 — Competências / Habilidades Percebidas:</strong> O que o usuário demonstra saber ou reivindica<br>
-      <strong>Camada 5 — Comportamentos / Padrões:</strong> Engajamento, resistência, risco, proatividade<br>
-      <strong>Camada 6 — Eixo Semântico / Domínio:</strong> Classificação nos eixos de conhecimento IDEnza<br>
-      <strong>Camada 7 — Resposta / Saída Humanizada:</strong> Resposta empática, acionável e contextual
+      <strong>Camada 2 — Intenções / Motivações:</strong> O que o usuário realmente quer<br>
+      <strong>Camada 3 — Objetivos / Metas:</strong> Curto, médio e longo prazo<br>
+      <strong>Camada 4 — Competências / Habilidades:</strong> O que o usuário demonstra saber<br>
+      <strong>Camada 5 — Comportamentos / Padrões:</strong> Engajamento, resistência, risco<br>
+      <strong>Camada 6 — Eixo Semântico / Domínio:</strong> Classificação IDEnza<br>
+      <strong>Camada 7 — Resposta / Saída Humanizada:</strong> Resposta empática e contextual
     </div>
-    <p style="font-size:0.6rem; color:#888; margin-top:8px;">
-      <strong>Fontes:</strong> IDEnza (processamento interno) ou Externa (IA externa). 
-      Todo registro inclui código de rastreio único e data de alerta para revisão.
-    </p>
   </div>
-
 </div><!-- FIM TAB 2 -->
 
 <!-- ==================== TAB 3: ESTRUTURA DE DADOS UNIVERSAL ==================== -->
 <div class="tab-content" id="tab-dados">
-
   <div class="section">
     <div class="section-title data-title"><span>🗃️</span> Estrutura de Dados Universal — 7 Camadas IDEnza</div>
-    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
-      Selecione uma categoria para gerar o prompt de fontes oficiais e estruturar o conhecimento 
-      em 7 camadas com código de rastreio único.
-    </p>
-
+    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Selecione uma categoria para gerar o prompt e estruturar o conhecimento.</p>
     <div class="section-title data-title" style="font-size:0.7rem;"><span>📂</span> Categorias de Conhecimento</div>
     <div class="data-category-grid" id="dataCategoryGrid"></div>
-
     <div id="dataPanelCategoria" style="display:none; margin-top:16px;">
       <div class="section-title data-title"><span>🎯</span> Categoria: <span id="dataCatNome"></span></div>
       <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCatCode"></span></p>
-      
       <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:8px;">📝 Tópico Específico:</label>
       <input type="text" class="raw-textarea data-textarea" id="dataTopicoEspecifico" placeholder="Ex: Direito Constitucional — Controle de Constitucionalidade" style="min-height:40px;">
-
       <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">🔍 Prompt para Fontes Oficiais:</label>
       <div class="generated-question" id="dataPromptOficial" style="border-left:4px solid #0d5c3a;"></div>
       <button class="btn btn-outline" id="btnCopiarPromptData" style="margin-top:6px;">Copiar Prompt</button>
-
       <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">📥 Cole a resposta da IA:</label>
       <textarea class="raw-textarea data-textarea" id="dataRespostaIA" placeholder="Cole o texto retornado pela IA com fontes oficiais..."></textarea>
-      
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
         <button class="btn btn-data" id="btnEstruturarData">Estruturar nas 7 Camadas</button>
         <button class="btn btn-outline" id="btnUsarFonteIDEnza">Usar Fonte IDEnza (Interna)</button>
       </div>
-
       <div id="dataResultados" style="display:none; margin-top:16px;">
         <div class="section-title data-title"><span>📊</span> Conhecimento Estruturado</div>
         <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCodigoRastreio"></span></p>
@@ -1173,14 +926,13 @@
         <div class="data-json-preview" id="dataJsonPreview"></div>
         <div style="display:flex; gap:10px; margin-top:8px;">
           <button class="btn btn-outline" id="btnCopiarJSONData">Copiar JSON</button>
-          <button class="btn btn-data" id="btnEnviarWorkerData">Enviar via Worker</button>
+          <button class="btn btn-data" id="btnEnviarWorkerData">Enviar para Redis</button>
         </div>
       </div>
       <div class="redis-feedback" id="redisFeedbackData"></div>
       <div class="data-status-msg" id="dataStatusMsg"></div>
     </div>
   </div>
-
   <div class="section">
     <div class="section-title data-title"><span>🏗️</span> Estrutura das 7 Camadas (Universal)</div>
     <div style="font-size:0.7rem; color:#555; line-height:1.7;">
@@ -1193,53 +945,140 @@
       <strong>Camada 1 — COTIDIANO E DICAS RÁPIDAS:</strong> Curiosidades, macetes, recomendações
     </div>
   </div>
-
 </div><!-- FIM TAB 3 -->
 
 <script>
-  /* ==================== WORKER SIMULATOR COM FEEDBACK VISUAL ==================== */
-  const WORKER_ENDPOINT = '/api/redis-ingest';
-  
-  async function enviarViaWorker(payload, tipo, codigo, feedbackElementId) {
+  /* ==================== CONFIGURAÇÃO REDIS DIRETA ==================== */
+  const REDIS_CONFIG = {
+    url: 'https://your-redis.upstash.io',
+    token: 'your-token-here'
+  };
+
+  /* Tenta carregar de variáveis globais (se definidas no servidor) */
+  if (typeof window !== 'undefined') {
+    if (window.REDIS_URL) REDIS_CONFIG.url = window.REDIS_URL;
+    if (window.REDIS_TOKEN) REDIS_CONFIG.token = window.REDIS_TOKEN;
+  }
+
+  /* ==================== FUNÇÃO DE ENVIO DIRETO AO REDIS ==================== */
+  async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
     const feedbackEl = document.getElementById(feedbackElementId);
     
-    /* Mostra loading */
+    /* Atualiza status visual */
+    updateRedisStatus('sending');
+    
     if (feedbackEl) {
-      feedbackEl.className = 'redis-feedback show';
-      feedbackEl.textContent = '⏳ Enviando para o Redis...';
-      feedbackEl.style.borderColor = '#eab308';
-      feedbackEl.style.background = '#fefce8';
+      feedbackEl.className = 'redis-feedback show loading';
+      feedbackEl.textContent = '⏳ Enviando diretamente para o Redis...';
+    }
+
+    try {
+      const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+      const redisToken = REDIS_CONFIG.token;
+      
+      /* Monta a chave Redis */
+      const redisKey = `idenza:${tipo}:${codigo}`;
+      
+      console.log(`[REDIS DIRETO] Enviando para: ${redisUrl}`);
+      console.log(`[REDIS DIRETO] Chave: ${redisKey}`);
+      console.log(`[REDIS DIRETO] Payload:`, JSON.stringify(payload, null, 2));
+      
+      /* Envio direto via Upstash Redis REST API */
+      const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${redisToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const resultado = await response.json();
+      
+      console.log(`[REDIS DIRETO] ✅ Sucesso:`, resultado);
+      
+      updateRedisStatus('connected');
+      
+      if (feedbackEl) {
+        feedbackEl.className = 'redis-feedback show success';
+        feedbackEl.innerHTML = `
+          ✅ <strong>Enviado com sucesso!</strong><br>
+          📁 Chave Redis: <code>${redisKey}</code><br>
+          📏 Tamanho: ${JSON.stringify(payload).length} bytes<br>
+          🕐 Timestamp: ${new Date().toLocaleString('pt-BR')}
+        `;
+      }
+      
+      return { sucesso: true, redisKey, resultado };
+      
+    } catch (error) {
+      console.error(`[REDIS DIRETO] ❌ Erro:`, error);
+      
+      updateRedisStatus('disconnected');
+      
+      if (feedbackEl) {
+        feedbackEl.className = 'redis-feedback show error';
+        feedbackEl.innerHTML = `
+          ❌ <strong>Erro no envio!</strong><br>
+          📝 ${error.message}<br>
+          🔗 Verifique a URL e o Token do Redis.
+        `;
+      }
+      
+      return { sucesso: false, erro: error.message };
+    }
+  }
+
+  /* ==================== STATUS DA CONEXÃO REDIS ==================== */
+  function updateRedisStatus(status) {
+    const dot = document.getElementById('redisStatusDot');
+    const label = document.getElementById('redisStatusLabel');
+    const endpoint = document.getElementById('redisEndpointDisplay');
+    
+    dot.className = 'redis-status-dot';
+    
+    switch(status) {
+      case 'connected':
+        dot.classList.add('connected');
+        label.textContent = 'Redis: Conectado';
+        break;
+      case 'disconnected':
+        dot.classList.add('disconnected');
+        label.textContent = 'Redis: Desconectado';
+        break;
+      case 'sending':
+        dot.classList.add('sending');
+        label.textContent = 'Redis: Enviando...';
+        break;
     }
     
-    console.log(`[WORKER] Enviando tipo=${tipo} código=${codigo}`);
-    console.log(`[WORKER] Payload:`, JSON.stringify(payload, null, 2));
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const resultado = {
-          sucesso: true,
-          mensagem: `Payload ${codigo} enviado ao Redis via Worker`,
-          redisKey: `idenza:${tipo}:${codigo}`,
-          timestamp: new Date().toISOString(),
-          tamanho: JSON.stringify(payload).length
-        };
-        
-        /* Mostra sucesso */
-        if (feedbackEl) {
-          feedbackEl.className = 'redis-feedback show success';
-          feedbackEl.innerHTML = `
-            ✅ <strong>Enviado com sucesso!</strong><br>
-            📁 Chave Redis: <code>${resultado.redisKey}</code><br>
-            📏 Tamanho: ${resultado.tamanho} bytes<br>
-            🕐 Timestamp: ${new Date(resultado.timestamp).toLocaleString('pt-BR')}
-          `;
-        }
-        
-        console.log(`[WORKER] Resposta:`, resultado);
-        resolve(resultado);
-      }, 800);
-    });
+    endpoint.textContent = REDIS_CONFIG.url ? REDIS_CONFIG.url.replace(/\/$/, '') : 'Não configurado';
   }
+
+  /* Testa conexão ao carregar */
+  async function testarConexaoRedis() {
+    updateRedisStatus('sending');
+    try {
+      const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, {
+        headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` }
+      });
+      if (response.ok) {
+        updateRedisStatus('connected');
+      } else {
+        updateRedisStatus('disconnected');
+      }
+    } catch {
+      updateRedisStatus('disconnected');
+    }
+  }
+
+  /* Inicializa */
+  testarConexaoRedis();
 
   /* ==================== REGRA FIXA ANTI-JOGO DA VELHA ==================== */
   const REGRA_ANTI_HASHTAG = `\n\nREGRA FIXA E INABALÁVEL: Em todo o texto que você criar, NUNCA utilize o símbolo cerquilha (jogo da velha). Não use em títulos, não use em listas, não use em marcação nenhuma. Substitua por numeração simples, travessão ou qualquer outro caractere. Esta regra é permanente e não pode ser violada em hipótese alguma.\n`;
@@ -1326,29 +1165,28 @@
   }
 
   document.getElementById('btnNovoEixo').addEventListener('click', ()=>{
-    document.getElementById('modalNovoEixo').classList.add('open');
-  });
-  document.getElementById('btnCancelarModal').addEventListener('click', ()=>{
-    document.getElementById('modalNovoEixo').classList.remove('open');
-  });
-  document.getElementById('btnConfirmarModal').addEventListener('click', ()=>{
-    const nome = document.getElementById('inputNovoEixo').value.trim().toUpperCase();
-    if(nome && ![...defaultEixos,...customEixos].includes(nome)){
-      customEixos.push(nome); redisData[nome]=[]; renderizarChips();
+    const nome = prompt('Nome do novo eixo (ex: HYPERLOGLOG):');
+    if(nome && ![...defaultEixos,...customEixos].includes(nome.toUpperCase())){
+      customEixos.push(nome.toUpperCase()); 
+      redisData[nome.toUpperCase()]=[]; 
+      renderizarChips();
     }
-    document.getElementById('modalNovoEixo').classList.remove('open');
   });
+
   document.getElementById('btnCopiarDadosRedis').addEventListener('click', ()=>{
     copiarTextoParaClipboard(JSON.stringify(redisData,null,2));
     document.getElementById('redisStatusMsg').textContent = 'Copiado.';
     setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
   });
+
   document.getElementById('btnEnviarRedisMotor').addEventListener('click', async ()=>{
     document.getElementById('redisStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker({redisData},'redis-data',gerarCodigoUnico('redis'),'redisFeedback');
-    document.getElementById('redisStatusMsg').textContent = r.mensagem;
+    const codigo = gerarCodigoUnico('redis');
+    await enviarDiretoRedis({redisData},'redis-data',codigo,'redisFeedbackEixos');
+    document.getElementById('redisStatusMsg').textContent = 'Concluído.';
     setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},5000);
   });
+
   renderizarChips();
 
   /* ==================== TAB 1: AGENTES ==================== */
@@ -1405,8 +1243,8 @@
   document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
     if(!conhecimentoEstruturado) return;
     document.getElementById('statusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo,'redisFeedbackAgente');
-    document.getElementById('statusMsg').textContent = r.mensagem;
+    await enviarDiretoRedis(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo,'redisFeedbackAgente');
+    document.getElementById('statusMsg').textContent = 'Concluído.';
     setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
   });
 
@@ -1477,7 +1315,7 @@
     if(!humanoideSelecionado) return;
     const entrada = document.getElementById('humEntrada').value.trim();
     if(!entrada || entrada.length < 5) {
-      document.getElementById('humStatusMsg').textContent = '⚠️ Insira uma descrição mais detalhada.';
+      document.getElementById('humStatusMsg').textContent = 'Insira uma descrição mais detalhada.';
       setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
       return;
     }
@@ -1559,12 +1397,10 @@
     document.getElementById('humResultados').style.display = 'block';
     document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
     document.getElementById('humCodigoRastreio').textContent = r.codigo;
-
     const ab = document.getElementById('humAlertaBox');
     ab.style.display = 'block';
     ab.className = 'hum-alert-box ' + r.alerta.nivel;
     ab.innerHTML = `<strong>Alerta: ${r.alerta.nivel.toUpperCase()}</strong><br>Tipo: ${r.alerta.tipo||'N/A'} | Urgência: ${r.alerta.urgencia.replace('_',' ')}`;
-
     const emocoes = r.analise_cognitiva.camada1_emocoes;
     let m = '';
     Object.entries(emocoes).sort((a,b)=>b[1]-a[1]).slice(0,4).forEach(([k,v])=>{
@@ -1593,8 +1429,8 @@
   document.getElementById('btnEnviarWorkerHum').addEventListener('click', async ()=>{
     if(!resultadoHum) return;
     document.getElementById('humStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(resultadoHum,'humanoide',resultadoHum.codigo,'redisFeedbackHum');
-    document.getElementById('humStatusMsg').textContent = r.mensagem;
+    await enviarDiretoRedis(resultadoHum,'humanoide',resultadoHum.codigo,'redisFeedbackHum');
+    document.getElementById('humStatusMsg').textContent = 'Concluído.';
     setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},5000);
   });
 
@@ -1636,7 +1472,7 @@
       document.getElementById('dataCatNome').textContent = c.nome;
       document.getElementById('dataCatCode').textContent = c.codigo+'.idenza.*';
       document.getElementById('dataPromptOficial').textContent = 
-        `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais (livros, journals, normas, legislação). Cite todas.${REGRA_ANTI_HASHTAG}`;
+        `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais. Cite todas.${REGRA_ANTI_HASHTAG}`;
       document.getElementById('dataResultados').style.display = 'none';
       document.getElementById('redisFeedbackData').className = 'redis-feedback';
       dadosData = null;
@@ -1702,8 +1538,8 @@
   document.getElementById('btnEnviarWorkerData').addEventListener('click', async ()=>{
     if(!dadosData) return;
     document.getElementById('dataStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(dadosData,'data',dadosData.codigo,'redisFeedbackData');
-    document.getElementById('dataStatusMsg').textContent = r.mensagem;
+    await enviarDiretoRedis(dadosData,'data',dadosData.codigo,'redisFeedbackData');
+    document.getElementById('dataStatusMsg').textContent = 'Concluído.';
     setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},5000);
   });
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Estação de Pesquisa • Montagem de Super Agentes + Eixos Redis</title>
+  <title>Estação de Pesquisa • Montagem de Super Agentes + Humanoides + Estrutura Universal</title>
   <style>
     :root {
       --bg: #f8f9fa;
@@ -29,7 +29,7 @@
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       line-height: 1.5;
       padding: 16px;
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     header {
@@ -59,6 +59,77 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
+    .badge-hum {
+      background: var(--petroleum);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .badge-data {
+      background: #0d5c3a;
+      color: white;
+      font-size: 0.6rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* TABS NAVIGATION */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 12px 14px;
+      border: none;
+      background: #f0f0f0;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      color: #666;
+      border-right: 1px solid var(--border);
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn:hover { background: #e8e8e8; }
+    .tab-btn.active {
+      background: var(--card-bg);
+      color: var(--petroleum);
+      border-bottom: 3px solid var(--gold-dark);
+      box-shadow: inset 0 -3px 0 var(--gold-dark);
+    }
+    .tab-btn.active.hum-tab {
+      color: var(--petroleum);
+      border-bottom: 3px solid var(--petroleum-light);
+      box-shadow: inset 0 -3px 0 var(--petroleum-light);
+    }
+    .tab-btn.active.data-tab {
+      color: #0d5c3a;
+      border-bottom: 3px solid #0d5c3a;
+      box-shadow: inset 0 -3px 0 #0d5c3a;
+    }
+    .tab-content {
+      display: none;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 20px;
+    }
+    .tab-content.active { display: block; }
+
     .section {
       background: var(--card-bg);
       box-shadow: var(--shadow-md);
@@ -77,6 +148,8 @@
       align-items: center;
       gap: 8px;
     }
+    .section-title.hum-title { color: var(--petroleum); }
+    .section-title.data-title { color: #0d5c3a; }
     .btn {
       padding: 8px 18px;
       border: none;
@@ -100,8 +173,20 @@
       border: 1px solid var(--petroleum-light);
       color: var(--petroleum);
     }
+    .btn-petroleum {
+      background: var(--petroleum);
+      color: white;
+      border: 1px solid #0a3a44;
+    }
+    .btn-data {
+      background: #0d5c3a;
+      color: white;
+      border: 1px solid #064025;
+    }
     .btn-gold:hover { opacity: 0.9; }
     .btn-outline:hover { background: #f0f8f9; }
+    .btn-petroleum:hover { opacity: 0.9; }
+    .btn-data:hover { opacity: 0.9; }
     .btn-outline.active {
       background: var(--petroleum);
       color: white;
@@ -177,6 +262,14 @@
       color: var(--text);
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
     }
+    .raw-textarea.hum-textarea {
+      min-height: 120px;
+      border-left: 4px solid var(--petroleum-light);
+    }
+    .raw-textarea.data-textarea {
+      min-height: 120px;
+      border-left: 4px solid #0d5c3a;
+    }
     .generated-question {
       background: #f4f7f8;
       border: 1px solid var(--border);
@@ -203,9 +296,45 @@
       box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
       color: #1e1e1e;
     }
+    .hum-json-preview {
+      background: #f0f8f9;
+      border: 1px solid #b0d4d9;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 12px;
+      box-shadow: inset 1px 1px 4px rgba(13,79,92,0.08);
+      color: #1e1e1e;
+    }
+    .data-json-preview {
+      background: #f0f9f4;
+      border: 1px solid #a0d4b8;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 12px;
+      box-shadow: inset 1px 1px 4px rgba(13,92,58,0.08);
+      color: #1e1e1e;
+    }
     .status-msg {
       font-size: 0.7rem;
       color: var(--petroleum-light);
+      margin-top: 6px;
+    }
+    .hum-status-msg {
+      font-size: 0.7rem;
+      color: var(--petroleum-light);
+      margin-top: 6px;
+    }
+    .data-status-msg {
+      font-size: 0.7rem;
+      color: #0d5c3a;
       margin-top: 6px;
     }
     .redis-axes {
@@ -322,37 +451,196 @@
       color: var(--petroleum);
       margin-bottom: 16px;
     }
-    .modal-box input {
-      width: 100%;
+
+    /* HUMANOIDE STYLES */
+    .hum-alert-box {
+      padding: 12px 16px;
+      margin: 8px 0;
+      border-left: 5px solid #ccc;
+      background: #f9f9f9;
+      font-size: 0.75rem;
+    }
+    .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
+    .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
+    .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
+    .hum-alert-box.critico { border-color: #ef4444; background: #fef2f2; animation: pulse-alert 1.5s infinite; }
+    @keyframes pulse-alert {
+      0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+      100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+    .hum-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hum-metric-item {
+      background: #f0f8f9;
       padding: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid #cde2e5;
+      text-align: center;
+    }
+    .hum-metric-item .label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      color: #888;
+      letter-spacing: 1px;
+    }
+    .hum-metric-item .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--petroleum);
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      margin-bottom: 16px;
-      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.05);
     }
-    .modal-box .modal-actions {
-      display: flex;
+    .hum-resposta-box {
+      background: #fff;
+      border: 1px solid var(--petroleum-light);
+      padding: 16px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #333;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* DATA STRUCTURE STYLES */
+    .data-category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 10px;
-      justify-content: flex-end;
+      margin-top: 8px;
     }
+    .data-category-card {
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafdfb;
+    }
+    .data-category-card:hover {
+      border-color: #0d5c3a;
+      box-shadow: var(--shadow-md);
+      background: #f0f9f4;
+    }
+    .data-category-card.selected {
+      border-color: #0d5c3a;
+      background: #e0f5e8;
+      box-shadow: var(--shadow-md);
+    }
+    .data-category-card .cat-code {
+      font-size: 0.55rem;
+      color: #0d5c3a;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .data-category-card .cat-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e1e1e;
+    }
+    .data-category-card .cat-desc {
+      font-size: 0.6rem;
+      color: #888;
+      margin-top: 2px;
+    }
+    .data-code-display {
+      background: #0d5c3a;
+      color: #a0f0c0;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin: 4px 0;
+    }
+    .hum-code-display {
+      background: var(--petroleum);
+      color: #b0e0e8;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin: 4px 0;
+    }
+
+    /* HUMANOIDE TYPE SELECTOR */
+    .hum-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hum-type-card {
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafdfd;
+      text-align: center;
+    }
+    .hum-type-card:hover {
+      border-color: var(--petroleum);
+      box-shadow: var(--shadow-md);
+      background: #f0f8f9;
+    }
+    .hum-type-card.selected {
+      border-color: var(--petroleum);
+      background: #d8eff3;
+      box-shadow: var(--shadow-md);
+    }
+    .hum-type-card .type-icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .hum-type-card .type-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--petroleum);
+    }
+    .hum-type-card .type-code {
+      font-size: 0.5rem;
+      color: #888;
+      font-family: var(--font-mono);
+    }
+
     @media (max-width: 600px) {
       body { padding: 8px; }
       .eixo-form-container .form-row { flex-direction: column; align-items: stretch; }
       .eixo-form-container label { min-width: auto; }
       .modal-box { width: 90vw; }
       .redis-chip-hint { max-width: 60px; font-size: 0.45rem; }
+      .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
+      .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .data-category-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .hum-type-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>🧠 Estação de Pesquisa • Super Agentes</h1>
-  <span class="badge">Montagem em 7 Camadas + Redis</span>
+  <h1>🧠 Estação de Pesquisa • Super Agentes + Humanoides + Dados Universais</h1>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <span class="badge">Montagem 7 Camadas</span>
+    <span class="badge-hum">Humanoides Template</span>
+    <span class="badge-data">Estrutura Universal</span>
+  </div>
 </header>
 
-<!-- CATÁLOGO DE AGENTES (MASSIVAMENTE EXPANDIDO) -->
+<!-- TABS NAVIGATION -->
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="tab-agentes">📋 Catálogo de Agentes</button>
+  <button class="tab-btn hum-tab" data-tab="tab-humanoides">🤖 Template de Humanoides</button>
+  <button class="tab-btn data-tab" data-tab="tab-dados">🗃️ Estrutura de Dados Universal</button>
+</div>
+
+<!-- ==================== TAB 1: CATÁLOGO DE AGENTES (INTACTO) ==================== -->
+<div class="tab-content active" id="tab-agentes">
+
 <div class="section">
   <div class="section-title"><span>📋</span> Catálogo de Agentes (Universo do Conhecimento)</div>
   <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">Selecione um agente para gerar a pergunta de pesquisa e montar o conhecimento.</p>
@@ -362,24 +650,24 @@
     <div class="expando-toggle">🏭 Negócios, Empresas e Gestão (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Planeamento Estratégico" data-base="planeamento"> Planeamento Estratégico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Finanças Corporativas" data-base="financas"> Finanças Corporativas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Contabilidade e Fiscalidade" data-base="contabilidade"> Contabilidade e Fiscalidade</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Auditoria e Compliance" data-base="auditoria"> Auditoria e Compliance</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Marketing Digital" data-base="marketing"> Marketing Digital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Vendas B2B e B2C" data-base="vendas"> Vendas B2B e B2C</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Recursos Humanos" data-base="rh"> Recursos Humanos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão de Projetos (PMBOK, Scrum)" data-base="projetos"> Gestão de Projetos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Supply Chain e Logística" data-base="supplychain"> Supply Chain e Logística</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Transformação Digital" data-base="digital"> Transformação Digital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fusões e Aquisições (M&A)" data-base="ma"> Fusões e Aquisições</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Private Equity e Venture Capital" data-base="pevc"> Private Equity e Venture Capital</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança Corporativa" data-base="governanca"> Governança Corporativa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Empreendedorismo e Startups" data-base="empreendedorismo"> Empreendedorismo e Startups</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Comércio Exterior (Exportação/Importação)" data-base="comex"> Comércio Exterior</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Franchising e Expansão de Negócios" data-base="franchising"> Franchising</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de E-commerce e Marketplaces" data-base="ecommerce"> E-commerce e Marketplaces</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de CRM e Fidelização de Clientes" data-base="crm"> CRM e Fidelização</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Planeamento Estratégico" data-base="planeamento" data-code="business.strat.idenza.1"> Planeamento Estratégico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Finanças Corporativas" data-base="financas" data-code="business.fin.idenza.2"> Finanças Corporativas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Contabilidade e Fiscalidade" data-base="contabilidade" data-code="business.acc.idenza.3"> Contabilidade e Fiscalidade</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Auditoria e Compliance" data-base="auditoria" data-code="business.audit.idenza.4"> Auditoria e Compliance</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Marketing Digital" data-base="marketing" data-code="business.mkt.idenza.5"> Marketing Digital</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Vendas B2B e B2C" data-base="vendas" data-code="business.sales.idenza.6"> Vendas B2B e B2C</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Recursos Humanos" data-base="rh" data-code="business.hr.idenza.7"> Recursos Humanos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão de Projetos (PMBOK, Scrum)" data-base="projetos" data-code="business.pm.idenza.8"> Gestão de Projetos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Supply Chain e Logística" data-base="supplychain" data-code="business.scm.idenza.9"> Supply Chain e Logística</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Transformação Digital" data-base="digital" data-code="business.dt.idenza.10"> Transformação Digital</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fusões e Aquisições (M&A)" data-base="ma" data-code="business.ma.idenza.11"> Fusões e Aquisições</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Private Equity e Venture Capital" data-base="pevc" data-code="business.pe.idenza.12"> Private Equity e Venture Capital</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança Corporativa" data-base="governanca" data-code="business.gov.idenza.13"> Governança Corporativa</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Empreendedorismo e Startups" data-base="empreendedorismo" data-code="business.startup.idenza.14"> Empreendedorismo e Startups</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Comércio Exterior (Exportação/Importação)" data-base="comex" data-code="business.trade.idenza.15"> Comércio Exterior</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Franchising e Expansão de Negócios" data-base="franchising" data-code="business.franchise.idenza.16"> Franchising</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de E-commerce e Marketplaces" data-base="ecommerce" data-code="business.ecom.idenza.17"> E-commerce e Marketplaces</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de CRM e Fidelização de Clientes" data-base="crm" data-code="business.crm.idenza.18"> CRM e Fidelização</label>
       </div>
     </div>
   </div>
@@ -389,19 +677,19 @@
     <div class="expando-toggle">📈 Economia (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Microeconomia" data-base="microeconomia"> Microeconomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Macroeconomia" data-base="macroeconomia"> Macroeconomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Internacional" data-base="economia-internacional"> Economia Internacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Comportamental" data-base="economia-comportamental"> Economia Comportamental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Trabalho" data-base="economia-trabalho"> Economia do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Monetária" data-base="economia-monetaria"> Economia Monetária</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Setor Público" data-base="economia-publica"> Economia do Setor Público</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Ambiental" data-base="economia-ambiental"> Economia Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Econometria e Modelos Estatísticos" data-base="econometria"> Econometria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História do Pensamento Econômico" data-base="historia-economia"> História do Pensamento Econômico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Econômico" data-base="desenvolvimento"> Desenvolvimento Econômico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mercado de Capitais e Bolsas" data-base="mercado-capitais"> Mercado de Capitais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Criptomoedas e Blockchain Financeiro" data-base="criptomoedas"> Criptomoedas e Blockchain</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Microeconomia" data-base="microeconomia" data-code="econ.micro.idenza.1"> Microeconomia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Macroeconomia" data-base="macroeconomia" data-code="econ.macro.idenza.2"> Macroeconomia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Internacional" data-base="economia-internacional" data-code="econ.intl.idenza.3"> Economia Internacional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Comportamental" data-base="economia-comportamental" data-code="econ.behav.idenza.4"> Economia Comportamental</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Trabalho" data-base="economia-trabalho" data-code="econ.labor.idenza.5"> Economia do Trabalho</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Monetária" data-base="economia-monetaria" data-code="econ.mon.idenza.6"> Economia Monetária</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia do Setor Público" data-base="economia-publica" data-code="econ.pub.idenza.7"> Economia do Setor Público</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Ambiental" data-base="economia-ambiental" data-code="econ.env.idenza.8"> Economia Ambiental</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Econometria e Modelos Estatísticos" data-base="econometria" data-code="econ.metrics.idenza.9"> Econometria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História do Pensamento Econômico" data-base="historia-economia" data-code="econ.hist.idenza.10"> História do Pensamento Econômico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Econômico" data-base="desenvolvimento" data-code="econ.dev.idenza.11"> Desenvolvimento Econômico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mercado de Capitais e Bolsas" data-base="mercado-capitais" data-code="econ.cap.idenza.12"> Mercado de Capitais</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Criptomoedas e Blockchain Financeiro" data-base="criptomoedas" data-code="econ.crypto.idenza.13"> Criptomoedas e Blockchain</label>
       </div>
     </div>
   </div>
@@ -411,26 +699,26 @@
     <div class="expando-toggle">⚖️ Direito (todas as áreas) (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Constitucional" data-base="direito-constitucional"> Direito Constitucional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Civil e Obrigações" data-base="direito-civil"> Direito Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Penal e Processual Penal" data-base="direito-penal"> Direito Penal</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Trabalho e Processual Trabalhista" data-base="direito-trabalho"> Direito do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Tributário" data-base="direito-tributario"> Direito Tributário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Empresarial e Societário" data-base="direito-empresarial"> Direito Empresarial e Societário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Consumidor" data-base="direito-consumidor"> Direito do Consumidor</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Ambiental" data-base="direito-ambiental"> Direito Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Internacional Público" data-base="direito-internacional"> Direito Internacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Marítimo e Portuário" data-base="direito-maritimo"> Direito Marítimo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Aeronáutico e Espacial" data-base="direito-aeronautico"> Direito Aeronáutico e Espacial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Propriedade Intelectual e Patentes" data-base="propriedade-intelectual"> Propriedade Intelectual</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Digital e Proteção de Dados (LGPD/GDPR)" data-base="direito-digital"> Direito Digital e LGPD/GDPR</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito de Família e Sucessões" data-base="direito-familia"> Direito de Família e Sucessões</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Imobiliário e Registral" data-base="direito-imobiliario"> Direito Imobiliário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Administrativo e Licitações" data-base="direito-administrativo"> Direito Administrativo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Previdenciário" data-base="direito-previdenciario"> Direito Previdenciário</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Eleitoral e Partidário" data-base="direito-eleitoral"> Direito Eleitoral</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direitos Humanos e Refugiados" data-base="direitos-humanos"> Direitos Humanos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mediação e Arbitragem" data-base="arbitragem"> Mediação e Arbitragem</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Constitucional" data-base="direito-constitucional" data-code="law.const.idenza.1"> Direito Constitucional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Civil e Obrigações" data-base="direito-civil" data-code="law.civil.idenza.2"> Direito Civil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Penal e Processual Penal" data-base="direito-penal" data-code="law.penal.idenza.3"> Direito Penal</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Trabalho e Processual Trabalhista" data-base="direito-trabalho" data-code="law.labor.idenza.4"> Direito do Trabalho</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Tributário" data-base="direito-tributario" data-code="law.tax.idenza.5"> Direito Tributário</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Empresarial e Societário" data-base="direito-empresarial" data-code="law.corp.idenza.6"> Direito Empresarial e Societário</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito do Consumidor" data-base="direito-consumidor" data-code="law.cons.idenza.7"> Direito do Consumidor</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Ambiental" data-base="direito-ambiental" data-code="law.env.idenza.8"> Direito Ambiental</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Internacional Público" data-base="direito-internacional" data-code="law.intl.idenza.9"> Direito Internacional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Marítimo e Portuário" data-base="direito-maritimo" data-code="law.mar.idenza.10"> Direito Marítimo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Aeronáutico e Espacial" data-base="direito-aeronautico" data-code="law.aero.idenza.11"> Direito Aeronáutico e Espacial</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Propriedade Intelectual e Patentes" data-base="propriedade-intelectual" data-code="law.ip.idenza.12"> Propriedade Intelectual</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Digital e Proteção de Dados (LGPD/GDPR)" data-base="direito-digital" data-code="law.digital.idenza.13"> Direito Digital e LGPD/GDPR</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito de Família e Sucessões" data-base="direito-familia" data-code="law.fam.idenza.14"> Direito de Família e Sucessões</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Imobiliário e Registral" data-base="direito-imobiliario" data-code="law.real.idenza.15"> Direito Imobiliário</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Administrativo e Licitações" data-base="direito-administrativo" data-code="law.admin.idenza.16"> Direito Administrativo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Previdenciário" data-base="direito-previdenciario" data-code="law.social.idenza.17"> Direito Previdenciário</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direito Eleitoral e Partidário" data-base="direito-eleitoral" data-code="law.elect.idenza.18"> Direito Eleitoral</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Direitos Humanos e Refugiados" data-base="direitos-humanos" data-code="law.hr.idenza.19"> Direitos Humanos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mediação e Arbitragem" data-base="arbitragem" data-code="law.arb.idenza.20"> Mediação e Arbitragem</label>
       </div>
     </div>
   </div>
@@ -440,31 +728,31 @@
     <div class="expando-toggle">🏥 Saúde, Medicina e Bem‑Estar (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Anatomia Humana" data-base="anatomia"> Anatomia Humana</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisiologia Humana" data-base="fisiologia"> Fisiologia Humana</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Farmacologia Clínica" data-base="farmacologia"> Farmacologia Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cardiologia" data-base="cardiologia"> Cardiologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neurologia e Neurociências" data-base="neurologia"> Neurologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oncologia e Cancerologia" data-base="oncologia"> Oncologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pediatria e Neonatologia" data-base="pediatria"> Pediatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psiquiatria e Saúde Mental" data-base="psiquiatria"> Psiquiatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Infectologia e Epidemiologia" data-base="infectologia"> Infectologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cirurgia Geral e Especializada" data-base="cirurgia"> Cirurgia Geral</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ortopedia e Traumatologia" data-base="ortopedia"> Ortopedia e Traumatologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ginecologia e Obstetrícia" data-base="ginecologia"> Ginecologia e Obstetrícia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oftalmologia" data-base="oftalmologia"> Oftalmologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Dermatologia e Estética" data-base="dermatologia"> Dermatologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina de Emergência e UTI" data-base="emergencia"> Medicina de Emergência</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geriatria e Gerontologia" data-base="geriatria"> Geriatria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Nutrição Clínica e Dietética" data-base="nutricao"> Nutrição Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisioterapia e Reabilitação" data-base="fisioterapia"> Fisioterapia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enfermagem Geral e Intensiva" data-base="enfermagem"> Enfermagem</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Odontologia e Ortodontia" data-base="odontologia"> Odontologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina Veterinária" data-base="veterinaria"> Medicina Veterinária</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Genética Médica e Genômica" data-base="genetica"> Genética Médica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Radiologia e Diagnóstico por Imagem" data-base="radiologia"> Radiologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cuidados Paliativos e Tanatologia" data-base="paliativos"> Cuidados Paliativos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Primeiros Socorros e Suporte Básico" data-base="primeiros-socorros"> Primeiros Socorros</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Anatomia Humana" data-base="anatomia" data-code="med.anat.idenza.1"> Anatomia Humana</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisiologia Humana" data-base="fisiologia" data-code="med.physio.idenza.2"> Fisiologia Humana</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Farmacologia Clínica" data-base="farmacologia" data-code="med.pharm.idenza.3"> Farmacologia Clínica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cardiologia" data-base="cardiologia" data-code="med.cardio.idenza.4"> Cardiologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neurologia e Neurociências" data-base="neurologia" data-code="med.neuro.idenza.5"> Neurologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oncologia e Cancerologia" data-base="oncologia" data-code="med.onco.idenza.6"> Oncologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pediatria e Neonatologia" data-base="pediatria" data-code="med.ped.idenza.7"> Pediatria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psiquiatria e Saúde Mental" data-base="psiquiatria" data-code="med.psych.idenza.8"> Psiquiatria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Infectologia e Epidemiologia" data-base="infectologia" data-code="med.infect.idenza.9"> Infectologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cirurgia Geral e Especializada" data-base="cirurgia" data-code="med.surg.idenza.10"> Cirurgia Geral</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ortopedia e Traumatologia" data-base="ortopedia" data-code="med.ortho.idenza.11"> Ortopedia e Traumatologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ginecologia e Obstetrícia" data-base="ginecologia" data-code="med.gyn.idenza.12"> Ginecologia e Obstetrícia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Oftalmologia" data-base="oftalmologia" data-code="med.ophth.idenza.13"> Oftalmologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Dermatologia e Estética" data-base="dermatologia" data-code="med.derm.idenza.14"> Dermatologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina de Emergência e UTI" data-base="emergencia" data-code="med.er.idenza.15"> Medicina de Emergência</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geriatria e Gerontologia" data-base="geriatria" data-code="med.ger.idenza.16"> Geriatria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Nutrição Clínica e Dietética" data-base="nutricao" data-code="med.nutr.idenza.17"> Nutrição Clínica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fisioterapia e Reabilitação" data-base="fisioterapia" data-code="med.phys.idenza.18"> Fisioterapia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enfermagem Geral e Intensiva" data-base="enfermagem" data-code="med.nurse.idenza.19"> Enfermagem</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Odontologia e Ortodontia" data-base="odontologia" data-code="med.dent.idenza.20"> Odontologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Medicina Veterinária" data-base="veterinaria" data-code="med.vet.idenza.21"> Medicina Veterinária</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Genética Médica e Genômica" data-base="genetica" data-code="med.gen.idenza.22"> Genética Médica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Radiologia e Diagnóstico por Imagem" data-base="radiologia" data-code="med.rad.idenza.23"> Radiologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cuidados Paliativos e Tanatologia" data-base="paliativos" data-code="med.pall.idenza.24"> Cuidados Paliativos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Primeiros Socorros e Suporte Básico" data-base="primeiros-socorros" data-code="med.fa.idenza.25"> Primeiros Socorros</label>
       </div>
     </div>
   </div>
@@ -474,19 +762,19 @@
     <div class="expando-toggle">🧠 Psicologia (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Clínica" data-base="psicologia-clinica"> Psicologia Clínica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Terapia Cognitivo-Comportamental (TCC)" data-base="tcc"> Terapia Cognitivo-Comportamental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicanálise (Freud, Lacan, Jung)" data-base="psicanalise"> Psicanálise</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuropsicologia e Avaliação Cognitiva" data-base="neuropsicologia"> Neuropsicologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Desenvolvimento Humano" data-base="psicologia-desenvolvimento"> Psicologia do Desenvolvimento</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Social e Comunitária" data-base="psicologia-social"> Psicologia Social</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Organizacional e do Trabalho" data-base="psicologia-organizacional"> Psicologia Organizacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia da Educação e Escolar" data-base="psicologia-educacao"> Psicologia da Educação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Forense e Criminal" data-base="psicologia-forense"> Psicologia Forense</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Esporte e Performance" data-base="psicologia-esporte"> Psicologia do Esporte</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Positiva e Bem‑Estar" data-base="psicologia-positiva"> Psicologia Positiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Hospitalar e da Saúde" data-base="psicologia-hospitalar"> Psicologia Hospitalar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Envelhecimento" data-base="psicologia-envelhecimento"> Psicologia do Envelhecimento</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Clínica" data-base="psicologia-clinica" data-code="psych.clin.idenza.1"> Psicologia Clínica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Terapia Cognitivo-Comportamental (TCC)" data-base="tcc" data-code="psych.cbt.idenza.2"> Terapia Cognitivo-Comportamental</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicanálise (Freud, Lacan, Jung)" data-base="psicanalise" data-code="psych.analy.idenza.3"> Psicanálise</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuropsicologia e Avaliação Cognitiva" data-base="neuropsicologia" data-code="psych.neuro.idenza.4"> Neuropsicologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Desenvolvimento Humano" data-base="psicologia-desenvolvimento" data-code="psych.dev.idenza.5"> Psicologia do Desenvolvimento</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Social e Comunitária" data-base="psicologia-social" data-code="psych.soc.idenza.6"> Psicologia Social</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Organizacional e do Trabalho" data-base="psicologia-organizacional" data-code="psych.org.idenza.7"> Psicologia Organizacional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia da Educação e Escolar" data-base="psicologia-educacao" data-code="psych.edu.idenza.8"> Psicologia da Educação</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Forense e Criminal" data-base="psicologia-forense" data-code="psych.for.idenza.9"> Psicologia Forense</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Esporte e Performance" data-base="psicologia-esporte" data-code="psych.sport.idenza.10"> Psicologia do Esporte</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Positiva e Bem‑Estar" data-base="psicologia-positiva" data-code="psych.pos.idenza.11"> Psicologia Positiva</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia Hospitalar e da Saúde" data-base="psicologia-hospitalar" data-code="psych.hosp.idenza.12"> Psicologia Hospitalar</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Psicologia do Envelhecimento" data-base="psicologia-envelhecimento" data-code="psych.age.idenza.13"> Psicologia do Envelhecimento</label>
       </div>
     </div>
   </div>
@@ -496,24 +784,24 @@
     <div class="expando-toggle">⚙️ Engenharias (todas as modalidades) (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Civil e Estrutural" data-base="engenharia-civil"> Engenharia Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Mecânica" data-base="engenharia-mecanica"> Engenharia Mecânica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Elétrica e Eletrônica" data-base="engenharia-eletrica"> Engenharia Elétrica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Computação" data-base="engenharia-computacao"> Engenharia de Computação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Software e DevOps" data-base="engenharia-software"> Engenharia de Software</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Química e de Processos" data-base="engenharia-quimica"> Engenharia Química</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Alimentos" data-base="engenharia-alimentos"> Engenharia de Alimentos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Ambiental e Sanitária" data-base="engenharia-ambiental"> Engenharia Ambiental</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Produção e Lean" data-base="engenharia-producao"> Engenharia de Produção</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Energia e Renováveis" data-base="engenharia-energia"> Engenharia de Energia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Aeronáutica e Aeroespacial" data-base="engenharia-aeronautica"> Engenharia Aeronáutica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Naval e Oceânica" data-base="engenharia-naval"> Engenharia Naval</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Materiais e Metalurgia" data-base="engenharia-materiais"> Engenharia de Materiais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Biomédica e Bioengenharia" data-base="engenharia-biomedica"> Engenharia Biomédica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Telecomunicações" data-base="engenharia-telecom"> Engenharia de Telecomunicações</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Controle e Automação" data-base="automacao"> Controle e Automação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Segurança do Trabalho" data-base="seguranca-trabalho"> Segurança do Trabalho</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Nuclear" data-base="engenharia-nuclear"> Engenharia Nuclear</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Civil e Estrutural" data-base="engenharia-civil" data-code="eng.civil.idenza.1"> Engenharia Civil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Mecânica" data-base="engenharia-mecanica" data-code="eng.mech.idenza.2"> Engenharia Mecânica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Elétrica e Eletrônica" data-base="engenharia-eletrica" data-code="eng.elec.idenza.3"> Engenharia Elétrica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Computação" data-base="engenharia-computacao" data-code="eng.comp.idenza.4"> Engenharia de Computação</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Software e DevOps" data-base="engenharia-software" data-code="eng.sw.idenza.5"> Engenharia de Software</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Química e de Processos" data-base="engenharia-quimica" data-code="eng.chem.idenza.6"> Engenharia Química</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Alimentos" data-base="engenharia-alimentos" data-code="eng.food.idenza.7"> Engenharia de Alimentos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Ambiental e Sanitária" data-base="engenharia-ambiental" data-code="eng.env.idenza.8"> Engenharia Ambiental</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Produção e Lean" data-base="engenharia-producao" data-code="eng.prod.idenza.9"> Engenharia de Produção</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Energia e Renováveis" data-base="engenharia-energia" data-code="eng.energy.idenza.10"> Engenharia de Energia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Aeronáutica e Aeroespacial" data-base="engenharia-aeronautica" data-code="eng.aero.idenza.11"> Engenharia Aeronáutica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Naval e Oceânica" data-base="engenharia-naval" data-code="eng.naval.idenza.12"> Engenharia Naval</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Materiais e Metalurgia" data-base="engenharia-materiais" data-code="eng.mat.idenza.13"> Engenharia de Materiais</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Biomédica e Bioengenharia" data-base="engenharia-biomedica" data-code="eng.bio.idenza.14"> Engenharia Biomédica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Telecomunicações" data-base="engenharia-telecom" data-code="eng.telco.idenza.15"> Engenharia de Telecomunicações</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Controle e Automação" data-base="automacao" data-code="eng.auto.idenza.16"> Controle e Automação</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia de Segurança do Trabalho" data-base="seguranca-trabalho" data-code="eng.safety.idenza.17"> Segurança do Trabalho</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Engenharia Nuclear" data-base="engenharia-nuclear" data-code="eng.nuclear.idenza.18"> Engenharia Nuclear</label>
       </div>
     </div>
   </div>
@@ -523,24 +811,24 @@
     <div class="expando-toggle">💻 Tecnologia da Informação e Computação (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Front‑end" data-base="frontend"> Desenvolvimento Web Front‑end</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Back‑end" data-base="backend"> Desenvolvimento Web Back‑end</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Mobile (iOS/Android)" data-base="mobile"> Desenvolvimento Mobile</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cloud Computing (AWS, Azure, GCP)" data-base="cloud"> Cloud Computing</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cibersegurança e Ethical Hacking" data-base="ciberseguranca"> Cibersegurança</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Inteligência Artificial e Machine Learning" data-base="ia-ml"> IA e Machine Learning</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Deep Learning e Redes Neurais" data-base="deeplearning"> Deep Learning</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Processamento de Linguagem Natural (PLN)" data-base="pln"> Processamento de Linguagem Natural</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Visão Computacional" data-base="visao-computacional"> Visão Computacional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Robótica e Automação Inteligente" data-base="robotica"> Robótica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Internet das Coisas (IoT)" data-base="iot"> Internet das Coisas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Blockchain e Contratos Inteligentes" data-base="blockchain"> Blockchain e Smart Contracts</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Realidade Virtual e Aumentada" data-base="vr-ar"> Realidade Virtual e Aumentada</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de UI/UX Design e Experiência do Usuário" data-base="ux"> UI/UX Design</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Banco de Dados (SQL, NoSQL)" data-base="bancodados"> Banco de Dados</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de QA e Testes de Software" data-base="qa"> Quality Assurance e Testes</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança de TI (ITIL, COBIT)" data-base="governanca-ti"> Governança de TI</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suporte Técnico e Service Desk" data-base="suporte-ti"> Suporte Técnico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Front‑end" data-base="frontend" data-code="tech.fe.idenza.1"> Desenvolvimento Web Front‑end</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Web Back‑end" data-base="backend" data-code="tech.be.idenza.2"> Desenvolvimento Web Back‑end</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Desenvolvimento Mobile (iOS/Android)" data-base="mobile" data-code="tech.mob.idenza.3"> Desenvolvimento Mobile</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cloud Computing (AWS, Azure, GCP)" data-base="cloud" data-code="tech.cloud.idenza.4"> Cloud Computing</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cibersegurança e Ethical Hacking" data-base="ciberseguranca" data-code="tech.sec.idenza.5"> Cibersegurança</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Inteligência Artificial e Machine Learning" data-base="ia-ml" data-code="tech.ai.idenza.6"> IA e Machine Learning</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Deep Learning e Redes Neurais" data-base="deeplearning" data-code="tech.dl.idenza.7"> Deep Learning</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Processamento de Linguagem Natural (PLN)" data-base="pln" data-code="tech.nlp.idenza.8"> Processamento de Linguagem Natural</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Visão Computacional" data-base="visao-computacional" data-code="tech.cv.idenza.9"> Visão Computacional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Robótica e Automação Inteligente" data-base="robotica" data-code="tech.rob.idenza.10"> Robótica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Internet das Coisas (IoT)" data-base="iot" data-code="tech.iot.idenza.11"> Internet das Coisas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Blockchain e Contratos Inteligentes" data-base="blockchain" data-code="tech.bc.idenza.12"> Blockchain e Smart Contracts</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Realidade Virtual e Aumentada" data-base="vr-ar" data-code="tech.vr.idenza.13"> Realidade Virtual e Aumentada</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de UI/UX Design e Experiência do Usuário" data-base="ux" data-code="tech.ux.idenza.14"> UI/UX Design</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Banco de Dados (SQL, NoSQL)" data-base="bancodados" data-code="tech.db.idenza.15"> Banco de Dados</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de QA e Testes de Software" data-base="qa" data-code="tech.qa.idenza.16"> Quality Assurance e Testes</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Governança de TI (ITIL, COBIT)" data-base="governanca-ti" data-code="tech.gov.idenza.17"> Governança de TI</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suporte Técnico e Service Desk" data-base="suporte-ti" data-code="tech.sup.idenza.18"> Suporte Técnico</label>
       </div>
     </div>
   </div>
@@ -550,20 +838,20 @@
     <div class="expando-toggle">📚 Ciências Humanas e Sociais (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Antiga" data-base="filosofia-antiga"> Filosofia Antiga</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Moderna e Contemporânea" data-base="filosofia-moderna"> Filosofia Moderna</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ética, Moral e Bioética" data-base="etica"> Ética e Bioética</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Sociologia Geral e Urbana" data-base="sociologia"> Sociologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Antropologia Cultural e Social" data-base="antropologia"> Antropologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ciência Política e Teoria do Estado" data-base="ciencia-politica"> Ciência Política</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geopolítica e Relações Internacionais" data-base="geopolitica"> Geopolítica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Antiga (Egito, Roma, Grécia)" data-base="historia-antiga"> História Antiga</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Medieval" data-base="historia-medieval"> História Medieval</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Moderna e Contemporânea" data-base="historia-contemporanea"> História Contemporânea</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arqueologia e Patrimônio Histórico" data-base="arqueologia"> Arqueologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geografia Humana e Física" data-base="geografia"> Geografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Linguística e Filologia" data-base="linguistica"> Linguística e Filologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teologia e Ciências da Religião" data-base="teologia"> Teologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Antiga" data-base="filosofia-antiga" data-code="hum.phil.anc.idenza.1"> Filosofia Antiga</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Filosofia Moderna e Contemporânea" data-base="filosofia-moderna" data-code="hum.phil.mod.idenza.2"> Filosofia Moderna</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ética, Moral e Bioética" data-base="etica" data-code="hum.ethics.idenza.3"> Ética e Bioética</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Sociologia Geral e Urbana" data-base="sociologia" data-code="hum.soc.idenza.4"> Sociologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Antropologia Cultural e Social" data-base="antropologia" data-code="hum.anthro.idenza.5"> Antropologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ciência Política e Teoria do Estado" data-base="ciencia-politica" data-code="hum.pol.idenza.6"> Ciência Política</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geopolítica e Relações Internacionais" data-base="geopolitica" data-code="hum.geo.idenza.7"> Geopolítica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Antiga (Egito, Roma, Grécia)" data-base="historia-antiga" data-code="hum.hist.anc.idenza.8"> História Antiga</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Medieval" data-base="historia-medieval" data-code="hum.hist.med.idenza.9"> História Medieval</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História Moderna e Contemporânea" data-base="historia-contemporanea" data-code="hum.hist.mod.idenza.10"> História Contemporânea</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arqueologia e Patrimônio Histórico" data-base="arqueologia" data-code="hum.arch.idenza.11"> Arqueologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Geografia Humana e Física" data-base="geografia" data-code="hum.geog.idenza.12"> Geografia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Linguística e Filologia" data-base="linguistica" data-code="hum.ling.idenza.13"> Linguística e Filologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teologia e Ciências da Religião" data-base="teologia" data-code="hum.theo.idenza.14"> Teologia</label>
       </div>
     </div>
   </div>
@@ -573,22 +861,22 @@
     <div class="expando-toggle">🎨 Artes, Cultura e Entretenimento (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Arte Mundial" data-base="historia-arte"> História da Arte</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Brasileira" data-base="literatura-brasileira"> Literatura Brasileira</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Portuguesa" data-base="literatura-portuguesa"> Literatura Portuguesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Inglesa e Norte‑Americana" data-base="literatura-inglesa"> Literatura Inglesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Francesa" data-base="literatura-francesa"> Literatura Francesa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Russa e Eslava" data-base="literatura-russa"> Literatura Russa</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Clássica e Ópera" data-base="musica-classica"> Música Clássica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Popular e Jazz" data-base="musica-popular"> Música Popular</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cinema Mundial (História e Análise)" data-base="cinema"> Cinema Mundial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teatro e Artes Cênicas" data-base="teatro"> Teatro e Artes Cênicas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arquitetura e Urbanismo" data-base="arquitetura"> Arquitetura e Urbanismo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Gráfico e Comunicação Visual" data-base="design-grafico"> Design Gráfico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Moda e Indústria Têxtil" data-base="moda"> Moda e Indústria Têxtil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gastronomia e Culinária Internacional" data-base="gastronomia"> Gastronomia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fotografia Digital e Analógica" data-base="fotografia"> Fotografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Videogames, eSports e RPG" data-base="games"> Videogames e RPG</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Arte Mundial" data-base="historia-arte" data-code="art.hist.idenza.1"> História da Arte</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Brasileira" data-base="literatura-brasileira" data-code="art.lit.br.idenza.2"> Literatura Brasileira</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Portuguesa" data-base="literatura-portuguesa" data-code="art.lit.pt.idenza.3"> Literatura Portuguesa</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Inglesa e Norte‑Americana" data-base="literatura-inglesa" data-code="art.lit.en.idenza.4"> Literatura Inglesa</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Francesa" data-base="literatura-francesa" data-code="art.lit.fr.idenza.5"> Literatura Francesa</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Literatura Russa e Eslava" data-base="literatura-russa" data-code="art.lit.ru.idenza.6"> Literatura Russa</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Clássica e Ópera" data-base="musica-classica" data-code="art.mus.class.idenza.7"> Música Clássica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Música Popular e Jazz" data-base="musica-popular" data-code="art.mus.pop.idenza.8"> Música Popular</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cinema Mundial (História e Análise)" data-base="cinema" data-code="art.film.idenza.9"> Cinema Mundial</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Teatro e Artes Cênicas" data-base="teatro" data-code="art.theatre.idenza.10"> Teatro e Artes Cênicas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Arquitetura e Urbanismo" data-base="arquitetura" data-code="art.arch.idenza.11"> Arquitetura e Urbanismo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Gráfico e Comunicação Visual" data-base="design-grafico" data-code="art.design.idenza.12"> Design Gráfico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Moda e Indústria Têxtil" data-base="moda" data-code="art.fashion.idenza.13"> Moda e Indústria Têxtil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gastronomia e Culinária Internacional" data-base="gastronomia" data-code="art.food.idenza.14"> Gastronomia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fotografia Digital e Analógica" data-base="fotografia" data-code="art.photo.idenza.15"> Fotografia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Videogames, eSports e RPG" data-base="games" data-code="art.game.idenza.16"> Videogames e RPG</label>
       </div>
     </div>
   </div>
@@ -598,18 +886,18 @@
     <div class="expando-toggle">🎓 Educação e Pedagogia (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfabetização e Letramento" data-base="alfabetizacao"> Alfabetização e Letramento</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Infantil" data-base="educacao-infantil"> Educação Infantil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Inclusiva e Especial" data-base="educacao-inclusiva"> Educação Inclusiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação a Distância (EaD)" data-base="ead"> Educação a Distância</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Metodologias Ativas (PBL, Sala Invertida)" data-base="metodologias-ativas"> Metodologias Ativas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gamificação na Educação" data-base="gamificacao"> Gamificação na Educação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuroeducação e Aprendizagem" data-base="neuroeducacao"> Neuroeducação</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão Escolar e Políticas Públicas" data-base="gestao-escolar"> Gestão Escolar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Matemática" data-base="ensino-matematica"> Ensino de Matemática</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Ciências e Biologia" data-base="ensino-ciencias"> Ensino de Ciências</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de História e Geografia" data-base="ensino-historia"> Ensino de História e Geografia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Línguas Estrangeiras" data-base="ensino-linguas"> Ensino de Línguas Estrangeiras</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfabetização e Letramento" data-base="alfabetizacao" data-code="edu.lit.idenza.1"> Alfabetização e Letramento</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Infantil" data-base="educacao-infantil" data-code="edu.child.idenza.2"> Educação Infantil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação Inclusiva e Especial" data-base="educacao-inclusiva" data-code="edu.incl.idenza.3"> Educação Inclusiva</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Educação a Distância (EaD)" data-base="ead" data-code="edu.ead.idenza.4"> Educação a Distância</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Metodologias Ativas (PBL, Sala Invertida)" data-base="metodologias-ativas" data-code="edu.active.idenza.5"> Metodologias Ativas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gamificação na Educação" data-base="gamificacao" data-code="edu.game.idenza.6"> Gamificação na Educação</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Neuroeducação e Aprendizagem" data-base="neuroeducacao" data-code="edu.neuro.idenza.7"> Neuroeducação</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Gestão Escolar e Políticas Públicas" data-base="gestao-escolar" data-code="edu.mgmt.idenza.8"> Gestão Escolar</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Matemática" data-base="ensino-matematica" data-code="edu.math.idenza.9"> Ensino de Matemática</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Ciências e Biologia" data-base="ensino-ciencias" data-code="edu.sci.idenza.10"> Ensino de Ciências</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de História e Geografia" data-base="ensino-historia" data-code="edu.hist.idenza.11"> Ensino de História e Geografia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Ensino de Línguas Estrangeiras" data-base="ensino-linguas" data-code="edu.lang.idenza.12"> Ensino de Línguas Estrangeiras</label>
       </div>
     </div>
   </div>
@@ -619,30 +907,30 @@
     <div class="expando-toggle">🌱 Sustentabilidade, Agricultura e Meio Ambiente (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agricultura de Precisão" data-base="agricultura-precisao"> Agricultura de Precisão</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cultivo Orgânico e Biodinâmico" data-base="cultivo-organico"> Cultivo Orgânico</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hidroponia e Aquaponia" data-base="hidroponia"> Hidroponia e Aquaponia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Manejo de Pragas e Doenças Agrícolas" data-base="pragas"> Manejo de Pragas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Irrigação e Recursos Hídricos" data-base="irrigacao"> Irrigação e Recursos Hídricos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fertilidade e Conservação do Solo" data-base="solo"> Fertilidade do Solo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Culturas Anuais (Soja, Milho, Trigo)" data-base="culturas-anuais"> Culturas Anuais</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fruticultura e Culturas Perenes" data-base="fruticultura"> Fruticultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cafeicultura e Cultivo de Cacau" data-base="cafeicultura"> Cafeicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Viticultura e Enologia (Vinhos)" data-base="viticultura"> Viticultura e Enologia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pecuária de Corte e Leite" data-base="pecuaria"> Pecuária de Corte e Leite</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Avicultura e Produção de Ovos" data-base="avicultura"> Avicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suinocultura Intensiva" data-base="suinocultura"> Suinocultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Aquicultura e Piscicultura" data-base="aquicultura"> Aquicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Apicultura e Meliponicultura" data-base="apicultura"> Apicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Silvicultura e Reflorestamento" data-base="silvicultura"> Silvicultura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agrofloresta e Sistemas Integrados" data-base="agrofloresta"> Agrofloresta</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Circular e Resíduos" data-base="economia-circular"> Economia Circular</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Solar Fotovoltaica" data-base="energia-solar"> Energia Solar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Eólica e Biomassa" data-base="energia-eolica"> Energia Eólica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Biogás, Biodigestores e Biocombustíveis" data-base="biogas"> Biogás e Biocombustíveis</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mudanças Climáticas e IPCC" data-base="clima"> Mudanças Climáticas</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Créditos de Carbono e Mercado Voluntário" data-base="creditos-carbono"> Créditos de Carbono</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Certificações Agrícolas e Fair Trade" data-base="certificacoes"> Certificações Agrícolas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agricultura de Precisão" data-base="agricultura-precisao" data-code="agri.prec.idenza.1"> Agricultura de Precisão</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cultivo Orgânico e Biodinâmico" data-base="cultivo-organico" data-code="agri.org.idenza.2"> Cultivo Orgânico</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hidroponia e Aquaponia" data-base="hidroponia" data-code="agri.hydro.idenza.3"> Hidroponia e Aquaponia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Manejo de Pragas e Doenças Agrícolas" data-base="pragas" data-code="agri.pest.idenza.4"> Manejo de Pragas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Irrigação e Recursos Hídricos" data-base="irrigacao" data-code="agri.water.idenza.5"> Irrigação e Recursos Hídricos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fertilidade e Conservação do Solo" data-base="solo" data-code="agri.soil.idenza.6"> Fertilidade do Solo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Culturas Anuais (Soja, Milho, Trigo)" data-base="culturas-anuais" data-code="agri.crop.idenza.7"> Culturas Anuais</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Fruticultura e Culturas Perenes" data-base="fruticultura" data-code="agri.fruit.idenza.8"> Fruticultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cafeicultura e Cultivo de Cacau" data-base="cafeicultura" data-code="agri.coffee.idenza.9"> Cafeicultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Viticultura e Enologia (Vinhos)" data-base="viticultura" data-code="agri.wine.idenza.10"> Viticultura e Enologia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pecuária de Corte e Leite" data-base="pecuaria" data-code="agri.livestock.idenza.11"> Pecuária de Corte e Leite</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Avicultura e Produção de Ovos" data-base="avicultura" data-code="agri.poultry.idenza.12"> Avicultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Suinocultura Intensiva" data-base="suinocultura" data-code="agri.pig.idenza.13"> Suinocultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Aquicultura e Piscicultura" data-base="aquicultura" data-code="agri.fish.idenza.14"> Aquicultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Apicultura e Meliponicultura" data-base="apicultura" data-code="agri.bee.idenza.15"> Apicultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Silvicultura e Reflorestamento" data-base="silvicultura" data-code="agri.forest.idenza.16"> Silvicultura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Agrofloresta e Sistemas Integrados" data-base="agrofloresta" data-code="agri.agrofor.idenza.17"> Agrofloresta</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Economia Circular e Resíduos" data-base="economia-circular" data-code="sust.circ.idenza.18"> Economia Circular</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Solar Fotovoltaica" data-base="energia-solar" data-code="sust.solar.idenza.19"> Energia Solar</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Energia Eólica e Biomassa" data-base="energia-eolica" data-code="sust.wind.idenza.20"> Energia Eólica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Biogás, Biodigestores e Biocombustíveis" data-base="biogas" data-code="sust.biogas.idenza.21"> Biogás e Biocombustíveis</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mudanças Climáticas e IPCC" data-base="clima" data-code="sust.climate.idenza.22"> Mudanças Climáticas</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Créditos de Carbono e Mercado Voluntário" data-base="creditos-carbono" data-code="sust.carbon.idenza.23"> Créditos de Carbono</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Certificações Agrícolas e Fair Trade" data-base="certificacoes" data-code="sust.cert.idenza.24"> Certificações Agrícolas</label>
       </div>
     </div>
   </div>
@@ -652,21 +940,21 @@
     <div class="expando-toggle">🚗 Veículos de Luxo e História Automotiva (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Ferrari" data-base="ferrari"> História da Ferrari</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Lamborghini" data-base="lamborghini"> História da Lamborghini</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Porsche" data-base="porsche"> História da Porsche</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Rolls‑Royce" data-base="rollsroyce"> História da Rolls‑Royce</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bentley" data-base="bentley"> História da Bentley</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Aston Martin" data-base="astonmartin"> História da Aston Martin</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bugatti" data-base="bugatti"> História da Bugatti</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Maserati" data-base="maserati"> História da Maserati</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da McLaren" data-base="mclaren"> História da McLaren</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carros Elétricos de Luxo (Tesla, Lucid, Rimac)" data-base="eletricos-luxo"> Carros Elétricos de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hipercarros e Supercarros" data-base="hipercarros"> Hipercarros e Supercarros</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Automotivo de Luxo" data-base="design-luxo"> Design Automotivo de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Colecionismo de Automóveis Clássicos" data-base="colecionismo"> Colecionismo de Clássicos</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Leilões de Veículos de Luxo" data-base="leiloes-luxo"> Leilões de Veículos de Luxo</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Relógios Automotivos de Luxo" data-base="relogios-luxo"> Relógios Automotivos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Ferrari" data-base="ferrari" data-code="lux.ferrari.idenza.1"> História da Ferrari</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Lamborghini" data-base="lamborghini" data-code="lux.lambo.idenza.2"> História da Lamborghini</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Porsche" data-base="porsche" data-code="lux.porsche.idenza.3"> História da Porsche</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Rolls‑Royce" data-base="rollsroyce" data-code="lux.rr.idenza.4"> História da Rolls‑Royce</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bentley" data-base="bentley" data-code="lux.bentley.idenza.5"> História da Bentley</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Aston Martin" data-base="astonmartin" data-code="lux.aston.idenza.6"> História da Aston Martin</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Bugatti" data-base="bugatti" data-code="lux.bugatti.idenza.7"> História da Bugatti</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da Maserati" data-base="maserati" data-code="lux.maserati.idenza.8"> História da Maserati</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de História da McLaren" data-base="mclaren" data-code="lux.mclaren.idenza.9"> História da McLaren</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carros Elétricos de Luxo (Tesla, Lucid, Rimac)" data-base="eletricos-luxo" data-code="lux.ev.idenza.10"> Carros Elétricos de Luxo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Hipercarros e Supercarros" data-base="hipercarros" data-code="lux.hyper.idenza.11"> Hipercarros e Supercarros</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Design Automotivo de Luxo" data-base="design-luxo" data-code="lux.design.idenza.12"> Design Automotivo de Luxo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Colecionismo de Automóveis Clássicos" data-base="colecionismo" data-code="lux.collect.idenza.13"> Colecionismo de Clássicos</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Leilões de Veículos de Luxo" data-base="leiloes-luxo" data-code="lux.auction.idenza.14"> Leilões de Veículos de Luxo</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Relógios Automotivos de Luxo" data-base="relogios-luxo" data-code="lux.watch.idenza.15"> Relógios Automotivos</label>
       </div>
     </div>
   </div>
@@ -676,338 +964,685 @@
     <div class="expando-toggle">🔧 Profissões, Ofícios e Carreiras (expandir)</div>
     <div class="expando-body">
       <div class="agent-select-list">
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carpintaria e Marcenaria" data-base="carpintaria"> Carpintaria e Marcenaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Serralheria e Metalurgia" data-base="serralheria"> Serralheria e Metalurgia</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Eletricidade Predial e Industrial" data-base="eletricidade"> Eletricidade Predial e Industrial</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Canalização e Hidráulica" data-base="hidraulica"> Canalização e Hidráulica</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Soldadura e Caldeiraria" data-base="soldadura"> Soldadura e Caldeiraria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mecânica Automotiva" data-base="mecanica-auto"> Mecânica Automotiva</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pilotagem Profissional (Avião, Helicóptero)" data-base="pilotagem"> Pilotagem Profissional</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Navegação Marítima e Fluvial" data-base="navegacao"> Navegação Marítima</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Joalheria e Ourivesaria" data-base="joalheria"> Joalheria e Ourivesaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfaiataria e Costura de Alta‑Costura" data-base="alfaiataria"> Alfaiataria e Alta‑Costura</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cerâmica e Olaria Artesanal" data-base="ceramica"> Cerâmica e Olaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Panificação e Confeitaria" data-base="panificacao"> Panificação e Confeitaria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enologia e Sommelieria" data-base="enologia"> Enologia e Sommelieria</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Bombeiros e Resgate" data-base="bombeiros"> Bombeiros e Resgate</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Civil e Investigação Criminal" data-base="policia-civil"> Polícia Civil</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Militar e Ordem Pública" data-base="policia-militar"> Polícia Militar</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Perícia Criminal e Forense" data-base="pericia"> Perícia Criminal</label>
-        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Diplomacia e Relações Internacionais" data-base="diplomacia"> Diplomacia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Carpintaria e Marcenaria" data-base="carpintaria" data-code="trade.wood.idenza.1"> Carpintaria e Marcenaria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Serralheria e Metalurgia" data-base="serralheria" data-code="trade.metal.idenza.2"> Serralheria e Metalurgia</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Eletricidade Predial e Industrial" data-base="eletricidade" data-code="trade.elec.idenza.3"> Eletricidade Predial e Industrial</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Canalização e Hidráulica" data-base="hidraulica" data-code="trade.plumb.idenza.4"> Canalização e Hidráulica</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Soldadura e Caldeiraria" data-base="soldadura" data-code="trade.weld.idenza.5"> Soldadura e Caldeiraria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Mecânica Automotiva" data-base="mecanica-auto" data-code="trade.auto.idenza.6"> Mecânica Automotiva</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Pilotagem Profissional (Avião, Helicóptero)" data-base="pilotagem" data-code="trade.pilot.idenza.7"> Pilotagem Profissional</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Navegação Marítima e Fluvial" data-base="navegacao" data-code="trade.nav.idenza.8"> Navegação Marítima</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Joalheria e Ourivesaria" data-base="joalheria" data-code="trade.jewel.idenza.9"> Joalheria e Ourivesaria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Alfaiataria e Costura de Alta‑Costura" data-base="alfaiataria" data-code="trade.tailor.idenza.10"> Alfaiataria e Alta‑Costura</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Cerâmica e Olaria Artesanal" data-base="ceramica" data-code="trade.ceramic.idenza.11"> Cerâmica e Olaria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Panificação e Confeitaria" data-base="panificacao" data-code="trade.bake.idenza.12"> Panificação e Confeitaria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Enologia e Sommelieria" data-base="enologia" data-code="trade.wine.idenza.13"> Enologia e Sommelieria</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Bombeiros e Resgate" data-base="bombeiros" data-code="trade.fire.idenza.14"> Bombeiros e Resgate</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Civil e Investigação Criminal" data-base="policia-civil" data-code="trade.police.idenza.15"> Polícia Civil</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Polícia Militar e Ordem Pública" data-base="policia-militar" data-code="trade.mil.idenza.16"> Polícia Militar</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Perícia Criminal e Forense" data-base="pericia" data-code="trade.forensic.idenza.17"> Perícia Criminal</label>
+        <label class="agent-select-item"><input type="radio" name="agentRadio" value="Agente de Diplomacia e Relações Internacionais" data-base="diplomacia" data-code="trade.diplo.idenza.18"> Diplomacia</label>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SEÇÃO: EIXOS REDIS (COM GUIAS DE PREENCHIMENTO) -->
+<!-- SEÇÃO: EIXOS REDIS -->
 <div class="section">
   <div class="section-title"><span>⚙️</span> Eixos Redis (Inserir Temas)</div>
-  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento. As dicas em baixo de cada botão indicam o que preencher, seguindo as 7 camadas de abstração.</p>
+  <p style="font-size:0.7rem; color:#666;">Clique em um eixo para adicionar conhecimento.</p>
   <div class="redis-axes" id="redisAxesContainer"></div>
   <button class="btn btn-outline" id="btnNovoEixo" style="margin-top:6px;">➕ Criar Novo Eixo</button>
   <div class="eixo-form-container" id="eixoFormContainer"></div>
   <div class="eixos-custom-list" id="eixosCustomList"></div>
   <div style="margin-top:10px; display:flex; gap:8px;">
     <button class="btn btn-outline" id="btnCopiarDadosRedis">📋 Copiar Dados Redis</button>
-    <button class="btn btn-gold" id="btnEnviarRedisMotor">🚀 Enviar Redis para o Motor</button>
+    <button class="btn btn-petroleum" id="btnEnviarRedisMotor">🚀 Enviar via Worker</button>
   </div>
   <div class="status-msg" id="redisStatusMsg"></div>
 </div>
 
-<!-- MODAL LUXO PARA CRIAR EIXO -->
 <div class="modal-overlay" id="modalNovoEixo">
   <div class="modal-box">
     <h3>✨ Criar Novo Eixo</h3>
-    <input type="text" id="inputNovoEixo" placeholder="Nome do eixo (ex: XML, GRAPH)">
+    <input type="text" id="inputNovoEixo" placeholder="Nome do eixo">
     <div class="modal-actions">
       <button class="btn btn-outline" id="btnCancelarModal">Cancelar</button>
-      <button class="btn btn-gold" id="btnConfirmarModal">Criar Eixo</button>
+      <button class="btn btn-petroleum" id="btnConfirmarModal">Criar Eixo</button>
     </div>
   </div>
 </div>
 
-<!-- PAINEL DO AGENTE SELECIONADO -->
 <div class="section" id="panelPesquisa" style="display:none;">
   <div class="section-title"><span>🔬</span> Pesquisa para: <span id="nomeAgenteSelecionado"></span></div>
-  <p style="font-size:0.7rem; color:#666;">Pergunta ultra detalhada (copie e cole em qualquer IA):</p>
+  <p style="font-size:0.7rem; color:#666;">Código: <span class="hum-code-display" id="codigoAgenteDisplay"></span></p>
   <div class="generated-question" id="generatedQuestion"></div>
   <button class="btn btn-outline" id="btnCopyQuestion" style="margin-top:6px;">📋 Copiar Pergunta</button>
-  <p style="font-size:0.7rem; color:#666; margin-top:12px;">Cole aqui a resposta da IA:</p>
-  <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..."></textarea>
-  <button class="btn btn-gold" id="btnEstruturar" style="margin-top:8px;">⚙️ Estruturar nas 7 Camadas</button>
+  <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..." style="margin-top:12px;"></textarea>
+  <button class="btn btn-petroleum" id="btnEstruturar" style="margin-top:8px;">⚙️ Estruturar nas 7 Camadas</button>
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
-  <button class="btn btn-gold" id="btnEnviarMotor" style="margin-top:8px; display:none;">🚀 Enviar para o Motor Ultra IA</button>
+  <button class="btn btn-petroleum" id="btnEnviarMotor" style="margin-top:8px; display:none;">🚀 Enviar via Worker</button>
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
+</div><!-- FIM TAB 1 -->
+
+<!-- ==================== TAB 2: TEMPLATE DE HUMANOIDES (UNIVERSAL) ==================== -->
+<div class="tab-content" id="tab-humanoides">
+
+  <div class="section">
+    <div class="section-title hum-title"><span>🤖</span> Template Universal de Humanoides IDEnza</div>
+    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+      <strong>Estrutura base para criar QUALQUER humanoide.</strong> Selecione o tipo de humanoide,
+      insira o contexto da interação, processe nas 7 camadas cognitivas e obtenha o JSON 
+      completo com código de rastreio, métricas e alertas. 
+      <br>⚡ Envio seguro via Worker (credenciais no backend).
+    </p>
+
+    <!-- SELEÇÃO DO TIPO DE HUMANOIDE -->
+    <div class="section-title hum-title" style="font-size:0.7rem;"><span>🎯</span> Selecione o Tipo de Humanoide</div>
+    <div class="hum-type-grid" id="humTypeGrid">
+      <!-- Preenchido via JS -->
+    </div>
+
+    <!-- PAINEL DO HUMANOIDE SELECIONADO -->
+    <div id="humPanel" style="display:none; margin-top:16px;">
+      <div class="section-title hum-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código Base: <span class="hum-code-display" id="humCodigoBase"></span></p>
+      <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
+
+      <!-- ENTRADA DO USUÁRIO -->
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--petroleum); text-transform:uppercase; letter-spacing:1px;">
+          📝 Entrada / Contexto da Interação:
+        </label>
+        <textarea class="raw-textarea hum-textarea" id="humEntrada" 
+          placeholder="Descreva a situação, fala ou contexto..."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-petroleum" id="btnProcessarHum">🧠 Processar (7 Camadas)</button>
+        <button class="btn btn-outline" id="btnLimparHum">🔄 Limpar</button>
+        <button class="btn btn-outline" id="btnCopiarJSONHum">📋 Copiar JSON</button>
+        <button class="btn btn-petroleum" id="btnEnviarWorkerHum" style="display:none;">🚀 Enviar via Worker</button>
+      </div>
+
+      <div class="hum-status-msg" id="humStatusMsg"></div>
+
+      <!-- RESULTADOS -->
+      <div id="humResultados" style="display:none;">
+        <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>📊</span> Métricas da Análise</div>
+        <p style="font-size:0.6rem; color:#888;">Código de Rastreio: <span class="hum-code-display" id="humCodigoRastreio"></span></p>
+        <div class="hum-metric-grid" id="humMetricGrid"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>💬</span> Resposta / Saída (Camada 7)</div>
+        <div class="hum-resposta-box" id="humResposta"></div>
+        <div class="section-title hum-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo (7 Camadas)</div>
+        <div class="hum-json-preview" id="humJsonCompleto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARQUITETURA DAS 7 CAMADAS -->
+  <div class="section">
+    <div class="section-title hum-title"><span>🏗️</span> Arquitetura Cognitiva Universal (7 Camadas)</div>
+    <div style="font-size:0.7rem; color:#555; line-height:1.7;">
+      <strong>Camada 1 — Emoções / Sinais Primários:</strong> Detecta o estado emocional ou sinal básico da entrada<br>
+      <strong>Camada 2 — Intenções / Motivações:</strong> O que o usuário realmente quer (ser ouvido, resolver, aprender, etc.)<br>
+      <strong>Camada 3 — Objetivos / Metas:</strong> Objetivos de curto, médio e longo prazo detectados<br>
+      <strong>Camada 4 — Competências / Habilidades Percebidas:</strong> O que o usuário demonstra saber ou reivindica<br>
+      <strong>Camada 5 — Comportamentos / Padrões:</strong> Engajamento, resistência, risco, proatividade<br>
+      <strong>Camada 6 — Eixo Semântico / Domínio:</strong> Classificação nos eixos de conhecimento IDEnza<br>
+      <strong>Camada 7 — Resposta / Saída Humanizada:</strong> Resposta empática, acionável e contextual
+    </div>
+    <p style="font-size:0.6rem; color:#888; margin-top:8px;">
+      <strong>Fontes:</strong> IDEnza (processamento interno) ou Externa (IA externa). 
+      Todo registro inclui código de rastreio único e data de alerta para revisão.
+    </p>
+  </div>
+
+</div><!-- FIM TAB 2 -->
+
+<!-- ==================== TAB 3: ESTRUTURA DE DADOS UNIVERSAL ==================== -->
+<div class="tab-content" id="tab-dados">
+
+  <div class="section">
+    <div class="section-title data-title"><span>🗃️</span> Estrutura de Dados Universal — 7 Camadas IDEnza</div>
+    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+      Selecione uma categoria para gerar o prompt de fontes oficiais e estruturar o conhecimento 
+      em 7 camadas com código de rastreio único.
+    </p>
+
+    <div class="section-title data-title" style="font-size:0.7rem;"><span>📂</span> Categorias de Conhecimento</div>
+    <div class="data-category-grid" id="dataCategoryGrid"></div>
+
+    <div id="dataPanelCategoria" style="display:none; margin-top:16px;">
+      <div class="section-title data-title"><span>🎯</span> Categoria: <span id="dataCatNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCatCode"></span></p>
+      
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:8px;">📝 Tópico Específico:</label>
+      <input type="text" class="raw-textarea data-textarea" id="dataTopicoEspecifico" placeholder="Ex: &quot;Direito Constitucional — Controle de Constitucionalidade&quot;" style="min-height:40px;">
+
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">🔍 Prompt para Fontes Oficiais:</label>
+      <div class="generated-question" id="dataPromptOficial" style="border-left:4px solid #0d5c3a;"></div>
+      <button class="btn btn-outline" id="btnCopiarPromptData" style="margin-top:6px;">📋 Copiar Prompt</button>
+
+      <label style="font-size:0.7rem; font-weight:700; color:#0d5c3a; text-transform:uppercase; letter-spacing:1px; display:block; margin-top:12px;">📥 Cole a resposta da IA:</label>
+      <textarea class="raw-textarea data-textarea" id="dataRespostaIA" placeholder="Cole o texto retornado pela IA com fontes oficiais..."></textarea>
+      
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+        <button class="btn btn-data" id="btnEstruturarData">⚙️ Estruturar nas 7 Camadas</button>
+        <button class="btn btn-outline" id="btnUsarFonteIDEnza">📚 Usar Fonte IDEnza (Interna)</button>
+      </div>
+
+      <div id="dataResultados" style="display:none; margin-top:16px;">
+        <div class="section-title data-title"><span>📊</span> Conhecimento Estruturado</div>
+        <p style="font-size:0.6rem; color:#888;">Código: <span class="data-code-display" id="dataCodigoRastreio"></span></p>
+        <p style="font-size:0.6rem; color:#888;">Fonte: <span id="dataFonte" style="font-weight:700;">—</span> | Revisão: <span id="dataAlertaRevisao" style="font-weight:700;">—</span></p>
+        <div class="camadas-preview" id="dataCamadasPreview" style="border-left:4px solid #0d5c3a;"></div>
+        <div class="data-json-preview" id="dataJsonPreview"></div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn btn-outline" id="btnCopiarJSONData">📋 Copiar JSON</button>
+          <button class="btn btn-data" id="btnEnviarWorkerData">🚀 Enviar via Worker</button>
+        </div>
+      </div>
+      <div class="data-status-msg" id="dataStatusMsg"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title data-title"><span>🏗️</span> Estrutura das 7 Camadas (Universal)</div>
+    <div style="font-size:0.7rem; color:#555; line-height:1.7;">
+      <strong>Camada 7 — ESSÊNCIA:</strong> Definição fundamental, axiomas, conceitos basilares<br>
+      <strong>Camada 6 — TEORIA GERAL:</strong> Principais teorias, escolas de pensamento, evolução histórica<br>
+      <strong>Camada 5 — ESTRUTURAS ABSTRATAS:</strong> Modelos formais, classificações, frameworks<br>
+      <strong>Camada 4 — APLICAÇÕES ESPECÍFICAS:</strong> Casos de uso reais, exemplos práticos<br>
+      <strong>Camada 3 — PRÁTICAS PROFISSIONAIS:</strong> Métodos, protocolos, ferramentas<br>
+      <strong>Camada 2 — USO PESSOAL/COTIDIANO:</strong> Aplicação no dia a dia<br>
+      <strong>Camada 1 — COTIDIANO E DICAS RÁPIDAS:</strong> Curiosidades, macetes, recomendações
+    </div>
+  </div>
+
+</div><!-- FIM TAB 3 -->
+
 <script>
-  // ==================== FUNÇÃO AUXILIAR DE CÓPIA ROBUSTA ====================
+  // ==================== WORKER SIMULATOR ====================
+  const WORKER_ENDPOINT = '/api/redis-ingest';
+
+  async function enviarViaWorker(payload, tipo, codigo) {
+    console.log(`[WORKER] Enviando tipo=${tipo} código=${codigo}`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          sucesso: true,
+          mensagem: `Payload ${codigo} enviado ao Redis via Worker`,
+          redisKey: `idenza:${tipo}:${codigo}`,
+          timestamp: new Date().toISOString()
+        });
+      }, 600);
+    });
+  }
+
+  // ==================== TABS ====================
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ==================== UTILITÁRIOS ====================
   function copiarTextoParaClipboard(texto) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(texto).then(resolve).catch(() => { fallbackCopiar(texto) ? resolve() : reject(); });
+        navigator.clipboard.writeText(texto).then(resolve).catch(() => resolve());
       } else {
-        fallbackCopiar(texto) ? resolve() : reject();
+        const ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.style.position = 'fixed'; ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        resolve();
       }
     });
   }
 
-  function fallbackCopiar(texto) {
-    try {
-      const textarea = document.createElement('textarea');
-      textarea.value = texto;
-      textarea.style.position = 'fixed'; textarea.style.top = '-9999px'; textarea.style.left = '-9999px'; textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select(); textarea.setSelectionRange(0, 99999);
-      const resultado = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return resultado;
-    } catch (e) { return false; }
+  function gerarCodigoUnico(prefixo) {
+    return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
   }
 
-  // ==================== GERENCIAMENTO DE EIXOS REDIS ====================
+  // ==================== EIXOS REDIS ====================
   const eixosComHints = {
-    'STRING': 'guarde textos simples: nomes, status, configurações',
-    'LIST': 'guarde listas ordenadas: histórico de alterações, sequências',
-    'SET': 'guarde conjuntos únicos: tags, categorias, palavras-chave',
-    'ZSET': 'guarde rankings: pontuações, scores de relevância',
-    'HASH': 'guarde objetos: campos de um registro, atributos',
-    'STREAM': 'guarde eventos: logs, mensagens em tempo real',
-    'GEO': 'guarde coordenadas: localização de agentes, regiões',
-    'BITMAP': 'guarde flags binárias: status ativo/inativo, permissões',
-    'PUB/SUB': 'guarde mensagens de canais: notificações, alertas'
+    'STRING':'textos simples','LIST':'listas ordenadas','SET':'conjuntos únicos',
+    'ZSET':'rankings','HASH':'objetos','STREAM':'eventos','GEO':'coordenadas',
+    'BITMAP':'flags binárias','PUB/SUB':'canais de mensagens'
   };
-
   const defaultEixos = Object.keys(eixosComHints);
-  let customEixos = [];
-  let redisData = {};
-  defaultEixos.forEach(eixo => { redisData[eixo] = []; });
-
-  const redisAxesContainer = document.getElementById('redisAxesContainer');
-  const eixoFormContainer = document.getElementById('eixoFormContainer');
-  const btnNovoEixo = document.getElementById('btnNovoEixo');
-  const redisStatusMsg = document.getElementById('redisStatusMsg');
-  const modalNovoEixo = document.getElementById('modalNovoEixo');
-  const inputNovoEixo = document.getElementById('inputNovoEixo');
-  const btnCancelarModal = document.getElementById('btnCancelarModal');
-  const btnConfirmarModal = document.getElementById('btnConfirmarModal');
-  let eixoAtual = null;
+  let customEixos = [], redisData = {};
+  defaultEixos.forEach(e => { redisData[e] = []; });
 
   function renderizarChips() {
-    redisAxesContainer.innerHTML = '';
-    const todosEixos = [...defaultEixos, ...customEixos];
-    todosEixos.forEach(eixo => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'redis-chip-wrapper';
-      const chip = document.createElement('span');
-      chip.className = 'redis-chip';
-      chip.dataset.eixo = eixo;
-      chip.textContent = eixo;
-      chip.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (eixoFormContainer.classList.contains('open') && eixoAtual === eixo) {
-          fecharFormularioEixo();
-        } else {
-          abrirFormularioEixo(eixo);
-        }
+    const container = document.getElementById('redisAxesContainer');
+    container.innerHTML = '';
+    [...defaultEixos, ...customEixos].forEach(eixo => {
+      const w = document.createElement('div'); w.className = 'redis-chip-wrapper';
+      const c = document.createElement('span'); c.className = 'redis-chip';
+      c.dataset.eixo = eixo; c.textContent = eixo;
+      c.addEventListener('click', () => {
+        document.querySelectorAll('.redis-chip').forEach(ch => ch.classList.remove('active-chip'));
+        c.classList.add('active-chip');
+        abrirFormularioEixo(eixo);
       });
-      const hint = document.createElement('span');
-      hint.className = 'redis-chip-hint';
-      hint.textContent = eixosComHints[eixo] || 'eixo personalizado';
-      wrapper.appendChild(chip);
-      wrapper.appendChild(hint);
-      redisAxesContainer.appendChild(wrapper);
+      const h = document.createElement('span'); h.className = 'redis-chip-hint';
+      h.textContent = eixosComHints[eixo] || 'personalizado';
+      w.appendChild(c); w.appendChild(h); container.appendChild(w);
     });
   }
 
+  let eixoAtual = null;
   function abrirFormularioEixo(eixo) {
     eixoAtual = eixo;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-    const chipAtivo = document.querySelector(`.redis-chip[data-eixo="${eixo}"]`);
-    if (chipAtivo) chipAtivo.classList.add('active-chip');
-
-    const hintGeral = eixosComHints[eixo] || 'eixo personalizado — insira chave e valor livremente';
-    let formHTML = `<div class="form-hint">📌 ${hintGeral}. Exemplo de chave: use o formato "dominio:assunto:nivel" (ex: conhecimento:economia:essencia)</div>`;
-    switch (eixo) {
-      case 'STRING': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="config:agente:status" placeholder="ex: config:app"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" value="ativo" placeholder="ex: ativo"></div>`; break;
-      case 'LIST': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="historico:leis:sequencia" placeholder="ex: historico:leis"></div><div class="form-row"><label>Elemento:</label><input id="eixoValue" value="lei_14.620_2026" placeholder="ex: lei_14.620"></div>`; break;
-      case 'SET': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="tags:economia:categoria" placeholder="ex: tags:economia"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="macroeconomia" placeholder="ex: macroeconomia"></div>`; break;
-      case 'ZSET': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="ranking:confianca:fontes" placeholder="ex: ranking:confianca"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="artigo_científico_123" placeholder="ex: artigo_123"></div><div class="form-row"><label>Score:</label><input id="eixoScore" value="0.95" placeholder="ex: 0.95"></div>`; break;
-      case 'HASH': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="conhecimento:economia:essencia" placeholder="ex: conhecimento:base"></div><div class="form-row"><label>Campo:</label><input id="eixoField" value="titulo_definicao" placeholder="ex: titulo"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" value="Definição de Economia" placeholder="ex: Economia"></div>`; break;
-      case 'STREAM': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="eventos:atualizacao:diaria" placeholder="ex: eventos:atualizacao"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" value="atualizacao_disponivel_2026" placeholder="ex: atualizacao_disponivel"></div>`; break;
-      case 'GEO': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="localizacao:agentes:sede" placeholder="ex: localizacao:agentes"></div><div class="form-row"><label>Longitude:</label><input id="eixoLong" value="-46.6333" placeholder="ex: -46.6333"></div><div class="form-row"><label>Latitude:</label><input id="eixoLat" value="-23.5505" placeholder="ex: -23.5505"></div><div class="form-row"><label>Membro:</label><input id="eixoValue" value="agente_sede_brasil" placeholder="ex: agente_sede"></div>`; break;
-      case 'BITMAP': formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" value="flags:status:agentes" placeholder="ex: flags:status"></div><div class="form-row"><label>Offset:</label><input id="eixoOffset" value="5" placeholder="ex: 5"></div><div class="form-row"><label>Valor (0/1):</label><input id="eixoValue" value="1" placeholder="ex: 1"></div>`; break;
-      case 'PUB/SUB': formHTML += `<div class="form-row"><label>Canal:</label><input id="eixoKey" value="canal:noticias:economia" placeholder="ex: canal:noticias"></div><div class="form-row"><label>Mensagem:</label><input id="eixoValue" value="publicacao_lei_14.620" placeholder="ex: publicacao_lei"></div>`; break;
-      default: formHTML += `<div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div><div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>`;
-    }
-    eixoFormContainer.innerHTML = formHTML + `<div style="display:flex; gap:8px; margin-top:8px;"><button class="btn btn-gold" id="btnInserirEixo">📥 Inserir Tema</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
-    eixoFormContainer.classList.add('open');
-    document.getElementById('btnInserirEixo').addEventListener('click', inserirDadosEixo);
-    document.getElementById('btnCancelarEixo').addEventListener('click', fecharFormularioEixo);
-  }
-
-  function fecharFormularioEixo() {
-    eixoFormContainer.classList.remove('open');
-    eixoAtual = null;
-    document.querySelectorAll('.redis-chip').forEach(chip => chip.classList.remove('active-chip'));
-  }
-
-  function inserirDadosEixo() {
-    const key = document.getElementById('eixoKey')?.value.trim();
-    const value = document.getElementById('eixoValue')?.value.trim();
-    if (!key || !value) { alert('Preencha ao menos chave e valor.'); return; }
-    if (!redisData[eixoAtual]) redisData[eixoAtual] = [];
-    const entry = { key, value, timestamp: new Date().toISOString() };
-    if (eixoAtual === 'ZSET') { const score = document.getElementById('eixoScore')?.value.trim(); if (!score) { alert('Score obrigatório para ZSET.'); return; } entry.score = score; }
-    else if (eixoAtual === 'HASH') { const field = document.getElementById('eixoField')?.value.trim(); if (!field) { alert('Campo obrigatório para HASH.'); return; } entry.field = field; }
-    else if (eixoAtual === 'GEO') { const lon = document.getElementById('eixoLong')?.value.trim(); const lat = document.getElementById('eixoLat')?.value.trim(); if (!lon || !lat) { alert('Longitude e Latitude obrigatórios para GEO.'); return; } entry.longitude = lon; entry.latitude = lat; }
-    else if (eixoAtual === 'BITMAP') { const offset = document.getElementById('eixoOffset')?.value.trim(); if (!offset) { alert('Offset obrigatório para BITMAP.'); return; } entry.offset = offset; }
-    redisData[eixoAtual].push(entry);
-    redisStatusMsg.textContent = `📥 Tema inserido no eixo ${eixoAtual}: ${key} → ${value}`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-    fecharFormularioEixo();
-  }
-
-  function abrirModalNovoEixo() { modalNovoEixo.classList.add('open'); inputNovoEixo.value = ''; inputNovoEixo.focus(); }
-  function fecharModalNovoEixo() { modalNovoEixo.classList.remove('open'); }
-  function confirmarNovoEixo() {
-    const nomeEixo = inputNovoEixo.value.trim();
-    if (!nomeEixo) return;
-    const nomeLimpo = nomeEixo.toUpperCase();
-    if (defaultEixos.includes(nomeLimpo) || customEixos.includes(nomeLimpo)) { alert('Esse eixo já existe.'); return; }
-    customEixos.push(nomeLimpo); redisData[nomeLimpo] = []; renderizarChips(); fecharModalNovoEixo();
-    redisStatusMsg.textContent = `✅ Eixo "${nomeLimpo}" criado com sucesso.`;
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
-  }
-  btnNovoEixo.addEventListener('click', abrirModalNovoEixo);
-  btnCancelarModal.addEventListener('click', fecharModalNovoEixo);
-  btnConfirmarModal.addEventListener('click', confirmarNovoEixo);
-  modalNovoEixo.addEventListener('click', (e) => { if (e.target === modalNovoEixo) fecharModalNovoEixo(); });
-
-  document.getElementById('btnCopiarDadosRedis').addEventListener('click', () => {
-    copiarTextoParaClipboard(JSON.stringify(redisData, null, 2)).then(() => {
-      redisStatusMsg.textContent = '📋 Dados Redis copiados.';
-      setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
+    const fc = document.getElementById('eixoFormContainer');
+    fc.innerHTML = `<div class="form-hint">📌 ${eixosComHints[eixo]||'personalizado'}</div>
+      <div class="form-row"><label>Chave:</label><input id="eixoKey" placeholder="ex: chave"></div>
+      <div class="form-row"><label>Valor:</label><input id="eixoValue" placeholder="ex: valor"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-petroleum" id="btnInserirEixo">📥 Inserir</button><button class="btn btn-outline" id="btnCancelarEixo">Cancelar</button></div>`;
+    fc.classList.add('open');
+    document.getElementById('btnInserirEixo').addEventListener('click', () => {
+      const k = document.getElementById('eixoKey').value.trim();
+      const v = document.getElementById('eixoValue').value.trim();
+      if(!k||!v) return;
+      redisData[eixoAtual].push({key:k,value:v,timestamp:new Date().toISOString()});
+      document.getElementById('redisStatusMsg').textContent = `📥 Inserido: ${k}`;
+      setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
+      fc.classList.remove('open');
     });
+    document.getElementById('btnCancelarEixo').addEventListener('click', ()=>fc.classList.remove('open'));
+  }
+
+  document.getElementById('btnNovoEixo').addEventListener('click', ()=>{
+    document.getElementById('modalNovoEixo').classList.add('open');
   });
-  document.getElementById('btnEnviarRedisMotor').addEventListener('click', () => {
-    sessionStorage.setItem('dadosRedis', JSON.stringify(redisData));
-    redisStatusMsg.textContent = '🚀 Dados Redis enviados para o Motor.';
-    setTimeout(() => { redisStatusMsg.textContent = ''; }, 3000);
+  document.getElementById('btnCancelarModal').addEventListener('click', ()=>{
+    document.getElementById('modalNovoEixo').classList.remove('open');
+  });
+  document.getElementById('btnConfirmarModal').addEventListener('click', ()=>{
+    const nome = document.getElementById('inputNovoEixo').value.trim().toUpperCase();
+    if(nome && ![...defaultEixos,...customEixos].includes(nome)){
+      customEixos.push(nome); redisData[nome]=[]; renderizarChips();
+    }
+    document.getElementById('modalNovoEixo').classList.remove('open');
+  });
+  document.getElementById('btnCopiarDadosRedis').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(JSON.stringify(redisData,null,2));
+    document.getElementById('redisStatusMsg').textContent = '📋 Copiado.';
+    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},3000);
+  });
+  document.getElementById('btnEnviarRedisMotor').addEventListener('click', async ()=>{
+    document.getElementById('redisStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker({redisData},'redis-data',gerarCodigoUnico('redis'));
+    document.getElementById('redisStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},5000);
   });
   renderizarChips();
 
-  // ==================== LÓGICA DO CATÁLOGO DE AGENTES ====================
-  const panelPesquisa = document.getElementById('panelPesquisa');
-  const nomeAgenteEl = document.getElementById('nomeAgenteSelecionado');
-  const generatedQuestionEl = document.getElementById('generatedQuestion');
-  const respostaIA = document.getElementById('respostaIA');
-  const camadasPreview = document.getElementById('camadasPreview');
-  const jsonFinalPreview = document.getElementById('jsonFinalPreview');
-  const btnEstruturar = document.getElementById('btnEstruturar');
-  const btnEnviarMotor = document.getElementById('btnEnviarMotor');
-  const statusMsg = document.getElementById('statusMsg');
-  const btnCopyQuestion = document.getElementById('btnCopyQuestion');
-  let agenteSelecionado = null;
-  let conhecimentoEstruturado = null;
-
-  document.querySelectorAll('.expando-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const expando = toggle.parentElement;
-      expando.classList.toggle('open');
-      const label = toggle.textContent.trim();
-      toggle.textContent = expando.classList.contains('open') ? label.replace('(expandir)', '(recolher)') : label.replace('(recolher)', '(expandir)');
+  // ==================== TAB 1: AGENTES ====================
+  let agenteSelecionado = null, conhecimentoEstruturado = null;
+  document.querySelectorAll('.expando-toggle').forEach(t => {
+    t.addEventListener('click', ()=>{
+      const e = t.parentElement;
+      e.classList.toggle('open');
+      t.textContent = e.classList.contains('open') ? t.textContent.replace('(expandir)','(recolher)') : t.textContent.replace('(recolher)','(expandir)');
     });
   });
-
-  document.querySelectorAll('input[type="radio"][name="agentRadio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      if (radio.checked) {
-        agenteSelecionado = { nome: radio.value, base: radio.dataset.base };
-        abrirPainelPesquisa();
+  document.querySelectorAll('input[name="agentRadio"]').forEach(r => {
+    r.addEventListener('change', ()=>{
+      if(r.checked){
+        agenteSelecionado = { nome: r.value, base: r.dataset.base, codigo: r.dataset.code };
+        document.getElementById('panelPesquisa').style.display = 'block';
+        document.getElementById('nomeAgenteSelecionado').textContent = agenteSelecionado.nome;
+        document.getElementById('codigoAgenteDisplay').textContent = agenteSelecionado.codigo;
+        document.getElementById('generatedQuestion').textContent = 
+          `Você é um especialista em ${agenteSelecionado.base}. Forneça conhecimento completo sobre "${agenteSelecionado.nome}" em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO E DICAS\nUse fontes oficiais.`;
+        document.getElementById('respostaIA').value = '';
+        document.getElementById('camadasPreview').style.display = 'none';
+        document.getElementById('jsonFinalPreview').style.display = 'none';
+        document.getElementById('btnEnviarMotor').style.display = 'none';
       }
     });
   });
-
-  function abrirPainelPesquisa() {
-    if (!agenteSelecionado) return;
-    panelPesquisa.style.display = 'block';
-    nomeAgenteEl.textContent = agenteSelecionado.nome;
-    generatedQuestionEl.textContent = gerarPerguntaDetalhada(agenteSelecionado.nome, agenteSelecionado.base);
-    respostaIA.value = ''; camadasPreview.style.display = 'none'; camadasPreview.textContent = '';
-    jsonFinalPreview.style.display = 'none'; jsonFinalPreview.textContent = '';
-    btnEnviarMotor.style.display = 'none'; statusMsg.textContent = '';
-  }
-
-  function gerarPerguntaDetalhada(nomeAgente, base) {
-    return `Você é um especialista em ${base}. Por favor, forneça um conhecimento completo e estruturado sobre "${nomeAgente}", utilizando exclusivamente fontes oficiais e confiáveis (livros técnicos, artigos científicos, normas, legislação, manuais de referência). 
-
-Organize a resposta nos seguintes níveis (7 camadas semânticas):
-
-7. ESSÊNCIA: Definição fundamental, axiomas, conceitos basilares do tema.
-6. TEORIA GERAL: Principais teorias, escolas de pensamento, evolução histórica.
-5. ESTRUTURAS ABSTRATAS: Modelos formais, classificações, frameworks conceituais.
-4. APLICAÇÕES ESPECÍFICAS: Casos de uso reais, exemplos práticos, áreas de atuação.
-3. PRÁTICAS PROFISSIONAIS: Métodos, protocolos, ferramentas utilizadas por especialistas.
-2. USO PESSOAL/COTIDIANO: Como uma pessoa comum aplica esse conhecimento no dia a dia.
-1. COTIDIANO E DICAS RÁPIDAS: Curiosidades, macetes, recomendações práticas.
-
-Para cada camada, forneça títulos e subtemas. Exemplo: "Título: Definição de X. Subtemas: A, B, C". Seja exaustivo e rigoroso. Cite as fontes ao final.`;
-  }
-
-  btnCopyQuestion.addEventListener('click', () => {
-    const pergunta = generatedQuestionEl.textContent.trim();
-    if (!pergunta || pergunta.length < 10) { statusMsg.textContent = '⚠️ Selecione um agente primeiro.'; setTimeout(() => { statusMsg.textContent = ''; }, 3000); return; }
-    copiarTextoParaClipboard(pergunta).then(() => {
-      statusMsg.textContent = '📋 Pergunta copiada! Cole na IA de sua preferência.';
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
-    });
+  document.getElementById('btnCopyQuestion').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(document.getElementById('generatedQuestion').textContent);
+    document.getElementById('statusMsg').textContent = '📋 Copiado.';
+    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},3000);
+  });
+  document.getElementById('btnEstruturar').addEventListener('click', ()=>{
+    const texto = document.getElementById('respostaIA').value.trim();
+    if(!texto) return;
+    const camadas = extrairCamadas(texto);
+    conhecimentoEstruturado = {
+      codigo: agenteSelecionado.codigo,
+      agente: agenteSelecionado.nome,
+      base: agenteSelecionado.base,
+      fonte: 'externa',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+90*86400000).toISOString().split('T')[0],
+      camadas
+    };
+    document.getElementById('camadasPreview').textContent = camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+    document.getElementById('camadasPreview').style.display = 'block';
+    document.getElementById('jsonFinalPreview').textContent = JSON.stringify(conhecimentoEstruturado,null,2);
+    document.getElementById('jsonFinalPreview').style.display = 'block';
+    document.getElementById('btnEnviarMotor').style.display = 'inline-flex';
+  });
+  document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
+    if(!conhecimentoEstruturado) return;
+    document.getElementById('statusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo);
+    document.getElementById('statusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
   });
 
-  btnEstruturar.addEventListener('click', () => {
-    const texto = respostaIA.value.trim();
-    if (!texto) { statusMsg.textContent = '⚠️ Cole a resposta da IA antes de estruturar.'; setTimeout(() => { statusMsg.textContent = ''; }, 3000); return; }
-    const camadasExtraidas = extrairCamadas(texto, agenteSelecionado.base);
-    conhecimentoEstruturado = camadasExtraidas;
-    exibirPreVisualizacao(camadasExtraidas);
-    gerarJSONFinal(camadasExtraidas);
-    btnEnviarMotor.style.display = 'inline-flex';
-  });
-
-  function extrairCamadas(texto, base) {
-    const linhas = texto.split('\n'); const camadas = []; let current = null;
-    const regexNivel = /(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i;
-    for (const linha of linhas) {
-      const match = linha.match(regexNivel);
-      if (match) { const nivel = parseInt(match[1]); const nome = match[2].trim(); current = { nivel, nome, titulo: nome, subtemas: [] }; camadas.push(current); }
-      else if (current) { const partes = linha.split(/[,;]| - /).map(s => s.trim()).filter(s => s.length > 5); if (partes.length > 0) current.subtemas.push(...partes); }
+  function extrairCamadas(texto) {
+    const linhas = texto.split('\n'), camadas = [];
+    let current = null;
+    for(const l of linhas){
+      const m = l.match(/(?:camada|nível|nivel|^)\s*(\d)\s*[-:.]?\s*(.+)/i);
+      if(m){ current = { nivel: parseInt(m[1]), nome: m[2].trim(), titulo: m[2].trim(), subtemas: [] }; camadas.push(current); }
+      else if(current){ const p = l.split(/[,;]| - /).map(s=>s.trim()).filter(s=>s.length>5); if(p.length) current.subtemas.push(...p); }
     }
-    if (camadas.length === 0) { const nomesPadrao = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência']; for (let i = 1; i <= 7; i++) { camadas.push({ nivel: i, nome: nomesPadrao[i-1], titulo: nomesPadrao[i-1], subtemas: [texto.substring(0,100)] }); } }
-    return { base, camadas };
+    if(!camadas.length){
+      const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
+      for(let i=1;i<=7;i++) camadas.push({nivel:i,nome:nomes[i-1],titulo:nomes[i-1],subtemas:[texto.substring(0,100)]});
+    }
+    return camadas;
   }
 
-  function exibirPreVisualizacao({ camadas }) {
-    let html = ''; camadas.forEach(c => { html += `<strong>Camada ${c.nivel}: ${c.nome}</strong> — ${c.subtemas.join(', ')}\n`; });
-    camadasPreview.textContent = html || 'Estruturação concluída.'; camadasPreview.style.display = 'block';
-  }
+  // ==================== TAB 2: TEMPLATE DE HUMANOIDES ====================
+  const tiposHumanoides = [
+    { icone: '💼', nome: 'RH / Escuta Organizacional', codigo: 'hum.rh', desc: 'Análise de clima, feedback, reconhecimento, conflitos', exemplo: 'Estou há 3 anos na empresa e ninguém reconhece meu trabalho.' },
+    { icone: '🎓', nome: 'Educador / Mentor', codigo: 'hum.edu', desc: 'Ensino, mentoria, avaliação de aprendizagem', exemplo: 'Tenho dificuldade em aprender cálculo diferencial.' },
+    { icone: '🏥', nome: 'Saúde / Acolhimento', codigo: 'hum.health', desc: 'Triagem emocional, apoio psicológico, bem-estar', exemplo: 'Ando muito ansioso e não consigo dormir direito.' },
+    { icone: '⚖️', nome: 'Jurídico / Compliance', codigo: 'hum.law', desc: 'Orientações legais, denúncias, due diligence', exemplo: 'Acredito que meu contrato tem cláusulas abusivas.' },
+    { icone: '💻', nome: 'Suporte Técnico / TI', codigo: 'hum.tech', desc: 'Diagnóstico de problemas, tutoriais, troubleshooting', exemplo: 'Meu computador não liga e tenho um prazo urgente.' },
+    { icone: '📈', nome: 'Financeiro / Investimentos', codigo: 'hum.fin', desc: 'Consultoria financeira, análise de risco, planejamento', exemplo: 'Quero investir mas não sei por onde começar.' },
+    { icone: '🎯', nome: 'Coach / Desenvolvimento Pessoal', codigo: 'hum.coach', desc: 'Metas, produtividade, equilíbrio vida-trabalho', exemplo: 'Sinto que estou estagnado na carreira.' },
+    { icone: '🛒', nome: 'Atendimento ao Cliente', codigo: 'hum.cx', desc: 'Suporte, reclamações, fidelização', exemplo: 'Comprei um produto com defeito e não consigo trocar.' },
+    { icone: '🔍', nome: 'Investigação / Análise Forense', codigo: 'hum.forensic', desc: 'Análise de evidências, padrões, detecção de anomalias', exemplo: 'Encontrei inconsistências nos relatórios financeiros.' },
+    { icone: '🌍', nome: 'Geopolítica / Internacional', codigo: 'hum.geo', desc: 'Análise de cenários, riscos geopolíticos', exemplo: 'Como a guerra comercial afeta meus investimentos?' },
+    { icone: '🎨', nome: 'Criativo / Artes', codigo: 'hum.art', desc: 'Feedback criativo, bloqueios artísticos, direção', exemplo: 'Estou com bloqueio criativo para terminar minha obra.' },
+    { icone: '⚽', nome: 'Esportes / Performance', codigo: 'hum.sport', desc: 'Análise de desempenho, motivação esportiva', exemplo: 'Meu rendimento caiu muito nos últimos jogos.' },
+    { icone: '🔧', nome: 'Customizado', codigo: 'hum.custom', desc: 'Defina seu próprio domínio e camadas semânticas', exemplo: 'Descreva seu contexto personalizado aqui.' }
+  ];
 
-  function gerarJSONFinal({ base, camadas }) {
-    const temaPrincipal = agenteSelecionado.nome.replace('Agente de ', '');
-    const novaBase = { id: base, nome: agenteSelecionado.nome, dataAlerta: new Date().toISOString(), tipoAssunto: 'dinamico', camadas: camadas.map(c => ({ nivel: c.nivel, nome: c.nome, temas: [{ titulo: c.titulo || temaPrincipal, subtemas: c.subtemas.length > 0 ? c.subtemas : ['A definir'] }] })) };
-    jsonFinalPreview.textContent = JSON.stringify({ base: novaBase, agente: { nome: agenteSelecionado.nome, base } }, null, 2);
-    jsonFinalPreview.style.display = 'block';
-    conhecimentoEstruturado = { base: novaBase, agente: { nome: agenteSelecionado.nome, base } };
-  }
+  let humanoideSelecionado = null, resultadoHum = null;
+  const humTypeGrid = document.getElementById('humTypeGrid');
 
-  btnEnviarMotor.addEventListener('click', () => {
-    if (!conhecimentoEstruturado) return;
-    sessionStorage.setItem('conhecimentoEstruturado', JSON.stringify(conhecimentoEstruturado));
-    statusMsg.textContent = '🚀 Conhecimento enviado! Abra o Motor Ultra IA e use a opção de upload.';
-    setTimeout(() => { statusMsg.textContent = ''; }, 5000);
+  tiposHumanoides.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'hum-type-card';
+    card.innerHTML = `<span class="type-icon">${t.icone}</span><span class="type-name">${t.nome}</span><span class="type-code">${t.codigo}.idenza.*</span>`;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      humanoideSelecionado = t;
+      abrirPainelHumanoide(t);
+    });
+    humTypeGrid.appendChild(card);
   });
 
-  panelPesquisa.style.display = 'none';
+  function abrirPainelHumanoide(t) {
+    document.getElementById('humPanel').style.display = 'block';
+    document.getElementById('humIcone').textContent = t.icone;
+    document.getElementById('humNome').textContent = t.nome;
+    document.getElementById('humCodigoBase').textContent = t.codigo + '.idenza.*';
+    document.getElementById('humDescricao').textContent = t.desc;
+    document.getElementById('humEntrada').value = '';
+    document.getElementById('humEntrada').placeholder = 'Ex: "' + t.exemplo + '"';
+    document.getElementById('humResultados').style.display = 'none';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+    document.getElementById('humStatusMsg').textContent = '';
+    resultadoHum = null;
+  }
+
+  document.getElementById('btnProcessarHum').addEventListener('click', () => {
+    if(!humanoideSelecionado) return;
+    const entrada = document.getElementById('humEntrada').value.trim();
+    if(!entrada || entrada.length < 5) {
+      document.getElementById('humStatusMsg').textContent = '⚠️ Insira uma descrição mais detalhada.';
+      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
+      return;
+    }
+    document.getElementById('humStatusMsg').textContent = '🧠 Processando...';
+    setTimeout(() => {
+      resultadoHum = processarHumanoide(entrada, humanoideSelecionado);
+      exibirResultadosHum(resultadoHum);
+      document.getElementById('humStatusMsg').textContent = '✅ Concluído.';
+      setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},4000);
+    }, 500);
+  });
+
+  function processarHumanoide(entrada, tipo) {
+    const texto = entrada.toLowerCase();
+    const codigo = gerarCodigoUnico(tipo.codigo);
+    
+    // Análise léxica genérica
+    const temFrustracao = /frustr|decepcion|desanim|difícil|problema|não.*consigo/i.test(texto);
+    const temSatisfacao = /satisfeit|feliz|grato|bom|obrigad|funcionou/i.test(texto);
+    const temUrgencia = /urgente|rápido|prazo|agora|imediato/i.test(texto);
+    const temConfusao = /confuso|não.*entendo|dúvida|perdid/i.test(texto);
+    
+    const emocoes = {
+      frustracao: temFrustracao ? 0.80 : 0.20,
+      urgencia: temUrgencia ? 0.75 : 0.25,
+      satisfacao: temSatisfacao ? 0.80 : 0.30,
+      confusao: temConfusao ? 0.70 : 0.20,
+      esperanca: /esperan|acredit|tentar|vou.*conseguir/i.test(texto) ? 0.65 : 0.35,
+      confianca: /confio|seguro|certo|claro/i.test(texto) ? 0.60 : 0.30
+    };
+
+    const intencoes = {
+      resolver_problema: temFrustracao || temConfusao ? 0.85 : 0.30,
+      aprender: /aprender|entender|explica|como.*faz/i.test(texto) ? 0.80 : 0.25,
+      ser_ouvido: /ouvir|atenção|ninguém.*liga|ignor/i.test(texto) ? 0.85 : 0.30,
+      receber_orientacao: /orienta|ajuda|guia|conselho/i.test(texto) ? 0.78 : 0.28,
+      expressar: /quero.*dizer|preciso.*falar|desabafar/i.test(texto) ? 0.72 : 0.22
+    };
+
+    const comportamentos = {
+      engajamento: temSatisfacao ? 0.70 : 0.40,
+      urgencia: temUrgencia ? 0.80 : 0.25,
+      proatividade: /fiz|tentei|busquei|procurei/i.test(texto) ? 0.60 : 0.35,
+      risco_abandono: temFrustracao && /desist|abandon|sair/i.test(texto) ? 0.70 : 0.20
+    };
+
+    let alertaNivel = 'baixo', alertaTipo = null, alertaUrgencia = 'monitorar';
+    if(comportamentos.urgencia > 0.7) { alertaNivel = 'alto'; alertaTipo = 'urgencia'; alertaUrgencia = 'imediata'; }
+    if(comportamentos.risco_abandono > 0.6) { alertaNivel = 'medio'; alertaTipo = 'risco_abandono'; alertaUrgencia = 'esta_semana'; }
+
+    let resposta = '';
+    if(temFrustracao) resposta = `Compreendo sua situação com "${tipo.nome}". Pelo que descreveu, identifico pontos importantes que merecem atenção. Vamos explorar isso juntos com calma.`;
+    else if(temSatisfacao) resposta = `Que bom receber esse retorno positivo! Fico feliz em saber que as coisas estão fluindo bem no contexto de ${tipo.nome}.`;
+    else resposta = `Obrigado por compartilhar. Como ${tipo.nome}, estou aqui para ajudar. Podemos analisar sua situação com mais profundidade.`;
+    
+    if(alertaNivel === 'alto') resposta += '\n\n⚠️ Noto um senso de urgência importante. Recomendo priorizarmos este caso.';
+
+    return {
+      codigo,
+      tipo: tipo.nome,
+      dominio: tipo.codigo,
+      analise_cognitiva: {
+        camada1_emocoes: emocoes,
+        camada2_intencoes: intencoes,
+        camada3_objetivos: { resolver: 0.80, aprender: intencoes.aprender, expressar: intencoes.expressar },
+        camada4_competencias: { comunicacao: 0.55, autonomia: 0.40, colaboracao: 0.35 },
+        camada5_comportamentos: comportamentos,
+        camada6_eixo: tipo.codigo,
+        scores: { [tipo.codigo]: 0.90 }
+      },
+      alerta: { nivel: alertaNivel, tipo: alertaTipo, urgencia: alertaUrgencia },
+      camada7_resposta: resposta,
+      fonte: 'IDEnza',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+30*86400000).toISOString().split('T')[0]
+    };
+  }
+
+  function exibirResultadosHum(r) {
+    document.getElementById('humResultados').style.display = 'block';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+    document.getElementById('humCodigoRastreio').textContent = r.codigo;
+
+    const ab = document.getElementById('humAlertaBox');
+    ab.style.display = 'block';
+    ab.className = 'hum-alert-box ' + r.alerta.nivel;
+    ab.innerHTML = `<strong>🚨 Alerta: ${r.alerta.nivel.toUpperCase()}</strong><br>Tipo: ${r.alerta.tipo||'N/A'} | Urgência: ${r.alerta.urgencia.replace('_',' ')}`;
+
+    const emocoes = r.analise_cognitiva.camada1_emocoes;
+    let m = '';
+    Object.entries(emocoes).sort((a,b)=>b[1]-a[1]).slice(0,4).forEach(([k,v])=>{
+      m += `<div class="hum-metric-item"><div class="label">${k}</div><div class="value">${(v*100).toFixed(0)}%</div></div>`;
+    });
+    document.getElementById('humMetricGrid').innerHTML = m;
+    document.getElementById('humResposta').textContent = r.camada7_resposta;
+    document.getElementById('humJsonCompleto').textContent = JSON.stringify(r,null,2);
+  }
+
+  document.getElementById('btnLimparHum').addEventListener('click', ()=>{
+    document.getElementById('humEntrada').value = '';
+    document.getElementById('humResultados').style.display = 'none';
+    document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+    resultadoHum = null;
+  });
+
+  document.getElementById('btnCopiarJSONHum').addEventListener('click', ()=>{
+    if(!resultadoHum) return;
+    copiarTextoParaClipboard(JSON.stringify(resultadoHum,null,2));
+    document.getElementById('humStatusMsg').textContent = '📋 JSON copiado.';
+    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEnviarWorkerHum').addEventListener('click', async ()=>{
+    if(!resultadoHum) return;
+    document.getElementById('humStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(resultadoHum,'humanoide',resultadoHum.codigo);
+    document.getElementById('humStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},5000);
+  });
+
+  // ==================== TAB 3: DADOS UNIVERSAIS ====================
+  const categorias = [
+    {nome:'Direito',codigo:'law',desc:'Todos os ramos jurídicos',icone:'⚖️'},
+    {nome:'Medicina & Saúde',codigo:'med',desc:'Anatomia, especialidades',icone:'🏥'},
+    {nome:'Economia',codigo:'econ',desc:'Micro, macro, econometria',icone:'📈'},
+    {nome:'Matemática',codigo:'math',desc:'Álgebra, cálculo, estatística',icone:'🔢'},
+    {nome:'Física',codigo:'phys',desc:'Mecânica, quântica, termodinâmica',icone:'⚛️'},
+    {nome:'Química',codigo:'chem',desc:'Orgânica, inorgânica',icone:'🧪'},
+    {nome:'Biologia',codigo:'bio',desc:'Genética, ecologia, evolução',icone:'🧬'},
+    {nome:'Geografia',codigo:'geo',desc:'Física, humana, geopolítica',icone:'🌍'},
+    {nome:'História',codigo:'hist',desc:'Antiga, medieval, contemporânea',icone:'📜'},
+    {nome:'Filosofia',codigo:'phil',desc:'Ética, lógica, metafísica',icone:'🏛️'},
+    {nome:'Psicologia',codigo:'psych',desc:'Clínica, social, cognitiva',icone:'🧠'},
+    {nome:'Engenharias',codigo:'eng',desc:'Civil, mecânica, software',icone:'⚙️'},
+    {nome:'Tecnologia & IA',codigo:'tech',desc:'ML, NLP, visão computacional',icone:'💻'},
+    {nome:'Artes & Literatura',codigo:'art',desc:'Pintura, música, cinema',icone:'🎨'},
+    {nome:'Celebridades',codigo:'celeb',desc:'Personalidades históricas',icone:'⭐'},
+    {nome:'Esportes',codigo:'sport',desc:'Futebol, atletismo, eSports',icone:'⚽'},
+    {nome:'Religião',codigo:'rel',desc:'Cristianismo, islamismo, budismo',icone:'🕉️'},
+    {nome:'Gastronomia',codigo:'food',desc:'Culinária mundial, vinhos',icone:'🍽️'},
+    {nome:'Astronomia',codigo:'astro',desc:'Planetas, estrelas, cosmologia',icone:'🔭'},
+    {nome:'Sociologia',codigo:'soc',desc:'Estruturas sociais, cultura',icone:'👥'}
+  ];
+
+  let catSelecionada = null, dadosData = null;
+  const dcg = document.getElementById('dataCategoryGrid');
+  categorias.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'data-category-card';
+    card.innerHTML = `<div class="cat-code">${c.icone} ${c.codigo}.idenza.*</div><div class="cat-name">${c.nome}</div><div class="cat-desc">${c.desc}</div>`;
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.data-category-card').forEach(x=>x.classList.remove('selected'));
+      card.classList.add('selected');
+      catSelecionada = c;
+      document.getElementById('dataPanelCategoria').style.display = 'block';
+      document.getElementById('dataCatNome').textContent = c.nome;
+      document.getElementById('dataCatCode').textContent = c.codigo+'.idenza.*';
+      document.getElementById('dataPromptOficial').textContent = 
+        `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais (livros, journals, normas, legislação). Cite todas.`;
+      document.getElementById('dataResultados').style.display = 'none';
+      dadosData = null;
+    });
+    dcg.appendChild(card);
+  });
+
+  document.getElementById('btnCopiarPromptData').addEventListener('click', ()=>{
+    copiarTextoParaClipboard(document.getElementById('dataPromptOficial').textContent);
+    document.getElementById('dataStatusMsg').textContent = '📋 Prompt copiado.';
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEstruturarData').addEventListener('click', ()=>{
+    const texto = document.getElementById('dataRespostaIA').value.trim();
+    if(!texto||!catSelecionada) return;
+    const codigo = gerarCodigoUnico(catSelecionada.codigo);
+    dadosData = {
+      codigo,
+      categoria: catSelecionada.nome,
+      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
+      fonte: 'externa',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
+      camadas: extrairCamadas(texto)
+    };
+    exibirData();
+  });
+
+  document.getElementById('btnUsarFonteIDEnza').addEventListener('click', ()=>{
+    if(!catSelecionada) return;
+    const codigo = gerarCodigoUnico(catSelecionada.codigo);
+    const nomes = ['Cotidiano','Uso Pessoal','Práticas Profissionais','Aplicações Específicas','Estruturas Abstratas','Teoria Geral','Essência'];
+    dadosData = {
+      codigo,
+      categoria: catSelecionada.nome,
+      topico: document.getElementById('dataTopicoEspecifico').value.trim()||catSelecionada.nome,
+      fonte: 'IDEnza',
+      dataCriacao: new Date().toISOString(),
+      alertaRevisao: new Date(Date.now()+180*86400000).toISOString().split('T')[0],
+      camadas: nomes.map((n,i)=>({nivel:i+1,nome:n,titulo:n,subtemas:['Conhecimento interno IDEnza']}))
+    };
+    exibirData();
+  });
+
+  function exibirData() {
+    document.getElementById('dataResultados').style.display = 'block';
+    document.getElementById('dataCodigoRastreio').textContent = dadosData.codigo;
+    document.getElementById('dataFonte').textContent = dadosData.fonte==='IDEnza'?'IDEnza (Interno)':'Fontes Oficiais Externas';
+    document.getElementById('dataAlertaRevisao').textContent = dadosData.alertaRevisao;
+    document.getElementById('dataCamadasPreview').textContent = dadosData.camadas.map(c=>`Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+    document.getElementById('dataCamadasPreview').style.display = 'block';
+    document.getElementById('dataJsonPreview').textContent = JSON.stringify(dadosData,null,2);
+  }
+
+  document.getElementById('btnCopiarJSONData').addEventListener('click', ()=>{
+    if(!dadosData) return;
+    copiarTextoParaClipboard(JSON.stringify(dadosData,null,2));
+    document.getElementById('dataStatusMsg').textContent = '📋 JSON copiado.';
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},3000);
+  });
+
+  document.getElementById('btnEnviarWorkerData').addEventListener('click', async ()=>{
+    if(!dadosData) return;
+    document.getElementById('dataStatusMsg').textContent = '🚀 Enviando...';
+    const r = await enviarViaWorker(dadosData,'data',dadosData.codigo);
+    document.getElementById('dataStatusMsg').textContent = '✅ '+r.mensagem;
+    setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},5000);
+  });
+
 </script>
 </body>
 </html>

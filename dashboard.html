@@ -4,73 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Estação de Pesquisa — Montagem de Super Agentes, Humanoides e Estrutura Universal</title>
-  <link rel="stylesheet" href="css/style1.css"> 
+  <link rel="stylesheet" href="css/style1.css">
+  </style>
 </head>
 <body>
-<!-- OVERLAY DE LOGIN IDENZA -->
-<div id="loginOverlay" style="
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: #0d4f5c; z-index: 99999;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-">
-  <div style="
-    background: #ffffff; padding: 50px 40px;
-    box-shadow: 8px 8px 24px rgba(0,0,0,0.4);
-    text-align: center; max-width: 420px; width: 90%;
-  ">
-    <div style="font-size:3rem; margin-bottom:8px;">🧠</div>
-    <h1 style="color:#0d4f5c; font-size:1.6rem; margin-bottom:6px; font-weight:700;">
-      IDEnza
-    </h1>
-    <p style="color:#888; font-size:0.75rem; margin-bottom:28px; letter-spacing:1px;">
-      ESTAÇÃO DE PESQUISA &bull; ACESSO RESTRITO
-    </p>
-    
-    <input 
-      type="password" 
-      id="senhaAcesso" 
-      placeholder="Digite a senha de acesso"
-      autocomplete="off"
-      style="
-        width: 100%; padding: 14px 16px; font-size: 0.95rem;
-        border: 2px solid #d0d0d0; text-align: center;
-        margin-bottom: 14px; outline: none;
-        font-family: 'Fira Code', monospace;
-        transition: border 0.2s;
-      "
-      onfocus="this.style.border='2px solid #0d4f5c'"
-      onblur="this.style.border='2px solid #d0d0d0'"
-      onkeydown="if(event.key==='Enter') verificarAcesso()"
-    >
-    
-    <button 
-      onclick="verificarAcesso()"
-      style="
-        width: 100%; padding: 14px; font-size: 0.9rem;
-        background: #b8860b; color: white; border: none;
-        cursor: pointer; font-weight: 700; letter-spacing: 2px;
-        text-transform: uppercase;
-        transition: all 0.2s;
-      "
-      onmouseover="this.style.background='#9a6f0a'"
-      onmouseout="this.style.background='#b8860b'"
-    >
-      Acessar
-    </button>
-    
-    <p id="loginErro" style="
-      color:#b91c1c; font-size:0.72rem; margin-top:14px; display:none;
-      font-weight:600;
-    ">
-      🔒 Senha incorreta
-    </p>
-    
-    <p style="color:#bbb; font-size:0.55rem; margin-top:20px;">
-      Ambiente privado &bull; IDEnza Intelligence Platform
-    </p>
-  </div>
-</div>
 
 <!-- BARRA DE STATUS DA CONEXÃO REDIS -->
 <div class="redis-connection-bar">

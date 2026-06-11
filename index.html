@@ -21,6 +21,12 @@
       --shadow-lg: 4px 4px 16px rgba(0,0,0,0.12);
       --radius: 0px;
       --font-mono: 'Fira Code', 'Courier New', monospace;
+      --success: #0d5c3a;
+      --success-bg: #e0f5e8;
+      --warning: #b8860b;
+      --warning-bg: #fefce8;
+      --error: #b91c1c;
+      --error-bg: #fef2f2;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
     body {
@@ -156,7 +162,7 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 0.8rem;
-      transition: 0.2s;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -187,6 +193,11 @@
     .btn-outline:hover { background: #f0f8f9; }
     .btn-petroleum:hover { opacity: 0.9; }
     .btn-data:hover { opacity: 0.9; }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
     .btn-outline.active {
       background: var(--petroleum);
       color: white;
@@ -337,6 +348,21 @@
       color: #0d5c3a;
       margin-top: 6px;
     }
+    
+    /* FEEDBACK DE ENVIO REDIS */
+    .redis-feedback {
+      padding: 8px 12px;
+      margin-top: 8px;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      border-left: 3px solid var(--petroleum-light);
+      background: #f0f8f9;
+      display: none;
+    }
+    .redis-feedback.show { display: block; }
+    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); }
+    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); }
+    
     .redis-axes {
       display: flex;
       flex-wrap: wrap;
@@ -999,6 +1025,7 @@
     <button class="btn btn-outline" id="btnCopiarDadosRedis">Copiar Dados Redis</button>
     <button class="btn btn-petroleum" id="btnEnviarRedisMotor">Enviar via Worker</button>
   </div>
+  <div class="redis-feedback" id="redisFeedback"></div>
   <div class="status-msg" id="redisStatusMsg"></div>
 </div>
 
@@ -1023,6 +1050,7 @@
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
   <button class="btn btn-petroleum" id="btnEnviarMotor" style="margin-top:8px; display:none;">Enviar via Worker</button>
+  <div class="redis-feedback" id="redisFeedbackAgente"></div>
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
@@ -1069,6 +1097,7 @@
       </div>
 
       <div class="hum-status-msg" id="humStatusMsg"></div>
+      <div class="redis-feedback" id="redisFeedbackHum"></div>
 
       <!-- RESULTADOS -->
       <div id="humResultados" style="display:none;">
@@ -1147,6 +1176,7 @@
           <button class="btn btn-data" id="btnEnviarWorkerData">Enviar via Worker</button>
         </div>
       </div>
+      <div class="redis-feedback" id="redisFeedbackData"></div>
       <div class="data-status-msg" id="dataStatusMsg"></div>
     </div>
   </div>
@@ -1167,20 +1197,47 @@
 </div><!-- FIM TAB 3 -->
 
 <script>
-  /* ==================== WORKER SIMULATOR ==================== */
+  /* ==================== WORKER SIMULATOR COM FEEDBACK VISUAL ==================== */
   const WORKER_ENDPOINT = '/api/redis-ingest';
-
-  async function enviarViaWorker(payload, tipo, codigo) {
+  
+  async function enviarViaWorker(payload, tipo, codigo, feedbackElementId) {
+    const feedbackEl = document.getElementById(feedbackElementId);
+    
+    /* Mostra loading */
+    if (feedbackEl) {
+      feedbackEl.className = 'redis-feedback show';
+      feedbackEl.textContent = '⏳ Enviando para o Redis...';
+      feedbackEl.style.borderColor = '#eab308';
+      feedbackEl.style.background = '#fefce8';
+    }
+    
     console.log(`[WORKER] Enviando tipo=${tipo} código=${codigo}`);
+    console.log(`[WORKER] Payload:`, JSON.stringify(payload, null, 2));
+    
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({
+        const resultado = {
           sucesso: true,
           mensagem: `Payload ${codigo} enviado ao Redis via Worker`,
           redisKey: `idenza:${tipo}:${codigo}`,
-          timestamp: new Date().toISOString()
-        });
-      }, 600);
+          timestamp: new Date().toISOString(),
+          tamanho: JSON.stringify(payload).length
+        };
+        
+        /* Mostra sucesso */
+        if (feedbackEl) {
+          feedbackEl.className = 'redis-feedback show success';
+          feedbackEl.innerHTML = `
+            ✅ <strong>Enviado com sucesso!</strong><br>
+            📁 Chave Redis: <code>${resultado.redisKey}</code><br>
+            📏 Tamanho: ${resultado.tamanho} bytes<br>
+            🕐 Timestamp: ${new Date(resultado.timestamp).toLocaleString('pt-BR')}
+          `;
+        }
+        
+        console.log(`[WORKER] Resposta:`, resultado);
+        resolve(resultado);
+      }, 800);
     });
   }
 
@@ -1288,7 +1345,7 @@
   });
   document.getElementById('btnEnviarRedisMotor').addEventListener('click', async ()=>{
     document.getElementById('redisStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker({redisData},'redis-data',gerarCodigoUnico('redis'));
+    const r = await enviarViaWorker({redisData},'redis-data',gerarCodigoUnico('redis'),'redisFeedback');
     document.getElementById('redisStatusMsg').textContent = r.mensagem;
     setTimeout(()=>{document.getElementById('redisStatusMsg').textContent='';},5000);
   });
@@ -1310,13 +1367,13 @@
         document.getElementById('panelPesquisa').style.display = 'block';
         document.getElementById('nomeAgenteSelecionado').textContent = agenteSelecionado.nome;
         document.getElementById('codigoAgenteDisplay').textContent = agenteSelecionado.codigo;
-        /* PROMPT COM REGRA ANTI-JOGO DA VELHA INCORPORADA */
         document.getElementById('generatedQuestion').textContent = 
           `Você é um especialista em ${agenteSelecionado.base}. Forneça conhecimento completo sobre "${agenteSelecionado.nome}" em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO E DICAS\nUse fontes oficiais.${REGRA_ANTI_HASHTAG}`;
         document.getElementById('respostaIA').value = '';
         document.getElementById('camadasPreview').style.display = 'none';
         document.getElementById('jsonFinalPreview').style.display = 'none';
         document.getElementById('btnEnviarMotor').style.display = 'none';
+        document.getElementById('redisFeedbackAgente').className = 'redis-feedback';
       }
     });
   });
@@ -1343,11 +1400,12 @@
     document.getElementById('jsonFinalPreview').textContent = JSON.stringify(conhecimentoEstruturado,null,2);
     document.getElementById('jsonFinalPreview').style.display = 'block';
     document.getElementById('btnEnviarMotor').style.display = 'inline-flex';
+    document.getElementById('redisFeedbackAgente').className = 'redis-feedback';
   });
   document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
     if(!conhecimentoEstruturado) return;
     document.getElementById('statusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo);
+    const r = await enviarViaWorker(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo,'redisFeedbackAgente');
     document.getElementById('statusMsg').textContent = r.mensagem;
     setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
   });
@@ -1411,6 +1469,7 @@
     document.getElementById('humResultados').style.display = 'none';
     document.getElementById('btnEnviarWorkerHum').style.display = 'none';
     document.getElementById('humStatusMsg').textContent = '';
+    document.getElementById('redisFeedbackHum').className = 'redis-feedback';
     resultadoHum = null;
   }
 
@@ -1520,6 +1579,7 @@
     document.getElementById('humEntrada').value = '';
     document.getElementById('humResultados').style.display = 'none';
     document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+    document.getElementById('redisFeedbackHum').className = 'redis-feedback';
     resultadoHum = null;
   });
 
@@ -1533,7 +1593,7 @@
   document.getElementById('btnEnviarWorkerHum').addEventListener('click', async ()=>{
     if(!resultadoHum) return;
     document.getElementById('humStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(resultadoHum,'humanoide',resultadoHum.codigo);
+    const r = await enviarViaWorker(resultadoHum,'humanoide',resultadoHum.codigo,'redisFeedbackHum');
     document.getElementById('humStatusMsg').textContent = r.mensagem;
     setTimeout(()=>{document.getElementById('humStatusMsg').textContent='';},5000);
   });
@@ -1575,10 +1635,10 @@
       document.getElementById('dataPanelCategoria').style.display = 'block';
       document.getElementById('dataCatNome').textContent = c.nome;
       document.getElementById('dataCatCode').textContent = c.codigo+'.idenza.*';
-      /* PROMPT COM REGRA ANTI-JOGO DA VELHA INCORPORADA */
       document.getElementById('dataPromptOficial').textContent = 
         `Você é um especialista em ${c.nome}. Forneça conhecimento COMPLETO em 7 camadas:\n7.ESSÊNCIA\n6.TEORIA GERAL\n5.ESTRUTURAS ABSTRATAS\n4.APLICAÇÕES\n3.PRÁTICAS PROFISSIONAIS\n2.USO PESSOAL\n1.COTIDIANO\nUse APENAS fontes oficiais (livros, journals, normas, legislação). Cite todas.${REGRA_ANTI_HASHTAG}`;
       document.getElementById('dataResultados').style.display = 'none';
+      document.getElementById('redisFeedbackData').className = 'redis-feedback';
       dadosData = null;
     });
     dcg.appendChild(card);
@@ -1642,7 +1702,7 @@
   document.getElementById('btnEnviarWorkerData').addEventListener('click', async ()=>{
     if(!dadosData) return;
     document.getElementById('dataStatusMsg').textContent = 'Enviando...';
-    const r = await enviarViaWorker(dadosData,'data',dadosData.codigo);
+    const r = await enviarViaWorker(dadosData,'data',dadosData.codigo,'redisFeedbackData');
     document.getElementById('dataStatusMsg').textContent = r.mensagem;
     setTimeout(()=>{document.getElementById('dataStatusMsg').textContent='';},5000);
   });

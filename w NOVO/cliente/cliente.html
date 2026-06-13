@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEnza Intelligence Platform — Painel do Cliente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-deep: #0B1A2F;
+            --navy-card: #102A43;
+            --copper: #C87A4F;
+            --copper-dim: #a05a3a;
+            --cream: #F5F0E8;
+            --white-soft: #EAE4D9;
+            --text-muted: #8A9CAF;
+            --shadow-copper: 0 8px 32px rgba(200, 122, 79, 0.08);
+            --success: #4caf50;
+            --warning: #d4a94f;
+            --danger: #b54a4a;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background-color: var(--navy-deep);
+            color: var(--cream);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+        }
+        .login-overlay {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: radial-gradient(circle at 50% 40%, rgba(200,122,79,0.05) 0%, #0B1A2F 70%);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--navy-card);
+            padding: 3rem 2.5rem; border-radius: 2px; max-width: 420px; width: 90%;
+            border: 1px solid var(--copper); box-shadow: var(--shadow-copper); text-align: center;
+        }
+        .login-box h2 { font-family: 'Playfair Display', serif; color: var(--copper); font-weight: 400; font-size: 2rem; margin-bottom: 0.3rem; }
+        .login-box .subtle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        .login-tabs { display: flex; border-bottom: 1px solid rgba(200,122,79,0.2); margin-bottom: 1.8rem; }
+        .login-tab {
+            flex:1; padding: 0.6rem 0; cursor: pointer; font-size: 0.85rem; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid transparent;
+            transition: all 0.3s; background: none; border-top: none; border-left: none; border-right: none;
+            font-family: 'Inter', sans-serif; font-weight: 500;
+        }
+        .login-tab.active { color: var(--copper); border-bottom-color: var(--copper); }
+        .login-tab:hover { color: var(--cream); }
+        .login-panel { display: none; }
+        .login-panel.active { display: block; }
+        .login-box .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .login-box label { display: block; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+        .login-box input { width: 100%; padding: 0.8rem; background: var(--navy-deep); border: 1px solid rgba(200,122,79,0.2); color: var(--cream); font-family: 'Inter', sans-serif; font-size: 0.9rem; }
+        .login-box .btn { width: 100%; margin-top: 0.5rem; }
+        .login-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.8rem; min-height: 1.2em; }
+        .btn {
+            display: inline-block; padding: 0.8rem 1.8rem; font-family: 'Inter', sans-serif;
+            font-weight: 500; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
+            border-radius: 2px; transition: all 0.3s ease; text-decoration: none; cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary { background: var(--copper); color: white; border-color: var(--copper); }
+        .btn-primary:hover { background: var(--copper-dim); border-color: var(--copper-dim); box-shadow: var(--shadow-copper); }
+        .btn-outline { background: transparent; color: var(--copper); border-color: var(--copper); }
+        .btn-outline:hover { background: rgba(200,122,79,0.05); box-shadow: var(--shadow-copper); }
+        .btn-sm { font-size: 0.75rem; padding: 0.4rem 1rem; letter-spacing: 0.04em; }
+        .btn-export {
+            background: transparent; border: 1px solid var(--copper); color: var(--copper);
+            padding: 0.4rem 1rem; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s;
+            font-family: 'Inter', sans-serif; font-weight: 500;
+        }
+        .btn-export:hover { background: rgba(200,122,79,0.08); }
+
+        /* ====== MICROFONE DE LUXO IDENZA ====== */
+        .mic-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 12px;
+        }
+        .btn-mic {
+            background: linear-gradient(135deg, rgba(200,122,79,0.06) 0%, rgba(200,122,79,0.12) 100%);
+            border: 1.5px solid rgba(200,122,79,0.35);
+            color: var(--copper);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(200,122,79,0.08), inset 0 0 20px rgba(200,122,79,0.03);
+            flex-shrink: 0;
+        }
+        .btn-mic:hover {
+            background: linear-gradient(135deg, rgba(200,122,79,0.15) 0%, rgba(200,122,79,0.25) 100%);
+            border-color: var(--copper);
+            box-shadow: 0 0 30px rgba(200,122,79,0.25), 0 0 60px rgba(200,122,79,0.1);
+            transform: scale(1.05);
+        }
+        .btn-mic.recording {
+            background: linear-gradient(135deg, rgba(180,74,74,0.15) 0%, rgba(200,122,79,0.25) 100%);
+            border-color: rgba(255,130,130,0.5);
+            color: #ffb0b0;
+            animation: micLuxuryPulse 2s infinite;
+            box-shadow: 0 0 40px rgba(255,100,100,0.25), 0 0 80px rgba(200,122,79,0.12);
+        }
+        @keyframes micLuxuryPulse {
+            0% { box-shadow: 0 0 20px rgba(255,100,100,0.15), 0 0 40px rgba(200,122,79,0.08); }
+            50% { box-shadow: 0 0 35px rgba(255,100,100,0.35), 0 0 70px rgba(200,122,79,0.18); }
+            100% { box-shadow: 0 0 20px rgba(255,100,100,0.15), 0 0 40px rgba(200,122,79,0.08); }
+        }
+        .mic-waves {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid transparent;
+            pointer-events: none;
+        }
+        .btn-mic.recording .mic-waves {
+            border-color: rgba(200,122,79,0.25);
+            animation: waveExpand 2s infinite;
+        }
+        @keyframes waveExpand {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .mic-indicator {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            min-width: 80px;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+        .mic-indicator.recording {
+            color: #ffb0b0;
+            opacity: 1;
+        }
+        .btn-speaker {
+            background: transparent; 
+            border: none; 
+            color: var(--copper);
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            margin-left: 6px; 
+            opacity: 0.5;
+            transition: all 0.3s;
+            vertical-align: middle;
+        }
+        .btn-speaker:hover { opacity: 1; transform: scale(1.1); }
+
+        .sidebar {
+            width: 260px; background: #060F1C; padding: 2rem 1.5rem; display: flex;
+            flex-direction: column; border-right: 1px solid rgba(200,122,79,0.15);
+            position: fixed; top:0; left:0; bottom:0; z-index: 10;
+        }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--copper); margin-bottom: 3rem; text-align: center; letter-spacing: 0.02em; }
+        .sidebar-logo span { font-size: 0.7rem; display: block; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+        .sidebar-nav { list-style: none; flex: 1; }
+        .sidebar-nav li { margin-bottom: 0.3rem; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 2px;
+            transition: all 0.3s; font-size: 0.9rem; letter-spacing: 0.02em; cursor: pointer;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(200,122,79,0.08); color: var(--copper); }
+        .sidebar-nav a.active { border-left: 2px solid var(--copper); }
+        .sidebar-footer { border-top: 1px solid rgba(200,122,79,0.15); padding-top: 1.5rem; font-size: 0.75rem; color: var(--text-muted); }
+        .sidebar-footer .user { color: var(--cream); font-weight: 400; margin-bottom: 0.3rem; }
+        .main-content { margin-left: 260px; flex: 1; padding: 2rem 3rem; width: 100%; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(200,122,79,0.15); }
+        .top-bar h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; color: var(--cream); }
+        .badge-status { background: rgba(76,175,80,0.15); color: var(--success); padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        .tab-nav { display: flex; gap: 2rem; border-bottom: 1px solid rgba(200,122,79,0.15); margin-bottom: 2rem; padding-bottom: 1rem; flex-wrap: wrap; }
+        .tab-nav a { color: var(--text-muted); text-decoration: none; font-size: 1rem; font-weight: 400; letter-spacing: 0.03em; padding-bottom: 0.5rem; border-bottom: 2px solid transparent; transition: all 0.3s; cursor: pointer; }
+        .tab-nav a:hover, .tab-nav a.active { color: var(--copper); border-bottom-color: var(--copper); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: var(--navy-card); padding: 1.5rem; border-top: 1px solid var(--copper); border-radius: 2px; }
+        .stat-card .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+        .stat-card .value { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--copper); }
+        .panel { background: var(--navy-card); border-radius: 2px; padding: 1.5rem; border: 1px solid rgba(200,122,79,0.1); margin-bottom: 2rem; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .panel-header h2 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 1.3rem; color: var(--cream); }
+        .terminal {
+            background: #0A1522; border: 1px solid rgba(200,122,79,0.2);
+            border-radius: 6px; padding: 2rem; text-align: left; font-family: 'Courier New', monospace;
+            min-height: 200px; max-height: 500px; overflow-y: auto;
+        }
+        .terminal-header { display: flex; gap: 8px; margin-bottom: 1.5rem; opacity: 0.5; align-items: center; }
+        .terminal-header span { width: 12px; height: 12px; border-radius: 50%; background: var(--copper); }
+        .conversation { min-height: 100px; margin-bottom: 1.5rem; color: var(--cream); }
+        .user-msg { color: var(--copper); margin-bottom: 0.5rem; }
+        .ai-msg { color: var(--cream); margin-bottom: 0.5rem; white-space: pre-wrap; position: relative; }
+        .cursor { display: inline-block; width: 8px; height: 1.2em; background: var(--copper); margin-left: 2px; animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+        .input-line { display: flex; align-items: center; color: var(--copper); margin-top: 1rem; gap: 8px; }
+        .input-line .prompt { margin-right: 0.5rem; }
+        #playground-input { background: transparent; border: none; color: var(--cream); font-family: inherit; font-size: 1rem; flex: 1; outline: none; caret-color: var(--copper); }
+        .latency { text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .notepad {
+            background: #0A1522; border: 1px solid rgba(200,122,79,0.2); border-radius: 6px;
+            padding: 1.5rem; min-height: 200px; display: flex; flex-direction: column;
+        }
+        .notepad textarea {
+            flex: 1; background: transparent; border: none; color: var(--cream);
+            font-family: 'Playfair Display', serif; font-size: 1rem; line-height: 1.8;
+            resize: vertical; outline: none; caret-color: var(--copper); min-height: 200px;
+        }
+        .notepad textarea::placeholder { color: var(--text-muted); font-style: italic; }
+        .notepad-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .notepad-header h3 { font-family: 'Playfair Display', serif; color: var(--copper); font-weight: 400; font-size: 1.2rem; }
+        .notepad-actions { display: flex; gap: 0.5rem; }
+        footer { background: #060F1C; padding: 2rem 1rem; text-align: center; margin-top: 3rem; border-top: 1px solid rgba(200,122,79,0.15); }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; letter-spacing: 0.02em; transition: color 0.3s; cursor: pointer; border-bottom: 1px solid transparent; margin: 0 1.5rem; }
+        .footer-links a:hover { color: var(--copper); }
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .sidebar { width: 200px; }
+            .main-content { margin-left: 200px; padding: 1.5rem; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <h2>IDEnza</h2>
+            <p class="subtle">Acesse seu ambiente inteligente</p>
+            <div class="login-tabs">
+                <button class="login-tab active" data-method="email">E‑mail</button>
+                <button class="login-tab" data-method="apikey">Chave de Acesso</button>
+            </div>
+            <div id="login-panel-email" class="login-panel active">
+                <form id="login-form-email">
+                    <div class="form-group"><label>E‑mail</label><input type="email" id="login-email" required></div>
+                    <div class="form-group"><label>Senha</label><input type="password" id="login-password" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div id="login-panel-apikey" class="login-panel">
+                <form id="login-form-apikey">
+                    <div class="form-group"><label>Chave de Acesso</label><input type="text" id="apikey-input" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div class="login-error" id="login-error"></div>
+            <p style="color:var(--text-muted); font-size:0.7rem; margin-top:1rem;">Ao acessar, você concorda com os Termos de Uso.</p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="app-container" style="display:none; width:100%;">
+        <aside class="sidebar">
+            <div class="sidebar-logo">IDEnza<span>Plataforma</span></div>
+            <ul class="sidebar-nav">
+                <li><a class="active" data-tab="tab-playground">🎙️ Playground</a></li>
+                <li><a data-tab="tab-notas">📝 Notas</a></li>
+                <li><a data-tab="tab-conta">👤 Minha Conta</a></li>
+                <li><a data-tab="tab-historico">📋 Histórico</a></li>
+                <li><a href="index.html" style="margin-top:2rem;">← Voltar ao site</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user" id="sidebar-user">Cliente</div>
+                <div>IDEnza © 2026</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h1>Painel do Cliente</h1>
+                <div class="badge-status">● Ativo</div>
+            </div>
+            <div class="tab-nav">
+                <a class="active" data-tab="tab-playground">🎙️ Playground</a>
+                <a data-tab="tab-notas">📝 Notas</a>
+                <a data-tab="tab-conta">👤 Minha Conta</a>
+                <a data-tab="tab-historico">📋 Histórico</a>
+            </div>
+
+            <!-- Playground COM SUPER IA + VOZ DE LUXO -->
+            <div id="tab-playground" class="tab-content active">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Console Inteligente</h2>
+                        <button class="btn-export" id="export-conversation">Exportar Conversa</button>
+                    </div>
+                    <div class="terminal">
+                        <div class="terminal-header"><span></span><span></span><span></span></div>
+                        <div class="conversation" id="playground-conversation">
+                            <div class="ai-msg">> Olá! Como posso ajudar? Digite ou use o microfone 🎤</div>
+                        </div>
+                        <div class="input-line">
+                            <span class="prompt">$</span>
+                            <input type="text" id="playground-input" placeholder="Digite ou clique no microfone..." autofocus>
+                            <div class="mic-container">
+                                <button class="btn-mic" id="btn-mic" title="Gravar voz">
+    <span class="mic-waves"></span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+</button>
+                                <span class="mic-indicator" id="mic-indicator">Pronto</span>
+                            </div>
+                        </div>
+                        <div class="latency" id="playground-latency"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notas -->
+            <div id="tab-notas" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header"><h2>Bloco de Notas</h2>
+                        <div class="notepad-actions">
+                            <button class="btn-export" id="save-notes">Salvar</button>
+                            <button class="btn-export" id="export-notes">Exportar</button>
+                        </div>
+                    </div>
+                    <div class="notepad"><textarea id="notepad-text" placeholder="Escreva suas anotações aqui..."></textarea></div>
+                </div>
+            </div>
+
+            <!-- Minha Conta -->
+            <div id="tab-conta" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="label">Créditos</div><div class="value" id="creditos-value">--</div></div>
+                    <div class="stat-card"><div class="label">Plano</div><div class="value" id="plano-value">--</div></div>
+                    <div class="stat-card"><div class="label">Status</div><div class="value" id="status-value">--</div></div>
+                    <div class="stat-card"><div class="label">Membro desde</div><div class="value" id="created-value">--</div></div>
+                </div>
+            </div>
+
+            <!-- Histórico -->
+            <div id="tab-historico" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header"><h2>Últimas Interações</h2><button class="btn-export" id="export-history">Exportar CSV</button></div>
+                    <div class="table-container"><table><thead><tr><th>Data</th><th>Prompt</th><th>Resposta</th></tr></thead><tbody id="historico-tbody"></tbody></table></div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="footer-links">
+                    <a href="index.html">← Voltar ao Site</a>
+                </div>
+                <div style="color:var(--text-muted); font-size:0.7rem; margin-top:0.5rem;">IDEnza © 2026</div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        (() => {
+            const API_BASE = 'https://idenza-new.avizaecosystem.workers.dev';
+            let recognition = null;
+            let isRecording = false;
+            let synth = window.speechSynthesis;
+
+            // ====== LOGIN ======
+            document.getElementById('login-form-email').onsubmit = async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                const errorDiv = document.getElementById('login-error');
+                if (!email || !password) { errorDiv.textContent = 'Preencha todos os campos'; errorDiv.style.color = '#ff4444'; return; }
+                errorDiv.textContent = '⏳ Entrando...'; errorDiv.style.color = 'var(--text-muted)';
+                try {
+                    const res = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (data.token && data.user) {
+                        localStorage.setItem('idenza_api_key', data.user.api_key);
+                        localStorage.setItem('idenza_token', data.token);
+                        abrirDashboard(data.user);
+                    } else {
+                        errorDiv.textContent = data.error || 'Credenciais inválidas';
+                        errorDiv.style.color = '#ff4444';
+                    }
+                } catch (err) { errorDiv.textContent = 'Erro de conexão'; errorDiv.style.color = '#ff4444'; }
+            };
+
+            document.getElementById('login-form-apikey').onsubmit = async (e) => {
+                e.preventDefault();
+                const apiKey = document.getElementById('apikey-input').value.trim();
+                const errorDiv = document.getElementById('login-error');
+                if (!apiKey) { errorDiv.textContent = 'Informe a chave'; errorDiv.style.color = '#ff4444'; return; }
+                errorDiv.textContent = '⏳ Verificando...'; errorDiv.style.color = 'var(--text-muted)';
+                try {
+                    const res = await fetch(`${API_BASE}/api/me`, { headers: { 'x-api-key': apiKey } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        localStorage.setItem('idenza_api_key', apiKey);
+                        abrirDashboard(data);
+                    } else {
+                        errorDiv.textContent = 'Chave inválida';
+                        errorDiv.style.color = '#ff4444';
+                    }
+                } catch (err) { errorDiv.textContent = 'Erro de conexão'; errorDiv.style.color = '#ff4444'; }
+            };
+
+            function abrirDashboard(userData) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                document.getElementById('sidebar-user').textContent = userData.name || 'Cliente';
+                document.getElementById('creditos-value').textContent = userData.balance || userData.credit_limit || '1000';
+                document.getElementById('plano-value').textContent = userData.plan || 'Starter';
+                document.getElementById('status-value').textContent = userData.status || 'Ativo';
+                document.getElementById('created-value').textContent = userData.created_at ? new Date(userData.created_at).toLocaleDateString('pt-BR') : '--';
+            }
+
+            // Tabs
+            document.querySelectorAll('.login-tab').forEach(t => {
+                t.addEventListener('click', () => {
+                    document.querySelectorAll('.login-tab').forEach(x => x.classList.remove('active'));
+                    document.querySelectorAll('.login-panel').forEach(x => x.classList.remove('active'));
+                    t.classList.add('active');
+                    document.getElementById('login-panel-' + t.dataset.method).classList.add('active');
+                    document.getElementById('login-error').textContent = '';
+                });
+            });
+
+            document.querySelectorAll('.tab-nav a, .sidebar-nav a[data-tab]').forEach(l => {
+                l.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = l.dataset.tab;
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-nav a, .sidebar-nav a[data-tab]').forEach(x => x.classList.remove('active'));
+                    document.getElementById(id).classList.add('active');
+                    l.classList.add('active');
+                });
+            });
+
+            // ====== PLAYGROUND COM SUPER IA + VOZ ======
+            const conv = document.getElementById('playground-conversation');
+            const inp = document.getElementById('playground-input');
+            const lat = document.getElementById('playground-latency');
+            const btnMic = document.getElementById('btn-mic');
+            const micIndicator = document.getElementById('mic-indicator');
+
+            // Inicializar reconhecimento de voz
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'pt-BR';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    inp.value = transcript;
+                    micIndicator.textContent = '✅ Capturado';
+                    micIndicator.classList.remove('recording');
+                    stopRecording();
+                    enviarMensagem(transcript);
+                };
+
+                recognition.onerror = () => {
+                    micIndicator.textContent = '❌ Erro';
+                    micIndicator.classList.remove('recording');
+                    stopRecording();
+                };
+            }
+
+            function startRecording() {
+                if (!recognition) {
+                    micIndicator.textContent = 'Não suportado';
+                    return;
+                }
+                isRecording = true;
+                btnMic.classList.add('recording');
+                micIndicator.textContent = '🎙️ Gravando';
+                micIndicator.classList.add('recording');
+                recognition.start();
+            }
+
+            function stopRecording() {
+                isRecording = false;
+                btnMic.classList.remove('recording');
+                if (!micIndicator.textContent.includes('✅')) {
+                    micIndicator.textContent = 'Pronto';
+                    micIndicator.classList.remove('recording');
+                }
+            }
+
+            btnMic.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+
+            // Função de envio de mensagem
+            async function enviarMensagem(msg) {
+                conv.innerHTML += `<div class="user-msg">> ${msg.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`;
+                const ai = document.createElement('div'); ai.className = 'ai-msg'; 
+                ai.innerHTML = '<span class="cursor"></span> Gerando...';
+                conv.appendChild(ai);
+                const st = Date.now();
+                const apiKey = localStorage.getItem('idenza_api_key');
+                
+                try {
+                    const res = await fetch(`${API_BASE}/api/ask`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey || '' },
+                        body: JSON.stringify({ query: msg, agent: 'idenza' })
+                    });
+                    const data = await res.json();
+                    const resposta = data.resposta || data.text || data.error || 'Sem resposta';
+                    ai.innerHTML = resposta + ' <button class="btn-speaker" title="Ouvir resposta">🔊</button>';
+                    lat.textContent = `< ${data.latency || (Date.now() - st)} ms — Super IA`;
+                    
+                    // Botão de voz na resposta
+                    ai.querySelector('.btn-speaker')?.addEventListener('click', () => {
+                        falarTexto(resposta);
+                    });
+
+                    // Salvar no histórico
+                    const hist = JSON.parse(localStorage.getItem('idenza_historico') || '[]');
+                    hist.unshift({ data: new Date().toLocaleString(), prompt: msg.substring(0, 100), resposta: resposta.substring(0, 100) });
+                    if (hist.length > 20) hist.pop();
+                    localStorage.setItem('idenza_historico', JSON.stringify(hist));
+                } catch (err) {
+                    ai.innerHTML = 'Erro ao conectar com a Super IA.';
+                    lat.textContent = 'Erro';
+                }
+            }
+
+            // Função de texto para voz
+            function falarTexto(texto) {
+                if (!synth) return;
+                synth.cancel();
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                synth.speak(utterance);
+            }
+
+            inp.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && inp.value.trim() !== '') {
+                    const msg = inp.value.trim(); inp.value = '';
+                    enviarMensagem(msg);
+                }
+            });
+
+            document.getElementById('export-conversation').onclick = () => {
+                const blob = new Blob([conv.innerText], { type: 'text/plain' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'conversa.txt'; a.click();
+            };
+
+            // Notas
+            const nt = document.getElementById('notepad-text');
+            nt.value = localStorage.getItem('idenza_notepad') || '';
+            nt.oninput = () => localStorage.setItem('idenza_notepad', nt.value);
+            document.getElementById('save-notes').onclick = () => { localStorage.setItem('idenza_notepad', nt.value); alert('Salvo.'); };
+            document.getElementById('export-notes').onclick = () => {
+                const b = new Blob([nt.value], { type: 'text/plain' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'notas.txt'; a.click();
+            };
+
+            // Histórico
+            function carregarHistorico() {
+                const hist = JSON.parse(localStorage.getItem('idenza_historico') || '[]');
+                document.getElementById('historico-tbody').innerHTML = hist.length ? 
+                    hist.map(h => `<tr><td>${h.data}</td><td>${h.prompt}</td><td>${h.resposta}</td></tr>`).join('') : 
+                    '<tr><td colspan="3">Nenhuma interação.</td></tr>';
+            }
+            carregarHistorico();
+
+            // ====== AUTO-LOGIN ======
+            (async () => {
+              const apiKey = localStorage.getItem('idenza_api_key');
+              if (apiKey) {
+                try {
+                  const res = await fetch(`${API_BASE}/api/me`, { headers: { 'x-api-key': apiKey } });
+                  if (res.ok) {
+                    const data = await res.json();
+                    abrirDashboard(data);
+                  } else { localStorage.removeItem('idenza_api_key'); }
+                } catch (err) {}
+              }
+            })();
+        })();
+    </script>
+</body>
+</html>

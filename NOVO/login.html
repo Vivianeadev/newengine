@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Acesso Restrito · Gestão IDEnza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style0.css">
+    <style>
+        .superia-splash { display: none; }
+        .superia-splash.visible { display: flex; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- ========== CAMADA 1: AVISO DE SEGURANÇA ========== -->
+    <div class="aviso-overlay" id="avisoPopup">
+        <div class="aviso-container">
+            <div class="robos-moldura">
+                <div class="robo-asset top-left" style="background-image: url('assets/robo-guardiao-esq.png');"></div>
+                <div class="robo-asset top-right" style="background-image: url('assets/robo-guardiao-dir.png');"></div>
+                <div class="robo-asset bottom-left" style="background-image: url('assets/robo-sentinela-esq.png');"></div>
+                <div class="robo-asset bottom-right" style="background-image: url('assets/robo-sentinela-dir.png');"></div>
+                <div class="robo-asset mid-left" style="background-image: url('assets/robo-drone-esq.png');"></div>
+                <div class="robo-asset mid-right" style="background-image: url('assets/robo-drone-dir.png');"></div>
+                <div class="robo-asset top-center" style="background-image: url('assets/robo-topo.png');"></div>
+                <div class="robo-asset bottom-center" style="background-image: url('assets/robo-base.png');"></div>
+            </div>
+            <div class="aviso-content">
+                <div class="aviso-header">
+                    <div class="aviso-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="aviso-titulo">⚠️ AVISO DE SEGURANÇA</h2>
+                    <p class="aviso-subtitulo">Sistema de Proteção IDEnza</p>
+                </div>
+                <div class="aviso-gold-line"></div>
+                <p class="aviso-texto">
+                    Você está prestes a acessar um <strong>ambiente restrito</strong> da 
+                    <strong>Gestão IDEnza</strong>.<br><br>
+                    Este sistema é <strong>exclusivo para funcionários autorizados e parceiros credenciados</strong>. 
+                    Tentativas de acesso não autorizado são monitoradas e registradas.<br><br>
+                    <strong>Você é um funcionário ou parceiro oficial da IDEnza?</strong>
+                </p>
+                <div class="aviso-botoes">
+                    <button class="aviso-btn sim" id="btnConfirmarFuncionario">
+                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                        Sim, sou funcionário/parceiro
+                    </button>
+                    <button class="aviso-btn nao" id="btnNegarFuncionario">
+                        <i class="fas fa-times-circle" style="margin-right: 8px;"></i>
+                        Não, voltar ao início
+                    </button>
+                </div>
+                <p class="aviso-footer">
+                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i>
+                    IDEnza Security Protocol · Monitoramento Ativo
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CAMADA 2: SPLASH SCREEN ========== -->
+    <div class="superia-splash" id="superiaSplash">
+        <div class="particles-container">
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        </div>
+        <div class="golden-line"></div><div class="golden-line"></div><div class="golden-line"></div>
+        <div class="horizontal-line top"></div><div class="horizontal-line bottom"></div>
+        <div class="splash-content">
+            <div class="brand-tag">Super Agentes · Humanoides · Dados Universais</div>
+            <h1 class="splash-title">ID<span>Enza</span></h1>
+            <p class="splash-subtitle">Painel de Gestão Avançada</p>
+            <div class="splash-divider">
+                <div class="divider-wing"></div><div class="divider-diamond"></div><div class="divider-wing right"></div>
+            </div>
+            <button class="enter-btn" id="enterBtn">
+                <i class="fas fa-fingerprint" style="margin-right: 10px; font-size: 0.7rem;"></i>Acessar Sistema
+            </button>
+            <div class="splash-loader">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div class="version-tag">v1.0 · Arquitetura Cognitiva 7 Camadas</div>
+    </div>
+
+    <script>
+        // ========== CONFIGURAÇÕES ==========
+        // URL do Worker que contém a senha na variável secreta
+        const AUTH_WORKER_URL = 'https://idenza-new.avizaecosystem.workers.dev/auth/verify';
+        
+        const URL_INICIAL = '../index.html';
+        const DESTINO_GESTAO = 'painel.html';
+        const DESTINO_PESQUISA = 'estacao_pesquisa.html';
+
+        let overlay = null;
+        let redirecionando = false;
+
+        // ========== CAMADA 1 → CAMADA 2 ==========
+        function mostrarSplash() {
+            document.getElementById('avisoPopup').style.display = 'none';
+            document.getElementById('superiaSplash').classList.add('visible');
+        }
+
+        function voltarAoInicio() {
+            if (redirecionando) return;
+            redirecionando = true;
+            document.getElementById('avisoPopup').style.display = 'none';
+            window.location.href = URL_INICIAL;
+        }
+
+        // ========== CAMADA 3: MODAL DE SENHA ==========
+        function abrirModalSenha() {
+            if (redirecionando) return;
+            if (overlay) overlay.remove();
+            
+            overlay = document.createElement('div');
+            overlay.className = 'password-overlay';
+            overlay.innerHTML = `
+                <div class="password-box">
+                    <h2><i class="fas fa-shield-haltered" style="color: #b8860b; margin-right: 8px;"></i>Portal IDEnza · Acesso Restrito</h2>
+                    <div class="gold-line"></div>
+                    <p style="color: rgb(255 255 255 / .5); font-size: .65rem; margin-bottom: 1.5rem; letter-spacing: 1px;">Selecione o módulo desejado</p>
+                    <input type="password" id="senha" placeholder="Digite a senha de acesso" autofocus>
+                    <div class="error-msg" id="erro"></div>
+                    <div class="btn-row">
+                        <button class="password-btn primary" id="btn-gestao">
+                            <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Painel de Gestão
+                        </button>
+                        <button class="password-btn primary" id="btn-pesquisa">
+                            <i class="fas fa-flask" style="margin-right: 8px;"></i>Estação de Pesquisa
+                        </button>
+                        <button class="password-btn" id="cancelar">
+                            <i class="fas fa-times" style="margin-right: 6px;"></i>Cancelar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            setTimeout(() => {
+                const campo = document.getElementById('senha');
+                if (campo) campo.focus();
+            }, 100);
+            
+            // Cada botão abre seu próprio link individual
+            document.getElementById('btn-gestao').addEventListener('click', () => verificarSenha(DESTINO_GESTAO));
+            document.getElementById('btn-pesquisa').addEventListener('click', () => verificarSenha(DESTINO_PESQUISA));
+            document.getElementById('cancelar').addEventListener('click', fechar);
+            document.getElementById('senha').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') verificarSenha(DESTINO_GESTAO);
+            });
+            document.addEventListener('keydown', esc);
+        }
+
+        function fechar() {
+            if (overlay) {
+                overlay.classList.add('fade-out');
+                setTimeout(() => { 
+                    if (overlay) overlay.remove(); 
+                    overlay = null; 
+                }, 300);
+            }
+            document.removeEventListener('keydown', esc);
+        }
+
+        function esc(e) { 
+            if (e.key === 'Escape') fechar(); 
+        }
+
+        // ========== VERIFICAÇÃO VIA WORKER ==========
+        async function verificarSenha(destino) {
+            if (redirecionando) return;
+            
+            const campo = document.getElementById('senha');
+            const erro = document.getElementById('erro');
+            const senha = campo.value.trim();
+
+            if (!senha) {
+                erro.style.color = '#c78b1a';
+                erro.textContent = '❌ Por favor, digite a senha de acesso.';
+                campo.focus();
+                return;
+            }
+
+            // Desabilita botões durante verificação
+            const botoes = document.querySelectorAll('.password-btn');
+            botoes.forEach(b => b.disabled = true);
+            
+            const btnId = destino === DESTINO_GESTAO ? 'btn-gestao' : 'btn-pesquisa';
+            const btnAtivo = document.getElementById(btnId);
+            const textoOriginal = btnAtivo.innerHTML;
+            btnAtivo.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Verificando...';
+
+            try {
+                const response = await fetch(AUTH_WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: senha })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // SENHA CORRETA!
+                    redirecionando = true;
+                    
+                    // Feedback visual
+                    erro.style.color = '#22c55e';
+                    erro.textContent = '✅ Acesso autorizado! Redirecionando...';
+                    
+                    // Redireciona após breve delay
+                    setTimeout(() => {
+                        window.location.href = destino;
+                    }, 800);
+                    
+                } else {
+                    // SENHA INCORRETA
+                    erro.style.color = '#c78b1a';
+                    erro.textContent = '❌ ' + (data.error || 'Senha incorreta. Tente novamente.');
+                    campo.value = '';
+                    campo.focus();
+                    
+                    // Efeito visual de erro
+                    campo.style.animation = 'none';
+                    campo.offsetHeight;
+                    campo.style.animation = 'shake 0.5s ease-in-out';
+                    
+                    // Reabilita botões
+                    botoes.forEach(b => b.disabled = false);
+                    btnAtivo.innerHTML = textoOriginal;
+                }
+            } catch (err) {
+                console.error('Erro de conexão:', err);
+                erro.style.color = '#c78b1a';
+                erro.textContent = '🔌 Erro de conexão com o servidor. Tente novamente.';
+                
+                // Reabilita botões
+                botoes.forEach(b => b.disabled = false);
+                btnAtivo.innerHTML = textoOriginal;
+            }
+        }
+
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            redirecionando = false;
+            
+            // SEMPRE mostra o aviso primeiro - NÃO verifica sessão anterior
+            document.getElementById('avisoPopup').style.display = 'flex';
+
+            // Botão "Sim, sou funcionário"
+            document.getElementById('btnConfirmarFuncionario').addEventListener('click', () => {
+                if (redirecionando) return;
+                mostrarSplash();
+            });
+
+            // Botão "Não, voltar"
+            document.getElementById('btnNegarFuncionario').addEventListener('click', () => {
+                if (redirecionando) return;
+                voltarAoInicio();
+            });
+
+            // Escape fecha o aviso
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('avisoPopup').style.display === 'flex') {
+                    voltarAoInicio();
+                }
+            });
+
+            // Botão da splash abre o modal de senha
+            document.getElementById('enterBtn').addEventListener('click', () => {
+                if (redirecionando) return;
+                abrirModalSenha();
+            });
+        });
+
+        // Enter na splash também abre
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !overlay && !redirecionando && document.getElementById('superiaSplash').classList.contains('visible')) {
+                abrirModalSenha();
+            }
+        });
+    </script>
+</body>
+</html>

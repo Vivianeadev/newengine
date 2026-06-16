@@ -589,7 +589,6 @@
   <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
   <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
   <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
-  <!-- ADIÇÃO: Barra de mini-dots dos slots multi-Redis (inserida via JS) -->
 </div>
 
 <div class="explain-panel" id="explainPanel">
@@ -656,15 +655,6 @@
   <textarea class="generated-question" id="generatedQuestion" style="min-height:120px;"></textarea>
   <button class="btn btn-outline" id="btnCopyQuestion" style="margin-top:6px;">Copiar Pergunta</button>
   <textarea class="raw-textarea" id="respostaIA" placeholder="Cole o texto retornado pela IA..." style="margin-top:12px;"></textarea>
-  <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
-  <label style="font-size:0.7rem; font-weight:600; color:var(--petroleum);">Prefixo Redis:</label>
-  <select id="prefixoEnvioAgente" style="padding:4px 8px; border:1px solid var(--border); font-family:var(--font-mono); font-size:0.7rem;">
-    <option value="agente">agente</option>
-    <option value="data">data</option>
-    <option value="humanoide">humanoide</option>
-    <option value="fabrica">fabrica</option>
-  </select>
-</div>
   <button class="btn btn-petroleum" id="btnEstruturar" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
   <div class="camadas-preview" id="camadasPreview" style="display:none;"></div>
   <div class="camadas-preview" id="jsonFinalPreview" style="display:none; margin-top:6px;"></div>
@@ -793,7 +783,19 @@
       <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
       <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
     </div>
-
+<!-- ATALHOS DE CAMADA RÁPIDA -->
+<div style="margin-bottom:12px;">
+  <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">⚡ Camada Rápida</label>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;" id="fabricaAtalhoCamadas">
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L1" style="font-size:0.65rem;padding:4px 12px;">L1 – Resposta Imediata</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L2" style="font-size:0.65rem;padding:4px 12px;">L2 – Inferência</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L3" style="font-size:0.65rem;padding:4px 12px;">L3 – Contextualização</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L4" style="font-size:0.65rem;padding:4px 12px;">L4 – Consolidação</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L5" style="font-size:0.65rem;padding:4px 12px;">L5 – Profissional</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L6" style="font-size:0.65rem;padding:4px 12px;">L6 – Especializado</button>
+    <button class="btn btn-outline atalho-camada-btn" data-camada="L7" style="font-size:0.65rem;padding:4px 12px;">L7 – Essência</button>
+  </div>
+</div>
     <div id="fabricaPainelConfig">
       <div style="margin-bottom:12px;">
         <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">Nome do Especialista / Humanoide / Perfil</label>
@@ -811,22 +813,10 @@
         <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave (separadas por vírgula)</label>
         <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="neuroarquitetura, design biofílico, cognição espacial" style="min-height:36px;">
       </div>
-	  <div style="margin-bottom:12px;" id="fabricaCampoRespostaPronta">
-  <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">💬 Resposta Pronta (para Objeto Redis)</label>
-  <textarea class="raw-textarea" id="fabricaRespostaPronta" placeholder="Texto que o Mentor responderá quando este agente for ativado..." style="min-height:80px;"></textarea>
-</div>
       <div style="margin-bottom:12px;" id="fabricaCampoAgentesRelacionados">
         <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">Agentes Relacionados (códigos um por linha, ou cole um JSON completo)</label>
         <textarea class="raw-textarea" id="fabricaAgentesRelacionados" placeholder="med.neuro.idenza.5&#10;art.arch.idenza.11&#10;psych.clin.idenza.1" style="min-height:70px;"></textarea>
       </div>
-	  <div style="margin-bottom:12px;" id="fabricaCampoTipoChave">
-  <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">🔑 Prefixo da Chave no Redis</label>
-  <select class="raw-textarea" id="fabricaTipoChave" style="min-height:36px;">
-    <option value="agente">Agente (idenza:agente:*)</option>
-    <option value="data">Dado Universal (idenza:data:*)</option>
-    <option value="fabrica" selected>Fábrica (idenza:fabrica:*)</option>
-  </select>
-</div>
       <div style="margin-bottom:12px;" id="fabricaCampoCamada">
         <label style="font-size:0.7rem;font-weight:700;color:var(--petroleum);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
         <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
@@ -1094,33 +1084,7 @@ async function testarConexaoRedis() {
   setTimeout(() => { COGNITIVE_SYSTEM.vigilance.runSurveillance(); }, 5000);
 }
 testarConexaoRedis();
-async function enviarViaWorker(payload, tipo, codigo, feedbackElementId) {
-  const feedbackEl = document.getElementById(feedbackElementId);
-  feedbackEl.className = 'redis-feedback show loading';
-  feedbackEl.textContent = '⏳ Enviando via Worker (sync caixa preta + branca)...';
 
-  try {
-    const response = await fetch('https://idenza-new.avizaecosystem.workers.dev/api/estacao/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tipo, codigo, payload })
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Worker respondeu ${response.status}: ${err}`);
-    }
-
-    const resultado = await response.json();
-    feedbackEl.className = 'redis-feedback show success';
-    feedbackEl.innerHTML = `✅ <strong>Enviado com sucesso!</strong><br>📁 Chave Redis: <code>idenza:${tipo}:${codigo}</code><br>🔁 Sincronizado nas duas caixas (preta + branca)`;
-    return { sucesso: true };
-  } catch (error) {
-    feedbackEl.className = 'redis-feedback show error';
-    feedbackEl.innerHTML = `❌ <strong>Erro no envio!</strong><br>📝 ${error.message}`;
-    return { sucesso: false, erro: error.message };
-  }
-}
 const REGRA_ANTI_HASHTAG = `\n\nREGRA FIXA E INABALÁVEL: Em todo o texto que você criar, NUNCA utilize o símbolo cerquilha (jogo da velha). Não use em títulos, não use em listas, não use em marcação nenhuma. Substitua por numeração simples, travessão ou qualquer outro caractere. Esta regra é permanente e não pode ser violada em hipótese alguma.\n`;
 
 /* ==================== TABS ==================== */
@@ -1134,20 +1098,16 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 /* ==================== UTILITÁRIOS ==================== */
-/* CORREÇÃO: Função de cópia robustecida (super engenheiro) */
 function copiarTextoParaClipboard(texto) {
   return new Promise((resolve) => {
-    // Tenta usar a API moderna do clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(texto)
         .then(() => resolve())
         .catch(() => {
-          // Fallback para execCommand quando a API falha
           execFallbackCopy(texto);
           resolve();
         });
     } else {
-      // Navegador sem suporte a clipboard API
       execFallbackCopy(texto);
       resolve();
     }
@@ -1633,9 +1593,8 @@ document.getElementById('btnEstruturar').addEventListener('click', ()=>{
 
 document.getElementById('btnEnviarMotor').addEventListener('click', async ()=>{
   if(!conhecimentoEstruturado) return;
-  const prefixo = document.getElementById('prefixoEnvioAgente')?.value || 'agente';
   document.getElementById('statusMsg').textContent = 'Enviando...';
-  await enviarViaWorker(conhecimentoEstruturado, prefixo, conhecimentoEstruturado.codigo, 'redisFeedbackAgente');
+  await enviarDiretoRedis(conhecimentoEstruturado,'agente',conhecimentoEstruturado.codigo,'redisFeedbackAgente');
   document.getElementById('statusMsg').textContent = 'Envio concluído.';
   setTimeout(()=>{document.getElementById('statusMsg').textContent='';},5000);
 });
@@ -1961,13 +1920,30 @@ document.getElementById('btnEnviarWorkerData').addEventListener('click', async (
     });
   });
 
+  // ATALHOS DE CAMADA RÁPIDA (DELEGAÇÃO DE EVENTOS)
+  const containerAtalhos = document.getElementById('fabricaAtalhoCamadas');
+  if (containerAtalhos) {
+    containerAtalhos.addEventListener('click', (e) => {
+      const btn = e.target.closest('.atalho-camada-btn');
+      if (!btn) return;
+      containerAtalhos.querySelectorAll('.atalho-camada-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const camadaSelecionada = btn.dataset.camada;
+      const select = document.getElementById('fabricaCamadaDestino');
+      if (select) {
+        select.value = camadaSelecionada;
+      }
+    });
+  }
+
   function ajustarCamposFabrica(tipo) {
     const campoComposicao = document.getElementById('fabricaCampoComposicao');
     const campoAgentes = document.getElementById('fabricaCampoAgentesRelacionados');
     const campoCamada = document.getElementById('fabricaCampoCamada');
     if (campoComposicao) campoComposicao.style.display = tipo === 'humanoide' ? 'block' : 'none';
     if (campoAgentes) campoAgentes.style.display = (tipo === 'especialista' || tipo === 'completo') ? 'block' : 'none';
-    if (campoCamada) campoCamada.style.display = (tipo === 'perfil' || tipo === 'objeto' || tipo === 'completo') ? 'block' : 'none';
+    // CAMPO DE CAMADA SEMPRE VISÍVEL (CORREÇÃO)
+    if (campoCamada) campoCamada.style.display = 'block';
   }
 
   function parseAgentesRelacionados(raw) {
@@ -2030,24 +2006,17 @@ document.getElementById('btnEnviarWorkerData').addEventListener('click', async (
     }
 
     if (tipoGeracao === 'objeto' || tipoGeracao === 'completo') {
-  const respostaPronta = document.getElementById('fabricaRespostaPronta')?.value?.trim() || 
-    `Conhecimento especializado em ${especialidade || 'assuntos diversos'}.`;
+      resultado.objeto_cognitivo_redis = {
+        topic_id: `${dominio.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 30)}.${Date.now().toString(36)}`,
+        agente: nome, tipo: 'conhecimento_estruturado',
+        resposta_pronta: `Conhecimento especializado em ${especialidade}.`,
+        fontes: ['IDEnza Internal'], validado_em: new Date().toISOString(),
+        revisar_em: new Date(Date.now() + 90 * 86400000).toISOString(),
+        criticidade: 'medium', score_confianca: 0.80, camada_origem: camadaDestino,
+        status_regulatorio: 'pending_validation', palavras_chave: palavrasChave
+      };
+    }
 
-  resultado.objeto_cognitivo_redis = {
-    topic_id: `${dominio.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 30)}.${Date.now().toString(36)}`,
-    agente: nome,
-    tipo: 'conhecimento_estruturado',
-    resposta_pronta: respostaPronta,
-    fontes: ['IDEnza Internal'],
-    validado_em: new Date().toISOString(),
-    revisar_em: new Date(Date.now() + 90 * 86400000).toISOString(),
-    criticidade: 'medium',
-    score_confianca: 0.80,
-    camada_origem: camadaDestino,
-    status_regulatorio: 'pending_validation',
-    palavras_chave: palavrasChave
-  };
-}
     if (tipoGeracao === 'perfil' || tipoGeracao === 'completo') {
       resultado.alertas = [{
         tipo_alerta: 'novo_perfil', criticidade: 'media', origem: 'fabrica_cognitiva',
@@ -2159,15 +2128,14 @@ document.getElementById('btnEnviarWorkerData').addEventListener('click', async (
   });
 
   document.getElementById('fabricaBtnEnviarRedis')?.addEventListener('click', async () => {
-  if (!resultadoFabrica) return;
-  document.getElementById('fabricaStatusMsg').textContent = 'Enviando...';
-  const codigo = resultadoFabrica.codigo_universal;
-  const tipoChave = document.getElementById('fabricaTipoChave')?.value || 'agente';
-  await enviarViaWorker(resultadoFabrica, tipoChave, codigo, 'fabricaFeedback');
-  document.getElementById('fabricaStatusMsg').textContent = 'Concluído.';
-  setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 5000);
-  if (historicoFabrica.length > 0) { historicoFabrica[0].status = 'Enviado ao Redis'; renderizarHistoricoFabrica(); }
-});
+    if (!resultadoFabrica) return;
+    document.getElementById('fabricaStatusMsg').textContent = 'Enviando...';
+    const codigo = resultadoFabrica.codigo_universal;
+    await enviarDiretoRedis(resultadoFabrica, 'fabrica', codigo, 'fabricaFeedback');
+    document.getElementById('fabricaStatusMsg').textContent = 'Concluído.';
+    setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 5000);
+    if (historicoFabrica.length > 0) { historicoFabrica[0].status = 'Enviado ao Redis'; renderizarHistoricoFabrica(); }
+  });
 
   document.getElementById('btnConsultarGeral')?.addEventListener('click', async () => {
     const chave = document.getElementById('consultaGeralKey').value.trim();
@@ -2514,12 +2482,10 @@ renderizarMultiRedisSlots();
   const bar = document.querySelector('.redis-connection-bar');
   if (!bar) return;
 
-  // Cria o contêiner dos mini-dots
   const slotBar = document.createElement('span');
   slotBar.id = 'multiRedisSlotBar';
   bar.appendChild(slotBar);
 
-  // Cria os dots coloridos
   function criarMiniDots() {
     slotBar.innerHTML = '';
     multiRedisSlots.forEach(slot => {
@@ -2543,7 +2509,6 @@ renderizarMultiRedisSlots();
     });
   }
 
-  // Modal de configuração
   function abrirModalSlot(slot) {
     const overlay = document.getElementById('slotModalOverlay');
     document.getElementById('slotModalTitle').textContent = `Configurar ${slot.nome}`;
@@ -2553,7 +2518,6 @@ renderizarMultiRedisSlots();
     document.getElementById('slotModalStatus').textContent = '';
     overlay.classList.add('open');
 
-    // Define ações dos botões
     document.getElementById('slotModalTestar').onclick = async () => {
       const url = document.getElementById('slotModalUrl').value.trim();
       const token = document.getElementById('slotModalToken').value.trim();
@@ -2580,9 +2544,9 @@ renderizarMultiRedisSlots();
       slot.nome = document.getElementById('slotModalNome').value.trim() || slot.nome;
       slot.url = document.getElementById('slotModalUrl').value.trim();
       slot.token = document.getElementById('slotModalToken').value.trim();
-      slot.status = 'disconnected'; // reseta status ao salvar novas credenciais
+      slot.status = 'disconnected';
       atualizarMiniDots();
-      renderizarMultiRedisSlots(); // recria a central de slots com os novos valores
+      renderizarMultiRedisSlots();
       overlay.classList.remove('open');
     };
 
@@ -2591,7 +2555,6 @@ renderizarMultiRedisSlots();
     };
   }
 
-  // Fecha modal clicando fora
   document.getElementById('slotModalOverlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) {
       e.currentTarget.classList.remove('open');
@@ -2600,10 +2563,8 @@ renderizarMultiRedisSlots();
 
   criarMiniDots();
 
-  // Expor função para atualizar os dots quando slots mudarem de status em outros lugares
   window._atualizarMiniDotsMultiRedis = atualizarMiniDots;
 
-  // Hook nas funções existentes para manter sincronia
   const originalRenderizar = renderizarMultiRedisSlots;
   renderizarMultiRedisSlots = function() {
     originalRenderizar();

@@ -21,6 +21,7 @@
             --warning: #d4a94f;
             --danger: #b54a4a;
         }
+        * { border-radius: 0 !important; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             background-color: var(--navy-deep);
@@ -38,7 +39,7 @@
         }
         .login-box {
             background: var(--navy-card);
-            padding: 3rem 2.5rem; border-radius: 2px; max-width: 420px; width: 90%;
+            padding: 3rem 2.5rem; max-width: 420px; width: 90%;
             border: 1px solid var(--copper); box-shadow: var(--shadow-copper); text-align: center;
         }
         .login-box h2 { font-family: 'Playfair Display', serif; color: var(--copper); font-weight: 400; font-size: 2rem; margin-bottom: 0.3rem; }
@@ -62,7 +63,7 @@
         .btn {
             display: inline-block; padding: 0.8rem 1.8rem; font-family: 'Inter', sans-serif;
             font-weight: 500; font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
-            border-radius: 2px; transition: all 0.3s ease; text-decoration: none; cursor: pointer;
+            transition: all 0.3s ease; text-decoration: none; cursor: pointer;
             border: 1px solid transparent;
         }
         .btn-primary { background: var(--copper); color: white; border-color: var(--copper); }
@@ -93,7 +94,7 @@
         .sidebar-nav li { margin-bottom: 0.3rem; }
         .sidebar-nav a {
             display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem;
-            color: var(--text-muted); text-decoration: none; border-radius: 2px;
+            color: var(--text-muted); text-decoration: none;
             transition: all 0.3s; font-size: 0.9rem; letter-spacing: 0.02em; cursor: pointer;
         }
         .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(200,122,79,0.08); color: var(--copper); }
@@ -112,7 +113,7 @@
             background: rgba(200, 122, 79, 0.08);
             border: 1px solid rgba(200, 122, 79, 0.25);
             color: var(--copper);
-            padding: 0.25rem 0.7rem; border-radius: 2px; font-size: 0.65rem;
+            padding: 0.25rem 0.7rem; font-size: 0.65rem;
             font-weight: 400; letter-spacing: 0.04em; cursor: pointer;
             transition: all 0.3s ease; font-family: 'Inter', sans-serif;
             white-space: nowrap; backdrop-filter: blur(4px);
@@ -126,10 +127,46 @@
             background: rgba(200, 122, 79, 0.15); border-color: rgba(200, 122, 79, 0.5); font-weight: 500;
         }
 
+        /* NOVOS BOTÕES DE AGENTES ANÔNIMOS (ATUALIDADES, ACADÊMICO, PROFISSIONAL) */
+        .agent-buttons-section { margin-bottom: 1.5rem; }
+        .agent-buttons-section .section-label {
+            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text-muted); margin-bottom: 0.3rem; display: block;
+        }
+        .agent-buttons-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .agent-btn-square {
+            width: 70px; height: 70px;
+            background: rgba(200, 122, 79, 0.03);
+            border: 1px solid rgba(200, 122, 79, 0.2);
+            color: var(--copper);
+            font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; line-height: 1.3;
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(4px);
+            padding: 0.2rem;
+            flex-shrink: 0;
+        }
+        .agent-btn-square:hover {
+            background: rgba(200, 122, 79, 0.15);
+            border-color: var(--copper);
+            color: white;
+            box-shadow: 0 0 12px rgba(200, 122, 79, 0.25);
+            transform: translateY(-1px);
+        }
+        .agent-btn-square.active-agent {
+            background: rgba(200, 122, 79, 0.25);
+            border-color: var(--copper);
+            color: white;
+            box-shadow: 0 0 14px rgba(200, 122, 79, 0.35);
+        }
+
         .topic-sidebar {
             background: #0A1522;
             border: 1px solid rgba(200,122,79,0.2);
-            border-radius: 2px;
             padding: 0.6rem;
             font-family: 'Inter', sans-serif;
             font-size: 0.7rem;
@@ -144,7 +181,7 @@
         }
         .topic-sidebar::-webkit-scrollbar { width: 6px; }
         .topic-sidebar::-webkit-scrollbar-track { background: #0A1522; }
-        .topic-sidebar::-webkit-scrollbar-thumb { background-color: var(--copper); border-radius: 3px; }
+        .topic-sidebar::-webkit-scrollbar-thumb { background-color: var(--copper); }
         .topic-sidebar h3 {
             font-size: 0.7rem; font-weight: 500; margin: 0 0 0.5rem 0;
             color: var(--copper); position: sticky; top: 0;
@@ -152,7 +189,7 @@
         }
         .topic-item {
             display: block; padding: 0.3rem 0.4rem; margin: 0.15rem 0;
-            border-radius: 2px; cursor: pointer; background: #102A43;
+            cursor: pointer; background: #102A43;
             transition: background 0.15s; color: var(--cream); word-break: break-word;
         }
         .topic-item:hover { background: rgba(200,122,79,0.2); }
@@ -161,34 +198,173 @@
         .main-content { margin-left: 280px; flex: 1; padding: 2rem 3rem; width: 100%; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(200,122,79,0.15); }
         .top-bar h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; color: var(--cream); }
-        .badge-status { background: rgba(76,175,80,0.15); color: var(--success); padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        .badge-status { background: rgba(76,175,80,0.15); color: var(--success); padding: 0.4rem 1rem; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .stat-card { background: var(--navy-card); padding: 1.5rem; border-top: 1px solid var(--copper); border-radius: 2px; }
+        .stat-card { background: var(--navy-card); padding: 1.5rem; border-top: 1px solid var(--copper); }
         .stat-card .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
         .stat-card .value { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--copper); }
-        .panel { background: var(--navy-card); border-radius: 2px; padding: 1.5rem; border: 1px solid rgba(200,122,79,0.1); margin-bottom: 2rem; }
+        .panel { background: var(--navy-card); padding: 1.5rem; border: 1px solid rgba(200,122,79,0.1); margin-bottom: 2rem; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
         .panel-header h2 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 1.3rem; color: var(--cream); }
         .terminal {
             background: #0A1522; border: 1px solid rgba(200,122,79,0.2);
-            border-radius: 6px; padding: 2rem; text-align: left; font-family: 'Courier New', monospace;
+            padding: 2rem; text-align: left; font-family: 'Courier New', monospace;
             min-height: 400px; max-height: 70vh; overflow-y: auto; width: 100%;
         }
-        .terminal-header { display: flex; gap: 8px; margin-bottom: 1.5rem; opacity: 0.5; align-items: center; }
-        .terminal-header span { width: 12px; height: 12px; border-radius: 50%; background: var(--copper); }
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+            margin-right: auto;
+        }
+        .terminal-dots span {
+            width: 12px;
+            height: 12px;
+            background: var(--copper);
+            opacity: 0.5;
+        }
         .conversation { min-height: 100px; margin-bottom: 1.5rem; color: var(--cream); }
         .user-msg { color: var(--copper); margin-bottom: 0.5rem; }
         .ai-msg { color: var(--cream); margin-bottom: 0.5rem; white-space: pre-wrap; position: relative; }
-        .cursor { display: inline-block; width: 8px; height: 1.2em; background: var(--copper); margin-left: 2px; animation: blink 1s step-end infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-        .input-line { display: flex; align-items: center; color: var(--copper); margin-top: 1rem; gap: 8px; }
-        .input-line .prompt { margin-right: 0.5rem; }
-        #playground-input { background: transparent; border: none; color: var(--cream); font-family: inherit; font-size: 1rem; flex: 1; outline: none; caret-color: var(--copper); }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+        .input-line .prompt {
+            color: var(--copper);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #playground-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(200,122,79,0.25);
+            padding: 0.6rem 2.6rem 0.6rem 1rem;
+            color: var(--cream);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            caret-color: var(--copper);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(200,122,79,0.02);
+        }
+        #playground-input:focus {
+            border-color: var(--copper);
+            box-shadow: 0 0 0 2px rgba(200,122,79,0.1);
+        }
+        #playground-input::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .mic-icon-inline {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            z-index: 2;
+            padding: 0;
+            outline: none;
+        }
+        .mic-icon-inline svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--text-muted);
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.25s;
+        }
+        .mic-icon-inline:hover {
+            background: rgba(200,122,79,0.08);
+            border-color: rgba(200,122,79,0.3);
+        }
+        .mic-icon-inline:hover svg {
+            stroke: var(--copper);
+        }
+        .mic-icon-inline.recording {
+            background: rgba(200,122,79,0.2);
+            border-color: var(--copper);
+            animation: micPulse 1.2s infinite;
+        }
+        .mic-icon-inline.recording svg {
+            stroke: var(--copper);
+        }
+        @keyframes micPulse {
+            0% { box-shadow: 0 0 0 0 rgba(200,122,79,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(200,122,79,0); }
+            100% { box-shadow: 0 0 0 0 rgba(200,122,79,0); }
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 0.4rem;
+            padding: 0.1rem 0;
+            justify-content: flex-start;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            flex-wrap: wrap;
+        }
+        .input-actions:hover { opacity: 1; }
+        .icon-btn {
+            background: none;
+            border: 1px solid transparent;
+            color: var(--copper);
+            font-size: 0.85rem;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            padding: 0;
+            line-height: 1;
+            position: relative;
+        }
+        .icon-btn:hover {
+            border-color: var(--copper);
+            background: rgba(200, 122, 79, 0.08);
+        }
+        .toggle-btn.active {
+            background: rgba(200, 122, 79, 0.2);
+            border-color: var(--copper);
+            box-shadow: 0 0 10px rgba(200, 122, 79, 0.3);
+            color: #fff;
+        }
         .latency { text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+
         .notepad {
-            background: #0A1522; border: 1px solid rgba(200,122,79,0.2); border-radius: 2px;
+            background: #0A1522; border: 1px solid rgba(200,122,79,0.2);
             padding: 1.5rem; min-height: 200px; display: flex; flex-direction: column;
         }
         .notepad textarea {
@@ -203,7 +379,7 @@
         footer { background: #060F1C; padding: 2rem 1rem; text-align: center; margin-top: 3rem; border-top: 1px solid rgba(200,122,79,0.15); }
         .user-status-line { display: flex; align-items: center; gap: 1.2rem; font-size: 0.7rem; color: var(--text-muted); }
         .status-dot {
-            width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+            width: 8px; height: 8px; background: var(--success);
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.6); display: inline-block;
         }
         @media (max-width: 1024px) {
@@ -216,6 +392,101 @@
             .main-content { margin-left: 0; }
             .stats-grid { grid-template-columns: 1fr; }
             .terminal { max-height: 50vh; }
+        }
+        .terminal, .topic-sidebar {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+        }
+        .terminal::-webkit-scrollbar, .topic-sidebar::-webkit-scrollbar {
+            display: none;
+            width: 0; height: 0;
+        }
+        .ai-msg {
+            animation: fadeSlideIn 0.35s ease-out;
+            padding: 0.6rem 0.8rem; margin: 0.3rem 0;
+            background: rgba(200, 122, 79, 0.04);
+            border-left: 2px solid rgba(200, 122, 79, 0.2);
+            line-height: 1.7;
+            text-shadow: 0 0 2px rgba(200, 122, 79, 0.2); /* leve destaque */
+        }
+        .user-msg {
+            animation: fadeSlideIn 0.25s ease-out;
+            padding: 0.5rem 0.8rem; margin: 0.3rem 0;
+            background: rgba(200, 122, 79, 0.06);
+            font-weight: 400;
+            text-shadow: 0 0 1px rgba(200, 122, 79, 0.2); /* leve destaque */
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator {
+            display: inline-flex; gap: 4px; align-items: center;
+            padding: 0.4rem 0.8rem; color: var(--copper); font-style: italic;
+        }
+        .typing-indicator .dot {
+            width: 6px; height: 6px; background: var(--copper);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+        .ai-msg .sender-label, .user-msg .sender-label {
+            display: block; font-size: 0.65rem; letter-spacing: 0.04em; margin-bottom: 0.3rem; font-weight: 500;
+            font-family: 'Inter', sans-serif;
+        }
+        .ai-msg .sender-label { color: var(--copper); }
+        .user-msg .sender-label { color: var(--text-muted); }
+        .ai-suggestions-container {
+            background: rgba(200, 122, 79, 0.03);
+            border: 1px solid rgba(200, 122, 79, 0.15);
+            padding: 0.8rem; margin: 0.5rem 0;
+        }
+        .ai-suggestion-message { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.6rem; font-family: 'Inter', sans-serif; }
+        .topic-suggestion-btn {
+            display: block; width: 100%; text-align: left;
+            background: rgba(200, 122, 79, 0.06);
+            border: 1px solid rgba(200, 122, 79, 0.2);
+            color: var(--cream); padding: 0.5rem 0.8rem; margin: 0.3rem 0;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 0.75rem; transition: all 0.2s;
+        }
+        .topic-suggestion-btn:hover { background: rgba(200, 122, 79, 0.15); border-color: var(--copper); }
+        .topic-suggestion-btn strong { color: var(--copper); }
+        .confidence-badge {
+            display: inline-block; background: var(--copper); color: #fff;
+            font-size: 0.6rem; padding: 0.1rem 0.4rem;
+            margin-left: 0.4rem; font-weight: 500;
+        }
+        .topic-suggestion-btn small { display: block; color: var(--text-muted); font-size: 0.65rem; margin-top: 0.2rem; }
+        .mic-status-text {
+            font-size: 0.65rem;
+            color: var(--copper);
+            margin-left: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .mic-status-text.visible { opacity: 1; }
+
+        /* contador diário e de temas */
+        .daily-counter {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-left: 4px;
+            white-space: nowrap;
+            opacity: 0.8;
+            letter-spacing: 0.02em;
+        }
+        .theme-counter {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-left: 8px;
+            white-space: nowrap;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -258,7 +529,6 @@
                 <li><a data-tab="tab-mentor">🧠 Mentor</a></li>
                 <li><a href="index.html" style="margin-top:2rem;">← Voltar ao site</a></li>
             </ul>
-
             <div class="sidebar-chips">
                 <div class="chip-group">
                     <span class="chip-group-label">⚡ Temas principais</span>
@@ -284,16 +554,23 @@
                     </div>
                 </div>
             </div>
-
+            <!-- NOVA SEÇÃO: AGENTES ANÔNIMOS TEMÁTICOS -->
+            <div class="agent-buttons-section">
+                <span class="section-label">🗂️ Agentes Anônimos</span>
+                <div class="agent-buttons-row">
+                    <button class="agent-btn-square" data-agent="atualidades">Atuali<br>dades</button>
+                    <button class="agent-btn-square" data-agent="academico">Acadê<br>mico</button>
+                    <button class="agent-btn-square" data-agent="profissional">Profis<br>sional</button>
+                </div>
+                <div class="theme-counter" id="theme-counter">0 temas consultados</div>
+            </div>
             <div class="topic-sidebar" id="topic-sidebar">
-                <h3>📌 Tópicos</h3>
-                <!-- Tópico fixo IDEnza RH (destaque) -->
+                <h3>📌 Tópicos do Orquestrador</h3>
                 <div class="topic-item" onclick="selecionarAgente('IDEnza RH', 'idenza:fabrica:recursos_humanos.idenza.mqguuweo.z15d')" style="background: rgba(200,122,79,0.12); border-left: 2px solid var(--copper);">
                     <strong>IDEnza RH</strong> <span class="topic-desc">(Super Humanoide)</span>
                 </div>
                 <div id="topic-list">Carregando tópicos...</div>
             </div>
-
             <div class="sidebar-footer">
                 <div class="user" id="sidebar-user">Cliente</div>
                 <div class="user-id" id="sidebar-user-id" style="font-size:0.7rem; opacity:0.8;">ID: --</div>
@@ -316,17 +593,41 @@
             <div id="tab-playground" class="tab-content active">
                 <div class="panel">
                     <div class="panel-header">
-                        <h2>Console: Super IA</h2>
+                        <h2>Console: IDEnza</h2>
                         <button class="btn-export" id="export-conversation">Exportar Conversa</button>
                     </div>
-                    <div class="terminal">
-                        <div class="terminal-header"><span></span><span></span><span></span></div>
+                    <div class="terminal" id="playground-terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dots"><span></span><span></span><span></span></div>
+                        </div>
                         <div class="conversation" id="playground-conversation">
-                            <div class="ai-msg">> Olá! Como posso ajudar? Digite sua pergunta ou clique em um tópico na barra lateral.</div>
+                            <div class="ai-msg">
+                                <span class="sender-label">🤖 IDEnza</span>
+                                Olá! Sou a <strong>IDEnza</strong>, sua Super IA. Estou aqui para ajudá-lo com análises profundas, respostas em múltiplas camadas de conhecimento e conexões inteligentes. Pergunte sobre qualquer tema ou clique em um tópico na barra lateral para começar.
+                            </div>
+                        </div>
+                        <div class="input-actions">
+                            <button class="icon-btn toggle-btn" id="btn-speech-to-speech" title="Speech to Speech (OFF)">🗣️</button>
+                            <button class="icon-btn" id="btn-tts" title="Ouvir última resposta">🔊</button>
+                            <button class="icon-btn toggle-btn" id="btn-soundfx" title="Efeitos Sonoros (OFF)">🔔</button>
+                            <button class="icon-btn toggle-btn" id="btn-audio-isolation" title="Isolamento de Áudio (OFF)">🎧</button>
+                            <button class="icon-btn" id="btn-clear-conversation" title="Apagar conversa">🗑️</button>
+                            <button class="icon-btn" id="btn-copy-conversation" title="Copiar conversa">📋</button>
+                            <span class="daily-counter" id="daily-counter">0 perguntas hoje</span>
                         </div>
                         <div class="input-line">
                             <span class="prompt">$</span>
-                            <input type="text" id="playground-input" placeholder="Digite sua pergunta..." autofocus>
+                            <div class="input-wrapper">
+                                <input type="text" id="playground-input" placeholder="Pergunte algo à IDEnza..." autofocus>
+                                <button type="button" class="mic-icon-inline" id="btn-mic-inline" title="Gravar e enviar automaticamente">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                        <line x1="12" y1="19" x2="12" y2="23"/>
+                                        <line x1="8" y1="23" x2="16" y2="23"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="latency" id="playground-latency"></div>
                     </div>
@@ -334,73 +635,26 @@
             </div>
 
             <div id="tab-notas" class="tab-content">
-                <div class="panel">
-                    <div class="panel-header"><h2>Bloco de Notas</h2>
-                        <div class="notepad-actions">
-                            <button class="btn-export" id="save-notes">Salvar</button>
-                            <button class="btn-export" id="export-notes">Exportar</button>
-                        </div>
-                    </div>
-                    <div class="notepad"><textarea id="notepad-text" placeholder="Escreva suas anotações aqui..."></textarea></div>
-                </div>
+                <div class="panel"><div class="panel-header"><h2>Bloco de Notas</h2><div class="notepad-actions"><button class="btn-export" id="save-notes">Salvar</button><button class="btn-export" id="export-notes">Exportar</button></div></div><div class="notepad"><textarea id="notepad-text" placeholder="Escreva suas anotações aqui..."></textarea></div></div>
             </div>
-
             <div id="tab-conta" class="tab-content">
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="label">Créditos</div><div class="value" id="creditos-value">--</div></div>
-                    <div class="stat-card"><div class="label">Plano</div><div class="value" id="plano-value">--</div></div>
-                    <div class="stat-card"><div class="label">Status</div><div class="value" id="status-value">--</div></div>
-                    <div class="stat-card"><div class="label">Membro desde</div><div class="value" id="created-value">--</div></div>
-                </div>
+                <div class="stats-grid"><div class="stat-card"><div class="label">Créditos</div><div class="value" id="creditos-value">--</div></div><div class="stat-card"><div class="label">Plano</div><div class="value" id="plano-value">--</div></div><div class="stat-card"><div class="label">Status</div><div class="value" id="status-value">--</div></div><div class="stat-card"><div class="label">Membro desde</div><div class="value" id="created-value">--</div></div></div>
                 <div id="account-update-info" style="font-size:0.65rem; color: var(--text-muted); opacity:0.8; margin-top:0.75rem; font-weight:300;"></div>
                 <div style="font-size:0.65rem; color: var(--text-muted); margin-top: 1.5rem; border-top: 1px solid var(--border-color, #ccc); padding-top: 1rem;">
                     <div style="font-size:0.7rem; font-weight: 400; margin-bottom: 0.5rem;">📜 Conformidade Legal e Termos de Uso</div>
-                    <details style="font-size:0.65rem; margin-bottom:0.25rem;">
-                        <summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">⚖️ Respeito às leis dos países</summary>
-                        <p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">A IDEnza respeita as leis e regulamentações de todos os países. É dever do usuário assegurar que o uso da plataforma está em conformidade com a legislação local. O descumprimento pode acarretar suspensão da conta.</p>
-                    </details>
-                    <details style="font-size:0.65rem; margin-bottom:0.25rem;">
-                        <summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">🛡️ Isenção de Responsabilidade</summary>
-                        <p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">A IDEnza não se responsabiliza por decisões tomadas com base nas análises da Super IA. As informações fornecidas são de caráter consultivo e não substituem assessoria jurídica profissional. Consulte sempre um advogado especializado.</p>
-                    </details>
-                    <details style="font-size:0.65rem; margin-bottom:0.25rem;">
-                        <summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">🌱 Sustentabilidade & Inovação IDEnza</summary>
-                        <p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">O uso desta plataforma está condicionado às regras de inovação da IDEnza, a primeira IA que atua diretamente pela sustentabilidade. Nosso protocolo proprietário estará disponível apenas a desenvolvedores parceiros autorizados, mediante acordo de confidencialidade.</p>
-                    </details>
-                    <details style="font-size:0.65rem; margin-bottom:0.25rem;">
-                        <summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">📄 Acesso ao Protocolo</summary>
-                        <p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">O protocolo de sustentabilidade da IDEnza é restrito a parceiros homologados. Para solicitar acesso, entre em contato pelo canal oficial de desenvolvedores.</p>
-                    </details>
+                    <details style="font-size:0.65rem; margin-bottom:0.25rem;"><summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">⚖️ Respeito às leis dos países</summary><p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">A IDEnza respeita as leis e regulamentações de todos os países. É dever do usuário assegurar que o uso da plataforma está em conformidade com a legislação local. O descumprimento pode acarretar suspensão da conta.</p></details>
+                    <details style="font-size:0.65rem; margin-bottom:0.25rem;"><summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">🛡️ Isenção de Responsabilidade</summary><p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">A IDEnza não se responsabiliza por decisões tomadas com base nas análises da Super IA. As informações fornecidas são de caráter consultivo e não substituem assessoria jurídica profissional. Consulte sempre um advogado especializado.</p></details>
+                    <details style="font-size:0.65rem; margin-bottom:0.25rem;"><summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">🌱 Sustentabilidade & Inovação IDEnza</summary><p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">O uso desta plataforma está condicionado às regras de inovação da IDEnza, a primeira IA que atua diretamente pela sustentabilidade. Nosso protocolo proprietário estará disponível apenas a desenvolvedores parceiros autorizados, mediante acordo de confidencialidade.</p></details>
+                    <details style="font-size:0.65rem; margin-bottom:0.25rem;"><summary style="cursor: pointer; color: var(--text-muted); font-weight: 300;">📄 Acesso ao Protocolo</summary><p style="margin:0.25rem 0 0 1rem; font-size:0.6rem;">O protocolo de sustentabilidade da IDEnza é restrito a parceiros homologados. Para solicitar acesso, entre em contato pelo canal oficial de desenvolvedores.</p></details>
                 </div>
             </div>
-
             <div id="tab-historico" class="tab-content">
-                <div class="panel">
-                    <div class="panel-header"><h2>Últimas Interações</h2><button class="btn-export" id="export-history">Exportar CSV</button></div>
-                    <div class="table-container"><table><thead><tr><th>Data</th><th>Prompt</th><th>Resposta</th></tr></thead><tbody id="historico-tbody"></tbody></table></div>
-                </div>
+                <div class="panel"><div class="panel-header"><h2>Últimas Interações</h2><button class="btn-export" id="export-history">Exportar CSV</button></div><div class="table-container"><table><thead><tr><th>Data</th><th>Prompt</th><th>Resposta</th></tr></thead><tbody id="historico-tbody"></tbody></table></div></div>
             </div>
-
             <div id="tab-mentor" class="tab-content">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2>Mentor IDEnza</h2>
-                        <span style="font-size:0.7rem; color:var(--text-muted);">Seu assistente de conhecimento vivo</span>
-                    </div>
-                    <div id="mentor-chat" style="background:#1e1e24; border:1px solid #2a2a35; padding:16px; min-height:250px; max-height:400px; overflow-y:auto; font-size:0.8rem; margin-bottom:12px; border-radius:2px;">
-                        <p style="color:#ccc;"><strong>Mentor:</strong> Olá! Pergunte-me sobre qualquer tema ou diga <em>"quais temas você conhece?"</em></p>
-                    </div>
-                    <div style="display:flex; gap:8px;">
-                        <input type="text" id="mentor-input" placeholder="Ex: quais temas você conhece?" style="flex:1; padding:10px; background:#2a2a35; border:1px solid #3a3a45; color:#fff; font-size:0.8rem; border-radius:2px;">
-                        <button class="btn btn-primary" id="btn-mentor-enviar" style="padding:10px 16px;">Enviar</button>
-                    </div>
-                    <div id="mentor-status" style="font-size:0.65rem; color:var(--text-muted); margin-top:8px;"></div>
-                </div>
+                <div class="panel"><div class="panel-header"><h2>Mentor IDEnza</h2><span style="font-size:0.7rem; color:var(--text-muted);">Seu assistente de conhecimento vivo</span></div><div id="mentor-chat" style="background:#1e1e24; border:1px solid #2a2a35; padding:16px; min-height:250px; max-height:400px; overflow-y:auto; font-size:0.8rem; margin-bottom:12px;"><p style="color:#ccc;"><strong>Mentor:</strong> Olá! Pergunte-me sobre qualquer tema ou diga <em>"quais temas você conhece?"</em></p></div><div style="display:flex; gap:8px;"><input type="text" id="mentor-input" placeholder="Ex: quais temas você conhece?" style="flex:1; padding:10px; background:#2a2a35; border:1px solid #3a3a45; color:#fff; font-size:0.8rem;"><button class="btn btn-primary" id="btn-mentor-enviar" style="padding:10px 16px;">Enviar</button></div><div id="mentor-status" style="font-size:0.65rem; color:var(--text-muted); margin-top:8px;"></div></div>
             </div>
-
-            <footer>
-                <div style="color:var(--text-muted); font-size:0.7rem; margin-top:0.5rem;">IDEnza © 2026</div>
-            </footer>
+            <footer><div style="color:var(--text-muted); font-size:0.7rem; margin-top:0.5rem;">IDEnza © 2026</div></footer>
         </main>
     </div>
 
@@ -408,8 +662,43 @@
         (() => {
             const API_BASE = 'https://idenza-new.avizaecosystem.workers.dev';
             const WORKER_BASE = 'https://knowledgegatekeeper.avz9-aproptech.workers.dev';
+            const STT_ENDPOINT = 'http://localhost:5000/perguntar';
 
-            // ===== LOGIN (inalterado) =====
+            // --- FUNÇÕES AUXILIARES DE CONTAGEM ---
+            function incrementarContadorPerguntas() {
+                const agora = Date.now();
+                const umDia = 24 * 60 * 60 * 1000;
+                let timestamps = JSON.parse(localStorage.getItem('idenza_perguntas_timestamps') || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < umDia);
+                timestamps.push(agora);
+                localStorage.setItem('idenza_perguntas_timestamps', JSON.stringify(timestamps));
+                atualizarContadorDiario();
+            }
+            function atualizarContadorDiario() {
+                const agora = Date.now();
+                const umDia = 24 * 60 * 60 * 1000;
+                let timestamps = JSON.parse(localStorage.getItem('idenza_perguntas_timestamps') || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < umDia);
+                const count = timestamps.length;
+                const counterEl = document.getElementById('daily-counter');
+                if (counterEl) counterEl.textContent = count + ' pergunta' + (count !== 1 ? 's' : '') + ' hoje';
+                localStorage.setItem('idenza_perguntas_timestamps', JSON.stringify(timestamps));
+            }
+
+            function incrementarContadorTema(tema) {
+                let counts = JSON.parse(localStorage.getItem('idenza_theme_counts') || '{}');
+                counts[tema] = (counts[tema] || 0) + 1;
+                localStorage.setItem('idenza_theme_counts', JSON.stringify(counts));
+                atualizarContadorTemas();
+            }
+            function atualizarContadorTemas() {
+                const counts = JSON.parse(localStorage.getItem('idenza_theme_counts') || '{}');
+                const total = Object.values(counts).reduce((a,b) => a+b, 0);
+                const el = document.getElementById('theme-counter');
+                if (el) el.textContent = total + ' tema' + (total !== 1 ? 's' : '') + ' consultado' + (total !== 1 ? 's' : '');
+            }
+
+            // ===== LOGIN =====
             document.getElementById('login-form-email').onsubmit = async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value.trim();
@@ -433,7 +722,6 @@
                     }
                 } catch (err) { errorDiv.textContent = 'Erro de conexão'; errorDiv.style.color = '#ff4444'; }
             };
-
             document.getElementById('login-form-apikey').onsubmit = async (e) => {
                 e.preventDefault();
                 const apiKey = document.getElementById('apikey-input').value.trim();
@@ -452,7 +740,6 @@
                     }
                 } catch (err) { errorDiv.textContent = 'Erro de conexão'; errorDiv.style.color = '#ff4444'; }
             };
-
             function abrirDashboard(userData) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
@@ -464,8 +751,9 @@
                 document.getElementById('created-value').textContent = userData.created_at ? new Date(userData.created_at).toLocaleDateString('pt-BR') : '--';
                 atualizarStatusCliente(userData);
                 carregarTopicosPlayground();
+                atualizarContadorDiario();
+                atualizarContadorTemas();
             }
-
             function atualizarStatusCliente(userData) {
                 const memberSinceEl = document.getElementById('member-since');
                 if (memberSinceEl && userData.created_at) {
@@ -474,7 +762,6 @@
                 const statusDot = document.querySelector('.status-dot');
                 if (statusDot) statusDot.style.background = userData.status === 'active' ? 'var(--success)' : 'var(--danger)';
             }
-
             document.querySelectorAll('.login-tab').forEach(t => {
                 t.addEventListener('click', () => {
                     document.querySelectorAll('.login-tab').forEach(x => x.classList.remove('active'));
@@ -484,7 +771,6 @@
                     document.getElementById('login-error').textContent = '';
                 });
             });
-
             document.querySelectorAll('.sidebar-nav a[data-tab]').forEach(l => {
                 l.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -497,106 +783,289 @@
                 });
             });
 
-            // ===== PLAYGROUND – CONVERSA COM HUMANOIDES + SUGESTÕES PROBABILÍSTICAS =====
+            // ===== PLAYGROUND & ÁUDIO =====
+            const terminalEl = document.getElementById('playground-terminal');
             const conv = document.getElementById('playground-conversation');
             const inp = document.getElementById('playground-input');
             const lat = document.getElementById('playground-latency');
+            const micBtn = document.getElementById('btn-mic-inline');
+            let currentAgent = { nome: 'IDEnza', chave: null }; // chave será usada como identificador do agente
+            let voiceMode = false;
+            let soundEnabled = false;
 
-            let currentAgent = { nome: 'Super IA', chave: null };
+            // --- MediaRecorder ---
+            let mediaRecorder;
+            let audioChunks = [];
+            let isRecording = false;
 
-            window.selecionarAgente = function(nome, chave) {
-                currentAgent = { nome, chave };
-                conv.innerHTML = `<div class="ai-msg">🤖 <strong>${nome}</strong> ativado. Pode perguntar!</div>`;
-                document.querySelector('#tab-playground .panel-header h2').textContent = `Console: ${nome}`;
-            };
+            function updateMicUI(recording) {
+                if (recording) {
+                    micBtn.classList.add('recording');
+                    micBtn.title = 'Gravando... clique para parar';
+                } else {
+                    micBtn.classList.remove('recording');
+                    micBtn.title = 'Gravar e enviar automaticamente';
+                }
+            }
 
-            async function enviarMensagem(msg, agentChave = null) {
-                if (!msg.trim()) return;
-                conv.innerHTML += `<div class="user-msg">> ${msg}</div>`;
-                const ai = document.createElement('div'); ai.className = 'ai-msg';
-                ai.innerHTML = '<span class="cursor"></span> Gerando...';
-                conv.appendChild(ai);
-                const st = Date.now();
+            async function startRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        updateMicUI(false);
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        await enviarAudioParaWorker(audioBlob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    updateMicUI(true);
+
+                    setTimeout(() => {
+                        if (mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                            isRecording = false;
+                        }
+                    }, 8000);
+
+                } catch (err) {
+                    alert('Erro ao acessar o microfone: ' + err.message);
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                }
+            }
+
+            micBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+
+            // --- ENVIO DE ÁUDIO (transcrição local + worker) ---
+            async function enviarAudioParaWorker(audioBlob) {
+                const userMsg = document.createElement('div');
+                userMsg.className = 'user-msg';
+                userMsg.innerHTML = '<span class="sender-label">👤 Você</span>🎤 Processando áudio...';
+                conv.appendChild(userMsg);
+                scrollTerminalToBottom();
+
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'gravacao.webm');
+
+                let pergunta = null;
+                try {
+                    const sttRes = await fetch(STT_ENDPOINT, { method: 'POST', body: formData });
+                    const sttData = await sttRes.json();
+                    if (sttData.erro) {
+                        userMsg.innerHTML = `<span class="sender-label">👤 Você</span>Erro na transcrição: ${sttData.erro}`;
+                        lat.textContent = 'Erro na transcrição';
+                        return;
+                    }
+                    pergunta = sttData.pergunta || '';
+                    userMsg.innerHTML = `<span class="sender-label">👤 Você</span>${pergunta}`;
+                } catch (err) {
+                    userMsg.innerHTML = '<span class="sender-label">👤 Você</span>Erro ao conectar com servidor de voz.';
+                    lat.textContent = 'Erro STT';
+                    return;
+                }
+
+                if (!pergunta.trim()) return;
+                incrementarContadorPerguntas();
+                await enviarMensagemWorker(pergunta, currentAgent.chave);
+            }
+
+            // --- ENVIO DE TEXTO (worker) ---
+            async function enviarMensagemWorker(msg, agentChave) {
+                const startTime = Date.now();
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'ai-msg';
+                aiMsg.innerHTML = `<span class="sender-label">🤖 ${currentAgent.nome}</span>⏳ Pensando...`;
+                conv.appendChild(aiMsg);
+                scrollTerminalToBottom();
 
                 try {
                     const res = await fetch(`${WORKER_BASE}/api/ask`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            query: msg,
-                            agent: agentChave || currentAgent.chave || undefined
-                        })
+                        body: JSON.stringify({ query: msg, agent: agentChave || undefined })
                     });
                     const data = await res.json();
-                    
-                    if (data.type === 'suggestions' && data.suggestions && data.suggestions.length > 0) {
-                        // Renderiza sugestões com confiança
-                        let html = `<div class="ai-suggestions-container">`;
-                        html += `<p class="ai-suggestion-message">${data.message || 'Talvez estes tópicos possam ajudar:'}</p>`;
-                        data.suggestions.forEach(s => {
-                            const pct = (s.confidence * 100).toFixed(0);
-                            html += `<button class="topic-suggestion-btn" data-id="${s.id}" data-title="${s.title}" data-confidence="${s.confidence}">
-                                <strong>${s.title}</strong> 
-                                <span class="confidence-badge">${pct}%</span>
-                                <br><small>${s.description || ''}</small>
-                            </button>`;
-                        });
-                        html += `</div>`;
-                        ai.innerHTML = html;
-                        lat.textContent = `< ${Date.now() - st} ms — ${currentAgent.nome} (sugestões)`;
+                    const resposta = data.resposta || data.response || data.text || data.error || 'Desculpe, não consegui processar.';
+                    aiMsg.innerHTML = `<span class="sender-label">🤖 ${currentAgent.nome}</span>${resposta}`;
+                    const elapsed = Date.now() - startTime;
+                    lat.textContent = `${data.cache_hit ? '⚡ Cache hit' : '🧠 Nova resposta'} · ${elapsed} ms`;
 
-                        // Adiciona event listeners aos botões de sugestão
-                        document.querySelectorAll('.topic-suggestion-btn').forEach(btn => {
-                            btn.addEventListener('click', (e) => {
-                                const titulo = e.currentTarget.dataset.title;
-                                const confianca = e.currentTarget.dataset.confidence;
-                                // Remove os botões de sugestão e envia pergunta específica
-                                const container = e.currentTarget.closest('.ai-suggestions-container');
-                                if (container) container.remove();
-                                enviarMensagem(`Explique sobre ${titulo} em 7 camadas de conhecimento`);
-                            });
-                        });
-                    } else {
-                        // Resposta normal
-                        ai.innerHTML = data.resposta || data.error || 'Sem resposta';
-                        lat.textContent = `< ${Date.now() - st} ms — ${currentAgent.nome}`;
-                        
-                        // Salva histórico local (opcional)
-                        const hist = JSON.parse(localStorage.getItem('idenza_historico') || '[]');
-                        hist.unshift({ data: new Date().toLocaleString(), prompt: msg.substring(0,100), resposta: (data.resposta || '').substring(0,100) });
-                        if (hist.length > 20) hist.pop();
-                        localStorage.setItem('idenza_historico', JSON.stringify(hist));
-                    }
+                    if (voiceMode && resposta) speakFree(resposta);
+                    if (soundEnabled) playChime();
+
+                    const hist = JSON.parse(localStorage.getItem('idenza_historico') || '[]');
+                    hist.unshift({ data: new Date().toLocaleString(), prompt: msg, resposta: resposta.substring(0, 100) });
+                    if (hist.length > 20) hist.pop();
+                    localStorage.setItem('idenza_historico', JSON.stringify(hist));
+
                 } catch (err) {
-                    ai.innerHTML = 'Erro ao conectar com a IA.';
-                    lat.textContent = 'Erro';
+                    aiMsg.innerHTML = `<span class="sender-label">🤖 ${currentAgent.nome}</span>⚠️ Erro de conexão com a IDEnza.`;
+                    lat.textContent = 'Erro de rede';
                 }
-                conv.scrollTop = conv.scrollHeight;
+                scrollTerminalToBottom();
             }
 
-            inp.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && inp.value.trim() !== '') {
-                    const msg = inp.value.trim(); inp.value = '';
-                    enviarMensagem(msg);
+            // --- FUNÇÕES DE INTERFACE ---
+            function scrollTerminalToBottom() {
+                if (!terminalEl) return;
+                terminalEl.scrollTop = terminalEl.scrollHeight;
+                requestAnimationFrame(() => {
+                    const lastMsg = conv.lastElementChild;
+                    if (lastMsg) lastMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    terminalEl.scrollTop = terminalEl.scrollHeight;
+                });
+            }
+
+            function speakFree(text) {
+                if (!text) return;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            function playChime() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch(e) {}
+            }
+
+            // ===== BOTÕES DE TOGGLE =====
+            document.getElementById('btn-speech-to-speech').addEventListener('click', function() {
+                voiceMode = !voiceMode;
+                this.classList.toggle('active', voiceMode);
+                this.title = voiceMode ? 'Speech to Speech (ON)' : 'Speech to Speech (OFF)';
+            });
+            document.getElementById('btn-soundfx').addEventListener('click', function() {
+                soundEnabled = !soundEnabled;
+                this.classList.toggle('active', soundEnabled);
+                this.title = soundEnabled ? 'Efeitos Sonoros (ON)' : 'Efeitos Sonoros (OFF)';
+                if (soundEnabled) playChime();
+            });
+            document.getElementById('btn-audio-isolation').addEventListener('click', function() {
+                this.classList.toggle('active');
+                const isActive = this.classList.contains('active');
+                this.title = isActive ? 'Isolamento de Áudio (ON)' : 'Isolamento de Áudio (OFF)';
+            });
+            document.getElementById('btn-tts').addEventListener('click', () => {
+                const lastAi = conv.querySelector('.ai-msg:last-of-type');
+                if (lastAi) {
+                    const label = lastAi.querySelector('.sender-label');
+                    let text = lastAi.innerText || lastAi.textContent || '';
+                    if (label) text = text.replace(label.innerText, '').trim();
+                    speakFree(text);
                 }
             });
+            document.getElementById('btn-clear-conversation').addEventListener('click', () => {
+                conv.innerHTML = `<div class="ai-msg"><span class="sender-label">🤖 IDEnza</span>Conversa limpa. Pode perguntar novamente.</div>`;
+                scrollTerminalToBottom();
+            });
+            document.getElementById('btn-copy-conversation').addEventListener('click', async () => {
+                const texto = Array.from(conv.children).map(el => el.textContent.trim()).join('\n\n');
+                try {
+                    await navigator.clipboard.writeText(texto);
+                    const btn = document.getElementById('btn-copy-conversation');
+                    btn.textContent = '✅';
+                    setTimeout(() => { btn.textContent = '📋'; }, 1500);
+                } catch (err) { alert('Não foi possível copiar.'); }
+            });
 
-            // Exportar conversa
-            document.getElementById('export-conversation').onclick = () => {
-                const blob = new Blob([conv.innerText], { type: 'text/plain' });
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'conversa.txt'; a.click();
-            };
-
-            // Chips de tema: agora disparam pergunta com o agente atual, podendo gerar sugestões
-            document.querySelectorAll('.chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    const tema = chip.dataset.tema;
-                    const pergunta = `Explique sobre ${tema} em 7 camadas de conhecimento`;
-                    enviarMensagem(pergunta);
+            // ===== AGENTES ANÔNIMOS (novos botões quadrados) =====
+            document.querySelectorAll('.agent-btn-square').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove destaque de outros
+                    document.querySelectorAll('.agent-btn-square').forEach(b => b.classList.remove('active-agent'));
+                    btn.classList.add('active-agent');
+                    const agentKey = btn.dataset.agent;
+                    const nome = btn.textContent.replace(/\s/g, ' ').trim();
+                    currentAgent = { nome: nome, chave: agentKey };
+                    conv.innerHTML += `<div class="ai-msg"><span class="sender-label">🤖 ${nome}</span><strong>${nome}</strong> ativado. Este agente anônimo está pronto para consultar o orquestrador.</div>`;
+                    document.querySelector('#tab-playground .panel-header h2').textContent = `Console: ${nome}`;
+                    incrementarContadorTema(agentKey);
+                    scrollTerminalToBottom();
                 });
             });
 
-            // ===== NOTAS (inalterado) =====
+            // ===== SELEÇÃO DE AGENTE (mantido para compatibilidade) =====
+            window.selecionarAgente = function(nome, chave) {
+                currentAgent = { nome, chave };
+                conv.innerHTML += `<div class="ai-msg"><span class="sender-label">🤖 ${nome}</span><strong>${nome}</strong> ativado. Este agente está conectado ao orquestrador IDEnza.</div>`;
+                document.querySelector('#tab-playground .panel-header h2').textContent = `Console: ${nome}`;
+                scrollTerminalToBottom();
+            };
+
+            // ===== ENVIO POR TEXTO (ENTER) =====
+            inp.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && inp.value.trim()) {
+                    const msg = inp.value.trim();
+                    inp.value = '';
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-msg';
+                    userDiv.innerHTML = `<span class="sender-label">👤 Você</span>${msg}`;
+                    conv.appendChild(userDiv);
+                    scrollTerminalToBottom();
+                    incrementarContadorPerguntas();
+                    enviarMensagemWorker(msg, currentAgent.chave);
+                }
+            });
+            terminalEl.addEventListener('click', (e) => {
+                if (!e.target.closest('.topic-suggestion-btn') && !e.target.closest('.icon-btn') && !e.target.closest('.mic-icon-inline')) inp.focus();
+            });
+            document.getElementById('export-conversation').onclick = () => {
+                const texto = Array.from(conv.children).map(el => el.textContent.trim()).join('\n\n');
+                const blob = new Blob([texto], { type: 'text/plain' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'conversa-idenza.txt'; a.click();
+            };
+
+            // ===== CHIPS (temas rápidos) =====
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const tema = chip.dataset.tema;
+                    const msg = `Entregue o conhecimento sobre ${tema}`;
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'user-msg';
+                    userDiv.innerHTML = `<span class="sender-label">👤 Você</span>${msg}`;
+                    conv.appendChild(userDiv);
+                    scrollTerminalToBottom();
+                    incrementarContadorPerguntas();
+                    // mantém o agente atual (se nenhum, usa IDEnza padrão)
+                    enviarMensagemWorker(msg, currentAgent.chave);
+                });
+            });
+
+            // ===== NOTAS =====
             const nt = document.getElementById('notepad-text');
             nt.value = localStorage.getItem('idenza_notepad') || '';
             nt.oninput = () => localStorage.setItem('idenza_notepad', nt.value);
@@ -606,66 +1075,76 @@
                 const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'notas.txt'; a.click();
             };
 
-            // ===== CARREGAMENTO DE TÓPICOS DA SIDEBAR =====
+            // ===== TÓPICOS DINÂMICOS =====
             async function obterTopicosViaWorker() {
                 try {
                     const res = await fetch(`${WORKER_BASE}/api/topics`);
-                    if (!res.ok) throw new Error('Falha ao buscar tópicos');
+                    if (!res.ok) throw new Error('Falha');
                     const data = await res.json();
                     return data.topics || [];
-                } catch (e) {
-                    console.error('Erro ao carregar tópicos:', e);
-                    return [];
-                }
+                } catch (e) { return []; }
             }
-
             window.perguntarTopico = function(chave) {
-                const partes = chave.split(':');
-                const nome = partes[2] || chave;
-                selecionarAgente(nome, chave);
+                let nome, uid;
+                if (chave.startsWith('ACI-')) {
+                    nome = chave;
+                    uid = chave;
+                } else {
+                    const partes = chave.split(':');
+                    nome = partes[2] || chave;
+                    uid = chave;
+                }
+                selecionarAgente(nome, uid);
             };
-
-            window.perguntarTopicoFixo = function(nome, chave) {
-                selecionarAgente(nome, chave);
-            };
-
             async function carregarTopicosPlayground() {
                 const container = document.getElementById('topic-list');
                 if (!container) return;
-                container.innerHTML = '⏳ Carregando tópicos...';
+                container.innerHTML = '⏳ Carregando...';
+                let topicos = [];
                 try {
-                    const topicos = await obterTopicosViaWorker();
-                    if (!topicos.length) {
-                        container.innerHTML = '<span style="color:var(--text-muted);">Nenhum tópico aprovado na caixa branca.</span>';
-                        return;
+                    const res = await fetch(`${WORKER_BASE}/api/topics`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        topicos = data.topics || [];
                     }
-                    let html = '';
-                    topicos.forEach(t => {
-                        html += `<div class="topic-item" onclick="perguntarTopico('${t.chave.replace(/'/g, "\\'")}')">
-                            <strong>${t.nome}</strong> <span class="topic-desc">(${t.camadas || 0}/7 camadas)</span>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                } catch (e) {
-                    container.innerHTML = '<span style="color:var(--danger);">Erro ao carregar tópicos.</span>';
-                }
+                } catch (e) {}
+                let agents = [];
+                try {
+                    const res = await fetch(`${WORKER_BASE}/api/agents`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        agents = data.agents || [];
+                    }
+                } catch (e) {}
+                const todos = [
+                    ...topicos,
+                    ...agents.map(a => ({
+                        nome: (a.tipo === 'humanoide' ? '🧟 ' : '🤖 ') + a.nome,
+                        chave: a.uid,
+                        camadas: 1
+                    }))
+                ];
+                container.innerHTML = todos.map(t => {
+                    const chaveEscapada = t.chave.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    return `<div class="topic-item" onclick="perguntarTopico('${chaveEscapada}')"><strong>${t.nome}</strong> <span class="topic-desc">(${t.camadas || 0} camadas)</span></div>`;
+                }).join('');
             }
 
-            // ===== AUTO-LOGIN =====
+            // ===== AUTO-LOGIN E INICIALIZAÇÃO =====
             (async () => {
                 const apiKey = localStorage.getItem('idenza_api_key');
                 if (apiKey) {
                     try {
                         const res = await fetch(`${API_BASE}/api/me`, { headers: { 'x-api-key': apiKey } });
-                        if (res.ok) {
-                            const data = await res.json();
-                            abrirDashboard(data);
-                        } else { localStorage.removeItem('idenza_api_key'); }
-                    } catch (err) {}
+                        if (res.ok) abrirDashboard(await res.json());
+                        else localStorage.removeItem('idenza_api_key');
+                    } catch (e) {}
                 }
+                atualizarContadorDiario();
+                atualizarContadorTemas();
             })();
 
-            // ===== MENTOR (inalterado) =====
+            // ===== MENTOR =====
             (function() {
                 const chat = document.getElementById('mentor-chat');
                 const input = document.getElementById('mentor-input');
@@ -677,17 +1156,14 @@
                     chat.innerHTML += `<p style="color:#aaa;"><strong>Você:</strong> ${pergunta}</p>`;
                     input.value = '';
                     if (pergunta.toLowerCase().includes('tema') || pergunta.toLowerCase().includes('conhece')) {
-                        try {
-                            const topicos = await obterTopicosViaWorker();
-                            if (!topicos.length) {
-                                chat.innerHTML += '<p style="color:#ccc;"><strong>Mentor:</strong> Nenhum tema disponível.</p>';
-                            } else {
-                                let resposta = '<p style="color:#ccc;"><strong>Mentor:</strong> 📚 Temas que conheço:</p><ul style="color:#ccc;">';
-                                topicos.forEach(t => resposta += `<li><b>${t.nome}</b> (${t.camadas || 0}/7 camadas)</li>`);
-                                resposta += '</ul>';
-                                chat.innerHTML += resposta;
-                            }
-                        } catch { chat.innerHTML += '<p style="color:#ccc;">Erro ao carregar temas.</p>'; }
+                        const topicos = await obterTopicosViaWorker();
+                        if (!topicos.length) chat.innerHTML += '<p style="color:#ccc;"><strong>Mentor:</strong> Nenhum tema disponível.</p>';
+                        else {
+                            let resposta = '<p style="color:#ccc;"><strong>Mentor:</strong> 📚 Temas que conheço:</p><ul style="color:#ccc;">';
+                            topicos.forEach(t => resposta += `<li><b>${t.nome}</b> (${t.camadas || 0}/7 camadas)</li>`);
+                            resposta += '</ul>';
+                            chat.innerHTML += resposta;
+                        }
                     } else {
                         chat.innerHTML += '<p style="color:#ccc;"><strong>Mentor:</strong> Pergunte "quais temas você conhece?".</p>';
                     }
@@ -695,6 +1171,8 @@
                 });
                 input.addEventListener('keypress', e => { if (e.key === 'Enter') btn.click(); });
             })();
+
+            setTimeout(() => { if (terminalEl) terminalEl.scrollTop = terminalEl.scrollHeight; }, 100);
         })();
     </script>
 </body>

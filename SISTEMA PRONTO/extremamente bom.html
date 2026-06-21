@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEnza — Plataforma Cognitiva Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style1.css">
+    <!-- Complemento de estilo para ajustes pontuais, usando as mesmas variáveis -->
+    <style>
+        /* Botão de exportação inline (minúsculo, junto à mensagem do orquestrador) */
+        .export-fab-inline {
+            background: var(--copper-ghost);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            padding: 4px 10px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-block;
+            margin-top: 6px;
+            align-self: flex-start;
+        }
+        .export-fab-inline:hover {
+            background: rgba(200, 122, 79, 0.1);
+            color: var(--copper);
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-copper);
+        }
+        /* Espaçamento extra para a lista de Categorias & Contexto */
+        #panelContext .sidebar-list {
+            gap: 6px;
+        }
+        #panelContext .sidebar-item {
+            padding: 10px 12px;
+        }
+        /* Tooltip expansível do rodapé */
+        .compliance-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--navy-card);
+            border: 1px solid var(--copper);
+            color: var(--cream);
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            padding: 12px 16px;
+            border-radius: 2px;
+            box-shadow: var(--shadow-elevated);
+            white-space: normal;
+            max-width: 260px;
+            z-index: 20;
+            animation: fadeInTooltip 0.25s ease;
+            pointer-events: none;
+        }
+        @keyframes fadeInTooltip {
+            from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .compliance-footer span {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY DE LOGIN (adicionado sem alterar a interface principal) -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>IDEnza</h2>
+            <p class="subtle">Acesse seu ambiente inteligente</p>
+            <div class="login-tabs">
+                <button class="login-tab active" data-method="email">E‑mail</button>
+                <button class="login-tab" data-method="apikey">Chave de Acesso</button>
+            </div>
+            <div id="login-panel-email" class="login-panel active">
+                <form id="login-form-email">
+                    <div class="form-group"><label>E‑mail</label><input type="email" id="login-email" required></div>
+                    <div class="form-group"><label>Senha</label><input type="password" id="login-password" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div id="login-panel-apikey" class="login-panel">
+                <form id="login-form-apikey">
+                    <div class="form-group"><label>Chave de Acesso</label><input type="text" id="apikey-input" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div class="login-error" id="login-error"></div>
+            <p class="tiny">Ao acessar, você concorda com os Termos de Uso.</p>
+            <button class="btn-outline" style="margin-top:1rem;padding:0.4rem 1rem;font-size:0.7rem;" onclick="localStorage.clear(); location.reload();">Limpar acesso (teste)</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE HISTÓRICO -->
+    <div id="historicoModal" class="historico-modal">
+        <div class="historico-modal-content">
+            <div class="historico-modal-header">
+                <span>📋 Histórico de Interações</span>
+                <button id="closeHistoricoModal">✕</button>
+            </div>
+            <div class="historico-list" id="historicoList">
+                <!-- Preenchido via JS -->
+            </div>
+            <div class="historico-actions">
+                <button id="exportHistoricoCSV">Exportar CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPAL (interface inalterada) -->
+    <div class="app-shell" id="appShell" style="display:none;">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-panel" id="panelSpecialists">
+                <h2 class="sidebar-panel-title">Temas & Especialistas</h2>
+                <ul class="sidebar-list" id="specialistList">
+                    <li class="sidebar-item">Tecnologia</li>
+                    <li class="sidebar-item">Blockchain</li>
+                    <li class="sidebar-item">Negócios</li>
+                    <li class="sidebar-item active">Arquitetura SaaS</li>
+                </ul>
+            </div>
+            <div class="sidebar-panel" id="panelContext">
+                <h2 class="sidebar-panel-title">Categorias & Contexto</h2>
+                <ul class="sidebar-list" id="contextList">
+                    <li class="sidebar-item">Plataforma</li>
+                    <li class="sidebar-item active">Multi-tenant</li>
+                    <li class="sidebar-item">Escalabilidade</li>
+                    <li class="sidebar-item">API Gateway</li>
+                </ul>
+
+                <div class="tabs-container">
+                    <ul class="tab-list" id="clientTabs">
+                        <li><a data-tab="tab-notas" class="active">📝 Notas</a></li>
+                        <li><a data-tab="tab-conta">👤 Minha Conta</a></li>
+                        <li><a data-tab="tab-historico">📋 Histórico</a></li>
+                    </ul>
+                </div>
+
+                <div class="theme-marker" id="themeMarker" title="Alternar tema Navy / Clean">
+                    <span class="theme-square"></span>
+                    <span class="theme-label">Navy Copper</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-area" id="mainArea">
+            <div class="chat-header">
+                <span class="chat-header-title">Centro Cognitivo</span>
+                <div class="chat-header-indicators">
+                    <span class="indicator"><span class="dot"></span> Foco: <span class="val highlight" id="focusVal">Plataforma SaaS</span></span>
+                    <span class="indicator">Especialista: <span class="val" id="specVal">Arquiteto de Software</span></span>
+                    <span class="indicator">Confiança: <span class="val highlight" id="confVal">87%</span></span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg ai">
+                    <span class="msg-label">IDEnza</span>
+                    <p class="msg-content">Olá, eu sou o <strong style="color:var(--copper);">Orquestrador Cognitivo IDEnza</strong> — um humanoide direcional que vai compreendendo sua intenção enquanto você descreve sua ideia.</p>
+                    <span class="msg-time">— agora</span>
+                    <!-- Botão de exportação integrado, minúsculo -->
+                    <button class="export-fab-inline" id="exportConversationBtn">📥 Exportar Conversa</button>
+                </div>
+            </div>
+        </main>
+
+        <div class="input-area" id="inputAreaContainer">
+            <!-- Tags semânticas em linha única, rente ao campo -->
+            <div class="tags-grid-container" id="tagsGridContainer">
+                <div class="tags-grid" id="tagsGrid"></div>
+            </div>
+            <div class="input-wrapper" id="inputWrapper">
+                <textarea id="userInput" placeholder="Descreva sua ideia livremente..." rows="1" aria-label="Campo de entrada cognitiva"></textarea>
+                <button class="send-btn" id="sendBtn" aria-label="Enviar" title="Enviar mensagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </button>
+                <!-- Botão de microfone inline (discreto) -->
+                <button class="mic-btn" id="micBtn" title="Gravar áudio" aria-label="Microfone">🎤</button>
+            </div>
+            <!-- Rodapé de compliance minúsculo abaixo do campo -->
+            <div class="compliance-footer">
+                <span data-tooltip="IDEnza é um orquestrador cognitivo que compreende e expande ideias de forma interativa.">Quem é IDEnza</span>
+                <span data-tooltip="Nosso objetivo é amplificar a cognição humana, conectando conhecimento e tecnologia de forma fluida.">Nossos Objetivos</span>
+                <span data-tooltip="Responsabilidade no uso ético da IA, transparência e privacidade desde a concepção.">Responsabilidade</span>
+                <span data-tooltip="Leia nossos Termos de Uso para entender as diretrizes de utilização da plataforma.">Termos de Uso</span>
+                <span data-tooltip="A privacidade dos seus dados é prioridade. Consulte nossa política.">Privacidade</span>
+                <span data-tooltip="Compromisso com acessibilidade universal, seguindo as melhores práticas internacionais.">Acessibilidade</span>
+                <span data-tooltip="Conformidade com normas e regulamentações, incluindo proteção de dados e segurança.">Compliance</span>
+                <!-- Contador diário integrado ao rodapé, minúsculo -->
+                <span class="daily-counter" id="dailyCounter">0 perguntas hoje</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip flutuante para os itens do rodapé -->
+    <div id="complianceTooltip" class="compliance-tooltip"></div>
+
+    <script>
+        (function() {
+            // ═══════════ CONFIGURAÇÕES DE BACKEND ═══════════
+            const API_AUTH_LOGIN = 'https://idenza-new.avizaecosystem.workers.dev/api/auth/login';
+            const API_ME         = 'https://idenza-new.avizaecosystem.workers.dev/api/me';
+            const API_ASK        = 'https://knowledgegatekeeper.avz9-aproptech.workers.dev/api/ask';
+            const API_TOPICS     = 'https://knowledgegatekeeper.avz9-aproptech.workers.dev/api/topics';
+            const API_AGENTS     = 'https://knowledgegatekeeper.avz9-aproptech.workers.dev/api/agents';
+            const API_MIC        = 'http://localhost:5000/perguntar';
+
+            // ═══════════ LOCAL STORAGE KEYS ═══════════
+            const LS_API_KEY     = 'idenza_api_key';
+            const LS_TOKEN       = 'idenza_token';
+            const LS_TIMESTAMPS  = 'idenza_perguntas_timestamps';
+            const LS_THEME_COUNTS = 'idenza_theme_counts';
+            const LS_HISTORICO   = 'idenza_historico';
+            const LS_NOTEPAD     = 'idenza_notepad';
+
+            // ═══════════ ESTADO GLOBAL ═══════════
+            let apiKey = localStorage.getItem(LS_API_KEY) || '';
+            let token = localStorage.getItem(LS_TOKEN) || '';
+            let topics = [];
+            let agents = [];
+            let currentAgent = null;
+            let currentAgentName = 'IDEnza';
+
+            // Elementos DOM
+            const chatMessages = document.getElementById('chatMessages');
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const specialistList = document.getElementById('specialistList');
+            const contextList = document.getElementById('contextList');
+            const focusVal = document.getElementById('focusVal');
+            const specVal = document.getElementById('specVal');
+            const confVal = document.getElementById('confVal');
+            const tagsGrid = document.getElementById('tagsGrid');
+            const tagsGridContainer = document.getElementById('tagsGridContainer');
+            const themeMarker = document.getElementById('themeMarker');
+            const themeLabel = themeMarker?.querySelector('.theme-label');
+            const clientTabs = document.getElementById('clientTabs');
+            const micBtn = document.getElementById('micBtn');
+            const dailyCounter = document.getElementById('dailyCounter');
+            const historicoModal = document.getElementById('historicoModal');
+            const historicoList = document.getElementById('historicoList');
+            const appShell = document.getElementById('appShell');
+            const loginOverlay = document.getElementById('loginOverlay');
+            const exportConversationBtn = document.getElementById('exportConversationBtn');
+
+            // Tooltip do rodapé
+            const complianceTooltip = document.getElementById('complianceTooltip');
+            let tooltipTimeout;
+
+            // ═══════════ FUNÇÕES DE ARMAZENAMENTO ═══════════
+            function salvarHistorico(prompt, resposta) {
+                let historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                historico.unshift({ data: new Date().toISOString(), prompt, resposta: resposta.substring(0, 200) });
+                if (historico.length > 50) historico.pop();
+                localStorage.setItem(LS_HISTORICO, JSON.stringify(historico));
+            }
+
+            function contarPergunta() {
+                const agora = Date.now();
+                let timestamps = JSON.parse(localStorage.getItem(LS_TIMESTAMPS) || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < 86400000);
+                timestamps.push(agora);
+                localStorage.setItem(LS_TIMESTAMPS, JSON.stringify(timestamps));
+                atualizarContador();
+                return timestamps.length;
+            }
+
+            function atualizarContador() {
+                const agora = Date.now();
+                let timestamps = JSON.parse(localStorage.getItem(LS_TIMESTAMPS) || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < 86400000);
+                const count = timestamps.length;
+                if (dailyCounter) {
+                    dailyCounter.textContent = count + ' pergunta' + (count !== 1 ? 's' : '') + ' hoje';
+                }
+            }
+
+            function incrementarContagemTema(agent) {
+                let contagens = JSON.parse(localStorage.getItem(LS_THEME_COUNTS) || '{}');
+                contagens[agent] = (contagens[agent] || 0) + 1;
+                localStorage.setItem(LS_THEME_COUNTS, JSON.stringify(contagens));
+            }
+
+            // ═══════════ LOGIN ═══════════
+            function abrirDashboard(userData) {
+                loginOverlay.style.display = 'none';
+                appShell.style.display = 'grid';
+                if (userData) {}
+                carregarTopicosAgentes();
+                atualizarContador();
+                userInput.focus();
+            }
+
+            document.getElementById('login-form-email').onsubmit = async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                const errorDiv = document.getElementById('login-error');
+                if (!email || !password) { errorDiv.textContent = 'Preencha todos os campos'; return; }
+                errorDiv.textContent = '⏳ Entrando...';
+                try {
+                    const res = await fetch(API_AUTH_LOGIN, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (data.token && data.user) {
+                        localStorage.setItem(LS_API_KEY, data.user.api_key);
+                        localStorage.setItem(LS_TOKEN, data.token);
+                        apiKey = data.user.api_key;
+                        token = data.token;
+                        abrirDashboard(data.user);
+                    } else {
+                        errorDiv.textContent = data.error || 'Credenciais inválidas';
+                    }
+                } catch (err) {
+                    errorDiv.textContent = 'Erro de conexão';
+                }
+            };
+
+            document.getElementById('login-form-apikey').onsubmit = async (e) => {
+                e.preventDefault();
+                const key = document.getElementById('apikey-input').value.trim();
+                const errorDiv = document.getElementById('login-error');
+                if (!key) { errorDiv.textContent = 'Informe a chave'; return; }
+                errorDiv.textContent = '⏳ Verificando...';
+                try {
+                    const res = await fetch(API_ME, { headers: { 'X-API-Key': key } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        localStorage.setItem(LS_API_KEY, key);
+                        apiKey = key;
+                        abrirDashboard(data);
+                    } else {
+                        errorDiv.textContent = 'Chave inválida';
+                    }
+                } catch (err) {
+                    errorDiv.textContent = 'Erro de conexão';
+                }
+            };
+
+            document.querySelectorAll('.login-tab').forEach(t => {
+                t.addEventListener('click', () => {
+                    document.querySelectorAll('.login-tab').forEach(x => x.classList.remove('active'));
+                    document.querySelectorAll('.login-panel').forEach(x => x.classList.remove('active'));
+                    t.classList.add('active');
+                    document.getElementById('login-panel-' + t.dataset.method).classList.add('active');
+                    document.getElementById('login-error').textContent = '';
+                });
+            });
+
+            // Auto-login
+            (async function autoLogin() {
+                if (apiKey) {
+                    try {
+                        const res = await fetch(API_ME, { headers: { 'X-API-Key': apiKey } });
+                        if (res.ok) {
+                            const data = await res.json();
+                            abrirDashboard(data);
+                            return;
+                        } else {
+                            localStorage.removeItem(LS_API_KEY);
+                            localStorage.removeItem(LS_TOKEN);
+                        }
+                    } catch (e) {}
+                }
+                loginOverlay.style.display = 'flex';
+            })();
+
+            // ═══════════ CARREGAMENTO DE TÓPICOS E AGENTES ═══════════
+            async function carregarTopicosAgentes() {
+                try {
+                    const headers = apiKey ? { 'X-API-Key': apiKey } : {};
+                    const [topicsResp, agentsResp] = await Promise.all([
+                        fetch(API_TOPICS, { headers }),
+                        fetch(API_AGENTS, { headers })
+                    ]);
+                    if (topicsResp.ok) topics = await topicsResp.json();
+                    if (agentsResp.ok) agents = await agentsResp.json();
+                } catch (e) {
+                    console.warn('Falha ao carregar tópicos/agentes', e);
+                }
+                renderizarSidebar();
+            }
+
+            function renderizarSidebar() {
+                const specItems = agents.length > 0 ? agents.map(a => a.name || a.id).slice(0, 6) : ['Tecnologia', 'Blockchain', 'Negócios', 'Arquitetura SaaS', 'IA', 'Segurança'];
+                updateSidebarList(specialistList, specItems);
+                const ctxItems = topics.length > 0 ? topics.map(t => t.name || t.id).slice(0, 6) : ['Plataforma', 'Multi-tenant', 'Escalabilidade', 'API Gateway', 'Microsserviços', 'DevOps'];
+                updateSidebarList(contextList, ctxItems);
+                adicionarEventosCliqueSidebar();
+            }
+
+            function updateSidebarList(listEl, items) {
+                listEl.style.opacity = '0.45';
+                listEl.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    listEl.innerHTML = '';
+                    items.forEach((item, i) => {
+                        const li = document.createElement('li');
+                        li.className = 'sidebar-item';
+                        li.textContent = item;
+                        if (i === 0) li.classList.add('active');
+                        listEl.appendChild(li);
+                    });
+                    listEl.style.opacity = '1';
+                    adicionarEventosCliqueSidebar();
+                }, 220);
+            }
+
+            function adicionarEventosCliqueSidebar() {
+                document.querySelectorAll('#specialistList .sidebar-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const nome = this.textContent.trim();
+                        document.querySelectorAll('#specialistList .sidebar-item').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        currentAgent = nome;
+                        currentAgentName = nome;
+                        specVal.textContent = nome;
+                        focusVal.textContent = nome;
+                    });
+                });
+                document.querySelectorAll('#contextList .sidebar-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const nome = this.textContent.trim();
+                        document.querySelectorAll('#contextList .sidebar-item').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        if (currentAgent) {
+                            currentAgent = currentAgent + ' | ' + nome;
+                        } else {
+                            currentAgent = nome;
+                        }
+                        currentAgentName = nome;
+                        specVal.textContent = nome;
+                        focusVal.textContent = nome;
+                    });
+                });
+            }
+
+            // ═══════════ ENVIO DE PERGUNTA ═══════════
+            async function enviarPergunta(prompt) {
+                const body = { query: prompt };
+                if (currentAgent) {
+                    body.agent = currentAgent;
+                }
+                const headers = { 'Content-Type': 'application/json' };
+                if (apiKey) headers['X-API-Key'] = apiKey;
+                const resp = await fetch(API_ASK, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(body)
+                });
+                if (!resp.ok) throw new Error('Erro na consulta');
+                return await resp.json();
+            }
+
+            function addMessage(type, content) {
+                const div = document.createElement('div');
+                div.className = `msg ${type}`;
+                const label = document.createElement('span');
+                label.className = 'msg-label';
+                label.textContent = type === 'user' ? 'Você' : currentAgentName || 'IDEnza';
+                const p = document.createElement('p');
+                p.className = 'msg-content';
+                p.textContent = content;
+                const time = document.createElement('span');
+                time.className = 'msg-time';
+                const now = new Date();
+                time.textContent = `— ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                div.appendChild(label);
+                div.appendChild(p);
+                div.appendChild(time);
+                chatMessages.appendChild(div);
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+                });
+                if (type === 'ai') {
+                    lastAIResponse = content;
+                }
+                return div;
+            }
+
+            let lastAIResponse = '';
+
+            // ═══════════ TTS (Ouvir última resposta) ═══════════
+            function speak(text) {
+                if (!text) return;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (lastAIResponse) speak(lastAIResponse);
+                }
+            });
+
+            // ═══════════ TAGS ═══════════
+            const domainMap = {
+                saas: {
+                    keywords: ['saas', 'software como serviço', 'plataforma', 'multitenant', 'multi-tenant', 'assinatura', 'cloud', 'escalabilidade', 'api', 'backend', 'microserviços', 'kubernetes'],
+                    tags: ['#multitenant', '#cloud', '#api', '#backend', '#escalabilidade', '#devops', '#microserviços', '#kubernetes']
+                },
+                blockchain: {
+                    keywords: ['blockchain', 'web3', 'defi', 'nft', 'token', 'cripto', 'smart contract', 'descentralizado', 'dao', 'ethereum', 'tokenomics'],
+                    tags: ['#blockchain', '#web3', '#defi', '#tokenomics', '#nft', '#dao', '#ethereum']
+                },
+                business: {
+                    keywords: ['negócios', 'estratégia', 'crescimento', 'receita', 'valuation', 'startup', 'pricing', 'go-to-market'],
+                    tags: ['#estratégia', '#crescimento', '#valuation', '#go-to-market', '#pricing', '#startup']
+                },
+                ai: {
+                    keywords: ['inteligência artificial', 'machine learning', 'nlp', 'llm', 'gpt', 'transformer', 'rede neural', 'orquestração'],
+                    tags: ['#ai', '#machine-learning', '#nlp', '#orquestração', '#llm', '#embedding']
+                },
+                design: {
+                    keywords: ['design', 'ux', 'ui', 'experiência', 'interface', 'usabilidade', 'acessibilidade', 'design system'],
+                    tags: ['#ux', '#design-system', '#interface', '#branding', '#acessibilidade']
+                },
+                security: {
+                    keywords: ['segurança', 'cyber', 'criptografia', 'zero trust', 'compliance', 'lgpd', 'gdpr'],
+                    tags: ['#security', '#compliance', '#zero-trust', '#lgpd', '#criptografia']
+                }
+            };
+
+            function analyzeLocal(text) {
+                const lower = text.toLowerCase();
+                let merged = [];
+                const seen = new Set();
+                for (const [domain, data] of Object.entries(domainMap)) {
+                    if (data.keywords.some(kw => lower.includes(kw))) {
+                        data.tags.forEach(t => { if (!seen.has(t)) { seen.add(t); merged.push(t); } });
+                    }
+                }
+                return merged.slice(0, 8);
+            }
+
+            function exibirTags(tagsArray) {
+                if (!tagsArray || tagsArray.length === 0) {
+                    hideTags();
+                    return;
+                }
+                const sizes = ['size-sm', 'size-sm', 'size-md', 'size-md', 'size-md', 'size-lg', 'size-lg', 'size-sm'];
+                let html = '';
+                tagsArray.forEach((tag, i) => {
+                    const sizeClass = sizes[i] || 'size-md';
+                    const isHighlight = i === 0 || i === tagsArray.length - 1;
+                    const highlightClass = isHighlight ? 'highlight-tag' : '';
+                    const delay = (i * 0.06) % 1;
+                    html += `<span class="grid-tag ${sizeClass} ${highlightClass}" style="--tag-delay:${delay}s;" title="${tag}">${tag}</span>`;
+                });
+                tagsGrid.innerHTML = html;
+                tagsGridContainer.classList.add('visible');
+            }
+
+            function hideTags() {
+                tagsGridContainer.classList.remove('visible');
+                setTimeout(() => {
+                    if (!tagsGridContainer.classList.contains('visible')) {
+                        tagsGrid.innerHTML = '';
+                    }
+                }, 400);
+            }
+
+            // ═══════════ MICROFONE ═══════════
+            let mediaRecorder;
+            let audioChunks = [];
+            let isRecording = false;
+
+            micBtn.addEventListener('click', async () => {
+                if (isRecording) {
+                    pararGravacao();
+                    return;
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        await transcreverAudio(audioBlob);
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('recording');
+                    micBtn.textContent = '⏹️';
+                } catch (err) {
+                    alert('Microfone não disponível.');
+                }
+            });
+
+            function pararGravacao() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    micBtn.classList.remove('recording');
+                    micBtn.textContent = '🎤';
+                }
+            }
+
+            async function transcreverAudio(blob) {
+                const formData = new FormData();
+                formData.append('audio', blob, 'gravacao.webm');
+                try {
+                    const resp = await fetch(API_MIC, { method: 'POST', body: formData });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        userInput.value += ' ' + (data.texto || data.text || '');
+                        userInput.dispatchEvent(new Event('input'));
+                    }
+                } catch (e) {
+                    console.warn('Falha na transcrição local:', e);
+                }
+            }
+
+            // ═══════════ ENVIO PRINCIPAL ═══════════
+            async function handleSubmit() {
+                const text = userInput.value.trim();
+                if (!text) return;
+                addMessage('user', text);
+                userInput.value = '';
+                userInput.style.height = 'auto';
+                userInput.focus();
+
+                try {
+                    const data = await enviarPergunta(text);
+                    const resposta = data.response || data.answer || data.text || 'Resposta não disponível';
+                    addMessage('ai', resposta);
+
+                    if (data.tags && Array.isArray(data.tags)) {
+                        exibirTags(data.tags);
+                    } else {
+                        const localTags = analyzeLocal(text);
+                        exibirTags(localTags.length > 0 ? localTags : resposta.split(/\s+/).filter(w => w.length > 5).slice(0, 8).map(w => '#' + w));
+                    }
+
+                    if (data.agents || data.topics) {
+                        const agentsList = data.agents || [];
+                        const topicsList = data.topics || [];
+                        if (agentsList.length) {
+                            const specItems = agentsList.map(a => a.name || a.id).slice(0, 6);
+                            updateSidebarList(specialistList, specItems);
+                        }
+                        if (topicsList.length) {
+                            const ctxItems = topicsList.map(t => t.name || t.id).slice(0, 6);
+                            updateSidebarList(contextList, ctxItems);
+                        }
+                        adicionarEventosCliqueSidebar();
+                    }
+
+                    if (data.focus) focusVal.textContent = data.focus;
+                    if (data.spec) specVal.textContent = data.spec;
+                    if (data.confidence) confVal.textContent = data.confidence + '%';
+
+                    salvarHistorico(text, resposta);
+                    contarPergunta();
+                    if (currentAgent) incrementarContagemTema(currentAgent);
+                } catch (e) {
+                    addMessage('ai', 'Desculpe, não consegui contactar o orquestrador.');
+                }
+            }
+
+            // ═══════════ EXPORTAÇÃO DA CONVERSA ═══════════
+            exportConversationBtn.addEventListener('click', function() {
+                const msgs = chatMessages.querySelectorAll('.msg');
+                let texto = '';
+                msgs.forEach(msg => {
+                    const label = msg.querySelector('.msg-label')?.textContent || '';
+                    const content = msg.querySelector('.msg-content')?.textContent || '';
+                    const time = msg.querySelector('.msg-time')?.textContent || '';
+                    texto += `${label} ${content} ${time}\n\n`;
+                });
+                const blob = new Blob([texto], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'conversa-idenza.txt';
+                a.click();
+            });
+
+            // ═══════════ HISTÓRICO MODAL ═══════════
+            function atualizarHistoricoModal() {
+                const historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                if (historico.length === 0) {
+                    historicoList.innerHTML = '<p style="color:#8A9CAF; font-size:0.8rem;">Nenhuma interação registrada.</p>';
+                    return;
+                }
+                let html = '';
+                historico.forEach(item => {
+                    const data = new Date(item.data);
+                    const dataStr = data.toLocaleString('pt-BR');
+                    html += `
+                        <div class="historico-item">
+                            <div class="h-data">${dataStr}</div>
+                            <div class="h-prompt">${item.prompt}</div>
+                            <div class="h-resposta">${item.resposta}</div>
+                        </div>
+                    `;
+                });
+                historicoList.innerHTML = html;
+            }
+
+            document.getElementById('closeHistoricoModal').addEventListener('click', () => {
+                historicoModal.classList.remove('open');
+            });
+            historicoModal.addEventListener('click', function(e) {
+                if (e.target === historicoModal) historicoModal.classList.remove('open');
+            });
+
+            document.getElementById('exportHistoricoCSV').addEventListener('click', function() {
+                const historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                if (historico.length === 0) return alert('Nenhum histórico para exportar.');
+                let csv = 'Data,Hora,Prompt,Resposta\n';
+                historico.forEach(item => {
+                    const data = new Date(item.data);
+                    const dataStr = data.toLocaleDateString('pt-BR');
+                    const horaStr = data.toLocaleTimeString('pt-BR');
+                    csv += `"${dataStr}","${horaStr}","${item.prompt.replace(/"/g, '""')}","${item.resposta.replace(/"/g, '""')}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'historico-idenza.csv';
+                a.click();
+            });
+
+            // ═══════════ EVENTOS ═══════════
+            sendBtn.addEventListener('click', handleSubmit);
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                }
+            });
+
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+                const text = this.value.trim();
+                if (text.length > 3) {
+                    const localTags = analyzeLocal(text);
+                    if (localTags.length > 0) exibirTags(localTags);
+                    else hideTags();
+                } else {
+                    hideTags();
+                }
+            });
+
+            // Sidebar abas
+            clientTabs.addEventListener('click', function(e) {
+                const target = e.target.closest('a');
+                if (!target) return;
+                e.preventDefault();
+                const tab = target.dataset.tab;
+                if (tab === 'tab-conta') {
+                    alert('Funcionalidade em desenvolvimento.');
+                    return;
+                }
+                if (tab === 'tab-historico') {
+                    atualizarHistoricoModal();
+                    historicoModal.classList.add('open');
+                    return;
+                }
+                if (tab === 'tab-notas') {
+                    // Abertura do bloco de notas (exige modal de notas no HTML)
+                    const notasModal = document.getElementById('notasModal');
+                    if (notasModal) {
+                        notasModal.classList.add('open');
+                        const notasEditor = document.getElementById('notasEditor');
+                        const saved = localStorage.getItem(LS_NOTEPAD);
+                        if (saved && notasEditor) notasEditor.value = saved;
+                        if (notasEditor) notasEditor.focus();
+                    } else {
+                        alert('Bloco de notas não disponível nesta versão.');
+                    }
+                }
+            });
+
+            // ═══════════ TOOLTIP DO RODAPÉ ═══════════
+            document.querySelectorAll('.compliance-footer span[data-tooltip]').forEach(span => {
+                span.addEventListener('click', function(e) {
+                    const text = this.getAttribute('data-tooltip');
+                    complianceTooltip.textContent = text;
+                    const rect = this.getBoundingClientRect();
+                    complianceTooltip.style.left = rect.left + rect.width/2 + 'px';
+                    complianceTooltip.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+                    complianceTooltip.style.display = 'block';
+                    clearTimeout(tooltipTimeout);
+                    tooltipTimeout = setTimeout(() => {
+                        complianceTooltip.style.display = 'none';
+                    }, 4000);
+                });
+            });
+            // Esconde o tooltip ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.compliance-footer span[data-tooltip]')) {
+                    complianceTooltip.style.display = 'none';
+                }
+            });
+
+            // ═══════════ INICIALIZAÇÃO (após DOM pronto) ═══════════
+            function init() {
+                // Tema (agora garantido que o DOM está pronto)
+                if (themeMarker) {
+                    themeMarker.addEventListener('click', () => {
+                        document.body.classList.toggle('theme-clean');
+                        const isClean = document.body.classList.contains('theme-clean');
+                        if (themeLabel) themeLabel.textContent = isClean ? 'Clean' : 'Navy Copper';
+                    });
+                }
+
+                // Bloco de notas
+                const notasEditor = document.getElementById('notasEditor');
+                if (notasEditor) {
+                    const savedNotepad = localStorage.getItem(LS_NOTEPAD);
+                    if (savedNotepad) notasEditor.value = savedNotepad;
+
+                    // Eventos dos botões do modal de notas (caso existam)
+                    const closeNotasModal = document.getElementById('closeNotasModal');
+                    if (closeNotasModal) {
+                        closeNotasModal.addEventListener('click', () => {
+                            localStorage.setItem(LS_NOTEPAD, notasEditor.value);
+                            document.getElementById('notasModal').classList.remove('open');
+                        });
+                    }
+                    const notasModal = document.getElementById('notasModal');
+                    if (notasModal) {
+                        notasModal.addEventListener('click', function(e) {
+                            if (e.target === notasModal) {
+                                localStorage.setItem(LS_NOTEPAD, notasEditor.value);
+                                notasModal.classList.remove('open');
+                            }
+                        });
+                    }
+                    let notasSaveTimeout;
+                    notasEditor.addEventListener('input', () => {
+                        clearTimeout(notasSaveTimeout);
+                        notasSaveTimeout = setTimeout(() => {
+                            localStorage.setItem(LS_NOTEPAD, notasEditor.value);
+                        }, 1000);
+                    });
+                    const copyNotasBtn = document.getElementById('copyNotasBtn');
+                    if (copyNotasBtn) {
+                        copyNotasBtn.addEventListener('click', () => {
+                            navigator.clipboard.writeText(notasEditor.value).then(() => alert('Texto copiado!'));
+                        });
+                    }
+                    const pasteNotasBtn = document.getElementById('pasteNotasBtn');
+                    if (pasteNotasBtn) {
+                        pasteNotasBtn.addEventListener('click', async () => {
+                            const text = await navigator.clipboard.readText();
+                            notasEditor.value += text;
+                            localStorage.setItem(LS_NOTEPAD, notasEditor.value);
+                        });
+                    }
+                    const pdfNotasBtn = document.getElementById('pdfNotasBtn');
+                    if (pdfNotasBtn) {
+                        pdfNotasBtn.addEventListener('click', () => window.print());
+                    }
+                }
+
+                // Atualizar contador diário
+                atualizarContador();
+
+                // Se o app já estiver visível (login automático), carrega agentes
+                if (appShell.style.display !== 'none') {
+                    carregarTopicosAgentes();
+                }
+            }
+
+            // Executa após o carregamento completo do DOM
+            window.addEventListener('DOMContentLoaded', init);
+
+            // Fallback: se o DOM já estiver completo, executamos imediatamente
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(init, 1);
+            }
+
+        })();
+    </script>
+</body>
+</html>

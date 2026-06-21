@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEnza — Plataforma Cognitiva Premium</title>
+    <style>
+        /* ═══════════════════════════════════════════════
+           IDEnza — Tema Navy Copper (CSS Custom Properties)
+           ═══════════════════════════════════════════════ */
+        :root {
+            --navy-deep: #0B1A2F;
+            --navy-card: #102A43;
+            --copper: #C87A4F;
+            --copper-dim: #a05a3a;
+            --copper-glow: rgba(200, 122, 79, 0.25);
+            --copper-ghost: rgba(200, 122, 79, 0.08);
+            --cream: #F5F0E8;
+            --white-soft: #EAE4D9;
+            --text-muted: #8A9CAF;
+            --compliance-color: #5A6A7A;
+            --legal-bg: #0A1625;
+            --success: #4caf50;
+            --danger: #b54a4a;
+            --shadow-copper: 0 8px 32px rgba(200, 122, 79, 0.08);
+            --shadow-elevated: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --border-subtle: rgba(200, 122, 79, 0.15);
+            --border-medium: rgba(200, 122, 79, 0.25);
+            --radius-xs: 4px;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --font-sans: 'Inter', 'SF Pro Display', 'Manrope', system-ui, sans-serif;
+            --font-serif: 'Playfair Display', 'Georgia', serif;
+            --transition: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-slow: 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--navy-deep);
+            color: var(--cream);
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+            position: relative;
+            user-select: none;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* ═══════════ Brilho descendente global ═══════════ */
+        body::after {
+            content: "";
+            position: fixed;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(to bottom,
+                    transparent 0%,
+                    rgba(200, 122, 79, 0.02) 45%,
+                    rgba(200, 122, 79, 0.04) 50%,
+                    rgba(200, 122, 79, 0.02) 55%,
+                    transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+            animation: descerBrilho 8s linear infinite;
+        }
+
+        @keyframes descerBrilho {
+            0% {
+                transform: translateY(-10%);
+            }
+            100% {
+                transform: translateY(10%);
+            }
+        }
+
+        /* ═══════════ Linha fina descendente ═══════════ */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(200, 122, 79, 0.15) 20%,
+                    rgba(200, 122, 79, 0.15) 80%,
+                    transparent 100%);
+            box-shadow: 0 0 4px 1px rgba(200, 122, 79, 0.08);
+            z-index: 9999;
+            pointer-events: none;
+            animation: descerLinha 8s linear infinite;
+        }
+
+        @keyframes descerLinha {
+            0% {
+                top: -2px;
+            }
+            100% {
+                top: 100vh;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           Container Principal
+           ═══════════════════════════════════════════════ */
+        .app-shell {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 1fr auto auto;
+            gap: 12px;
+            padding: 16px 20px;
+            grid-template-areas:
+                "sidebar main"
+                "sidebar input-area"
+                "sidebar .";
+        }
+
+        /* ═══════════════════════════════════════════════
+           Sidebar Esquerda — Duas Colunas
+           ═══════════════════════════════════════════════ */
+        .sidebar {
+            grid-area: sidebar;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+            z-index: 3;
+        }
+
+        .sidebar-panel {
+            background: var(--navy-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            padding: 18px 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            border-top: 1px solid var(--copper);
+        }
+
+        .sidebar-panel:hover {
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-copper);
+            transform: translateY(-2px);
+        }
+
+        .sidebar-panel-title {
+            font-family: var(--font-serif);
+            font-size: 0.7rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--copper);
+            margin-bottom: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-panel-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+            opacity: 0.6;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 2px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(200, 122, 79, 0.15) transparent;
+        }
+
+        .sidebar-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-list::-webkit-scrollbar-thumb {
+            background: rgba(200, 122, 79, 0.15);
+            border-radius: 10px;
+        }
+
+        .sidebar-item {
+            padding: 9px 12px;
+            border-radius: 2px;
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid transparent;
+            background: transparent;
+            position: relative;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(200, 122, 79, 0.05);
+            color: var(--cream);
+            border-color: var(--border-subtle);
+        }
+
+        .sidebar-item.active {
+            color: var(--copper);
+            font-weight: 500;
+            background: var(--copper-ghost);
+            border-color: var(--border-medium);
+            box-shadow: 0 0 14px rgba(200, 122, 79, 0.06);
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            bottom: 5px;
+            width: 2px;
+            background: var(--copper);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* ═══════════════════════════════════════════════
+           Área Principal (Chat)
+           ═══════════════════════════════════════════════ */
+        .main-area {
+            grid-area: main;
+            background: var(--navy-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            min-height: 0;
+            z-index: 1;
+            border-top: 1px solid var(--copper);
+        }
+
+        .chat-header {
+            flex-shrink: 0;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            gap: 12px;
+            flex-wrap: wrap;
+            z-index: 2;
+            background: var(--navy-card);
+        }
+
+        .chat-header-title {
+            font-family: var(--font-serif);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--copper);
+            font-weight: 400;
+        }
+
+        .chat-header-indicators {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .indicator {
+            font-size: 0.65rem;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .indicator .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--copper);
+            box-shadow: 0 0 8px var(--copper-glow);
+            animation: dotPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 6px var(--copper-glow);
+            }
+            50% {
+                box-shadow: 0 0 16px var(--copper-glow), 0 0 28px rgba(200, 122, 79, 0.15);
+            }
+        }
+
+        .indicator .val {
+            font-weight: 500;
+            color: var(--white-soft);
+        }
+
+        .indicator .val.highlight {
+            color: var(--copper);
+            font-weight: 500;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(200, 122, 79, 0.1) transparent;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 3%, black 97%, transparent 100%);
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 3px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(200, 122, 79, 0.1);
+            border-radius: 10px;
+        }
+
+        .msg {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            animation: msgIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.user {
+            align-items: flex-end;
+            padding-left: 15%;
+        }
+
+        .msg.ai {
+            align-items: flex-start;
+            padding-right: 12%;
+            border-left: 1px solid var(--border-medium);
+            padding-left: 14px;
+        }
+
+        .msg-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            opacity: 0.5;
+        }
+
+        .msg.user .msg-label {
+            color: var(--text-muted);
+        }
+
+        .msg.ai .msg-label {
+            color: var(--copper);
+        }
+
+        .msg-content {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--cream);
+            letter-spacing: 0.01em;
+        }
+
+        .msg.user .msg-content {
+            color: var(--text-muted);
+        }
+
+        .msg-time {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-top: 1px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           Input Area
+           ═══════════════════════════════════════════════ */
+        .input-area {
+            grid-area: input-area;
+            z-index: 3;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--navy-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            padding: 5px 8px 5px 18px;
+            transition: all var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-copper);
+        }
+
+        #userInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--cream);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            padding: 10px 4px;
+            letter-spacing: 0.01em;
+            resize: none;
+            min-height: 22px;
+            max-height: 110px;
+            line-height: 1.5;
+            caret-color: var(--copper);
+        }
+
+        #userInput::placeholder {
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+            font-style: italic;
+            opacity: 0.65;
+        }
+
+        .send-btn {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-medium);
+            background: var(--copper-ghost);
+            color: var(--copper);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .send-btn:hover {
+            background: rgba(200, 122, 79, 0.2);
+            border-color: var(--copper);
+            box-shadow: 0 8px 24px rgba(200, 122, 79, 0.25);
+            transform: scale(1.05);
+        }
+
+        .send-btn:active {
+            transform: scale(0.93);
+            transition: transform 0.1s ease;
+        }
+
+        .send-btn svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           Tags Distribuídas Organicamente
+           ═══════════════════════════════════════════════ */
+        .tags-orchestra {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .floating-tag {
+            position: absolute;
+            pointer-events: auto;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            background: rgba(16, 42, 67, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            padding: 5px 13px;
+            white-space: nowrap;
+            transition: all var(--transition-slow);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            animation: tagFloat 7s ease-in-out infinite;
+            animation-delay: var(--tag-delay, 0s);
+            opacity: 0.7;
+        }
+
+        .floating-tag:hover {
+            color: var(--cream);
+            background: rgba(200, 122, 79, 0.1);
+            border-color: var(--border-medium);
+            opacity: 1;
+            transform: translateY(-2px) scale(1.06);
+            box-shadow: 0 4px 18px rgba(200, 122, 79, 0.08);
+            z-index: 10;
+        }
+
+        .floating-tag.size-sm {
+            font-size: 0.6rem;
+            padding: 3px 10px;
+            opacity: 0.55;
+        }
+
+        .floating-tag.size-md {
+            font-size: 0.7rem;
+            padding: 5px 13px;
+            opacity: 0.7;
+        }
+
+        .floating-tag.size-lg {
+            font-size: 0.78rem;
+            padding: 7px 16px;
+            opacity: 0.82;
+            font-weight: 400;
+            border-color: var(--border-medium);
+            background: rgba(200, 122, 79, 0.08);
+        }
+
+        .floating-tag.highlight-tag {
+            color: var(--copper);
+            border-color: var(--border-medium);
+            background: var(--copper-ghost);
+            opacity: 0.9;
+            font-weight: 500;
+            animation-duration: 5.5s;
+        }
+
+        @keyframes tagFloat {
+            0%,
+            100% {
+                transform: translateY(0px) translateX(0px);
+            }
+            25% {
+                transform: translateY(-4px) translateX(2px);
+            }
+            50% {
+                transform: translateY(2px) translateX(-3px);
+            }
+            75% {
+                transform: translateY(-2px) translateX(1px);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           Tema Switcher (discreto)
+           ═══════════════════════════════════════════════ */
+        .theme-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            display: flex;
+            gap: 6px;
+            background: var(--navy-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 2px;
+            padding: 5px 8px;
+            box-shadow: var(--shadow-elevated);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .theme-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .theme-dot:hover {
+            border-color: var(--text-muted);
+            transform: scale(1.2);
+        }
+
+        .theme-dot.active {
+            border-color: var(--copper);
+            box-shadow: 0 0 10px var(--copper-glow);
+        }
+
+        .theme-dot.t1 {
+            background: #c9a84c;
+        }
+        .theme-dot.t2 {
+            background: #C87A4F;
+        }
+        .theme-dot.t3 {
+            background: #8b7ec8;
+        }
+        .theme-dot.t4 {
+            background: #4a9e6e;
+        }
+
+        /* ═══════════════════════════════════════════════
+           Responsividade
+           ═══════════════════════════════════════════════ */
+        @media (max-width: 1100px) {
+            .app-shell {
+                grid-template-columns: 240px 1fr;
+                gap: 8px;
+                padding: 10px 12px;
+            }
+            .sidebar-panel {
+                padding: 12px 10px;
+            }
+            .sidebar-item {
+                font-size: 0.7rem;
+                padding: 7px 10px;
+            }
+            .floating-tag.size-lg {
+                font-size: 0.7rem;
+                padding: 5px 12px;
+            }
+            .floating-tag.size-md {
+                font-size: 0.63rem;
+                padding: 4px 10px;
+            }
+            .floating-tag.size-sm {
+                font-size: 0.55rem;
+                padding: 2px 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                grid-template-areas:
+                    "sidebar"
+                    "main"
+                    "input-area";
+                gap: 6px;
+                padding: 6px 8px;
+            }
+            .sidebar {
+                flex-direction: row;
+                gap: 6px;
+                overflow-x: auto;
+                flex-shrink: 0;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                mask-image: linear-gradient(to right, black 88%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+            }
+            .sidebar::-webkit-scrollbar {
+                display: none;
+            }
+            .sidebar-panel {
+                flex: none;
+                min-width: 180px;
+                max-height: 140px;
+                border-radius: 2px;
+                padding: 10px 10px;
+            }
+            .sidebar-panel-title {
+                font-size: 0.55rem;
+                margin-bottom: 6px;
+            }
+            .sidebar-item {
+                font-size: 0.65rem;
+                padding: 6px 8px;
+            }
+            .chat-messages {
+                padding: 12px 10px;
+                gap: 14px;
+            }
+            .msg.user {
+                padding-left: 8%;
+            }
+            .msg.ai {
+                padding-right: 5%;
+                padding-left: 10px;
+            }
+            .msg-content {
+                font-size: 0.78rem;
+            }
+            .floating-tag {
+                font-size: 0.55rem !important;
+                padding: 3px 8px !important;
+            }
+            .floating-tag.size-lg {
+                font-size: 0.62rem !important;
+                padding: 4px 10px !important;
+            }
+            .tags-orchestra {
+                opacity: 0.65;
+            }
+            .theme-switcher {
+                bottom: 10px;
+                right: 8px;
+                padding: 4px 6px;
+            }
+            .theme-dot {
+                width: 18px;
+                height: 18px;
+            }
+            .chat-header {
+                padding: 10px 12px;
+                gap: 6px;
+            }
+            .indicator {
+                font-size: 0.55rem;
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .sidebar-panel {
+                min-width: 140px;
+                max-height: 120px;
+                padding: 8px;
+            }
+            .sidebar-item {
+                font-size: 0.6rem;
+                padding: 5px 7px;
+            }
+            .chat-messages {
+                padding: 10px 6px;
+                gap: 10px;
+            }
+            .msg-content {
+                font-size: 0.73rem;
+            }
+            .input-wrapper {
+                padding: 4px 6px 4px 12px;
+            }
+            #userInput {
+                font-size: 0.75rem;
+            }
+            .send-btn {
+                width: 34px;
+                height: 34px;
+            }
+            .floating-tag:not(.size-lg) {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="tags-orchestra" id="tagsOrchestra" aria-hidden="true"></div>
+
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-panel" id="panelSpecialists">
+                <h2 class="sidebar-panel-title">Temas & Especialistas</h2>
+                <ul class="sidebar-list" id="specialistList">
+                    <li class="sidebar-item">Tecnologia</li>
+                    <li class="sidebar-item">Blockchain</li>
+                    <li class="sidebar-item">Negócios</li>
+                    <li class="sidebar-item active">Arquitetura SaaS</li>
+                </ul>
+            </div>
+            <div class="sidebar-panel" id="panelContext">
+                <h2 class="sidebar-panel-title">Categorias & Contexto</h2>
+                <ul class="sidebar-list" id="contextList">
+                    <li class="sidebar-item">Plataforma</li>
+                    <li class="sidebar-item active">Multi-tenant</li>
+                    <li class="sidebar-item">Escalabilidade</li>
+                    <li class="sidebar-item">API Gateway</li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-area" id="mainArea">
+            <div class="chat-header">
+                <span class="chat-header-title">Centro Cognitivo</span>
+                <div class="chat-header-indicators">
+                    <span class="indicator"><span class="dot"></span> Foco: <span class="val highlight" id="focusVal">Plataforma SaaS</span></span>
+                    <span class="indicator">Especialista: <span class="val" id="specVal">Arquiteto de Software</span></span>
+                    <span class="indicator">Confiança: <span class="val highlight" id="confVal">87%</span></span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg ai">
+                    <span class="msg-label">IDEnza</span>
+                    <p class="msg-content">Bem-vindo à plataforma cognitiva IDEnza. Descreva sua ideia, conceito ou desafio estratégico. O sistema ajusta dinamicamente especialistas, contexto e tags semânticas.</p>
+                    <span class="msg-time">— agora</span>
+                </div>
+            </div>
+        </main>
+
+        <div class="input-area" id="inputAreaContainer">
+            <div class="input-wrapper" id="inputWrapper">
+                <textarea id="userInput" placeholder="Descreva sua ideia livremente..." rows="1" aria-label="Campo de entrada cognitiva"></textarea>
+                <button class="send-btn" id="sendBtn" aria-label="Enviar" title="Enviar mensagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="theme-switcher" id="themeSwitcher" title="Alternar tema">
+        <span class="theme-dot t1" data-theme="theme-obsidian-gold" title="Obsidian Gold"></span>
+        <span class="theme-dot t2 active" data-theme="default" title="Navy Copper"></span>
+        <span class="theme-dot t3" data-theme="theme-slate-violet" title="Slate Violet"></span>
+        <span class="theme-dot t4" data-theme="theme-emerald-tech" title="Emerald Tech"></span>
+    </div>
+
+    <script>
+        (function() {
+            const chatMessages = document.getElementById('chatMessages');
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const specialistList = document.getElementById('specialistList');
+            const contextList = document.getElementById('contextList');
+            const focusVal = document.getElementById('focusVal');
+            const specVal = document.getElementById('specVal');
+            const confVal = document.getElementById('confVal');
+            const tagsOrchestra = document.getElementById('tagsOrchestra');
+            const themeSwitcher = document.getElementById('themeSwitcher');
+
+            const domainMap = {
+                saas: {
+                    keywords: ['saas', 'software como serviço', 'plataforma', 'multitenant', 'multi-tenant',
+                        'assinatura', 'subscription', 'cloud', 'escalabilidade', 'onboarding', 'churn',
+                        'mrr', 'arr', 'ltv', 'cac', 'api', 'backend', 'microserviços', 'kubernetes',
+                        'docker', 'devops', 'pipeline', 'ci/cd', 'arquitetura', 'modular', 'tenant',
+                        'white-label', 'b2b', 'enterprise', 'gateway', 'api gateway'
+                    ],
+                    specialists: ['Arquiteto de Software', 'Plataformas SaaS', 'Cloud Strategy',
+                        'Engenharia Modular'
+                    ],
+                    contexts: ['Plataforma', 'Multi-tenant', 'Escalabilidade', 'API Gateway'],
+                    tags: ['#multitenant', '#cloud', '#api', '#backend', '#escalabilidade', '#devops',
+                        '#microserviços', '#kubernetes'
+                    ],
+                    focus: 'Plataforma SaaS',
+                    topSpec: 'Arquiteto de Software'
+                },
+                blockchain: {
+                    keywords: ['blockchain', 'web3', 'defi', 'nft', 'token', 'cripto', 'crypto',
+                        'smart contract', 'contrato inteligente', 'descentralizado', 'dao', 'ethereum',
+                        'solana', 'consenso', 'ledger', 'staking', 'tokenomics', 'metaverso',
+                        'digital asset', 'tokenização'
+                    ],
+                    specialists: ['Especialista Blockchain', 'Web3 Strategy', 'Tokenomics',
+                        'Contratos Inteligentes'
+                    ],
+                    contexts: ['Descentralização', 'Consenso', 'Tokenomics', 'Smart Contracts'],
+                    tags: ['#blockchain', '#web3', '#defi', '#tokenomics', '#nft', '#dao', '#ethereum',
+                        '#smartcontract'
+                    ],
+                    focus: 'Tecnologia Blockchain',
+                    topSpec: 'Especialista Blockchain'
+                },
+                business: {
+                    keywords: ['negócios', 'business', 'estratégia', 'strategy', 'mercado', 'market',
+                        'crescimento', 'growth', 'receita', 'revenue', 'valuation', 'investimento',
+                        'investment', 'm&a', 'fusão', 'aquisição', 'scale-up', 'startup', 'pmf',
+                        'product market fit', 'pivot', 'business model', 'modelo de negócio',
+                        'monetização', 'pricing', 'precificação', 'go-to-market', 'gtm'
+                    ],
+                    specialists: ['Estrategista de Negócios', 'Growth Hacking', 'M&A Advisory',
+                        'Modelagem Financeira'
+                    ],
+                    contexts: ['Estratégia', 'Mercado', 'Growth', 'Receita'],
+                    tags: ['#estratégia', '#crescimento', '#valuation', '#go-to-market', '#pricing',
+                        '#startup', '#scaleup', '#receita'
+                    ],
+                    focus: 'Estratégia de Negócios',
+                    topSpec: 'Estrategista de Negócios'
+                },
+                ai: {
+                    keywords: ['inteligência artificial', 'ai', 'machine learning', 'ml', 'deep learning',
+                        'nlp', 'llm', 'gpt', 'transformer', 'neural', 'rede neural', 'algoritmo',
+                        'treinamento', 'inferência', 'fine-tuning', 'rag', 'embedding', 'vector',
+                        'chatbot', 'agente', 'agent', 'automação', 'cognitivo', 'cognitive',
+                        'orquestração', 'orchestration'
+                    ],
+                    specialists: ['Cientista de Dados', 'ML Engineering', 'NLP Specialist',
+                        'Orquestração Cognitiva'
+                    ],
+                    contexts: ['Modelos', 'Treinamento', 'Inferência', 'Orquestração'],
+                    tags: ['#ai', '#machine-learning', '#nlp', '#orquestração', '#llm', '#embedding',
+                        '#agentes', '#rag'
+                    ],
+                    focus: 'Inteligência Artificial',
+                    topSpec: 'Cientista de Dados'
+                },
+                design: {
+                    keywords: ['design', 'ux', 'ui', 'experiência', 'experience', 'interface', 'usabilidade',
+                        'usability', 'acessibilidade', 'design system', 'protótipo', 'prototype',
+                        'wireframe', 'figma', 'visual', 'identidade', 'branding', 'marca', 'logotipo',
+                        'tipografia', 'paleta'
+                    ],
+                    specialists: ['Designer de Experiência', 'UI/UX Premium', 'Design Systems',
+                        'Branding Strategy'
+                    ],
+                    contexts: ['Experiência', 'Interface', 'Sistema', 'Identidade'],
+                    tags: ['#ux', '#design-system', '#interface', '#branding', '#acessibilidade', '#figma',
+                        '#visual', '#tipografia'
+                    ],
+                    focus: 'Design e Experiência',
+                    topSpec: 'Designer de Experiência'
+                },
+                security: {
+                    keywords: ['segurança', 'security', 'cyber', 'criptografia', 'encryption', 'zero trust',
+                        'compliance', 'lgpd', 'gdpr', 'soc2', 'iso27001', 'pentest', 'vulnerabilidade',
+                        'firewall', 'iam', 'autenticação', 'authentication', 'oauth', 'sso', 'rbac',
+                        'autorização'
+                    ],
+                    specialists: ['Especialista em Segurança', 'Compliance & LGPD', 'Zero Trust Architect',
+                        'Criptografia Avançada'
+                    ],
+                    contexts: ['Segurança', 'Compliance', 'Zero Trust', 'Criptografia'],
+                    tags: ['#security', '#compliance', '#zero-trust', '#lgpd', '#criptografia', '#oauth',
+                        '#iam', '#gdpr'
+                    ],
+                    focus: 'Segurança Digital',
+                    topSpec: 'Especialista em Segurança'
+                }
+            };
+
+            const defaultState = {
+                specialists: ['Tecnologia', 'Blockchain', 'Negócios', 'Arquitetura SaaS'],
+                contexts: ['Plataforma', 'Multi-tenant', 'Escalabilidade', 'API Gateway'],
+                tags: ['#multitenant', '#cloud', '#api', '#backend', '#escalabilidade', '#devops',
+                    '#microserviços', '#kubernetes'
+                ],
+                focus: 'Plataforma SaaS',
+                topSpec: 'Arquiteto de Software',
+                confidence: 87
+            };
+
+            function analyzeInput(text) {
+                const lower = text.toLowerCase();
+                const scores = {};
+                for (const [domain, data] of Object.entries(domainMap)) {
+                    let score = 0;
+                    for (const kw of data.keywords) {
+                        if (lower.includes(kw)) score += kw.length > 5 ? 2.5 : 1.5;
+                        if (kw.length > 6 && lower.includes(kw.substring(0, 5))) score += 0.5;
+                    }
+                    if (score > 0) scores[domain] = score;
+                }
+                if (Object.keys(scores).length === 0) return defaultState;
+
+                const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+                const primary = sorted[0][0];
+                const primaryData = domainMap[primary];
+
+                let mergedSpec = [];
+                let mergedCtx = [];
+                let mergedTags = [];
+                const seenSpec = new Set();
+                const seenCtx = new Set();
+                const seenTags = new Set();
+
+                for (let i = 0; i < Math.min(sorted.length, 3); i++) {
+                    const d = domainMap[sorted[i][0]];
+                    for (const s of d.specialists) {
+                        if (!seenSpec.has(s) && mergedSpec.length < 4) { seenSpec.add(s);
+                            mergedSpec.push(s); }
+                    }
+                    for (const c of d.contexts) {
+                        if (!seenCtx.has(c) && mergedCtx.length < 4) { seenCtx.add(c);
+                            mergedCtx.push(c); }
+                    }
+                    for (const t of d.tags) {
+                        if (!seenTags.has(t) && mergedTags.length < 10) { seenTags.add(t);
+                            mergedTags.push(t); }
+                    }
+                }
+                while (mergedSpec.length < 4) mergedSpec.push('Generalista Cognitivo');
+                while (mergedCtx.length < 4) mergedCtx.push('Contexto Adaptativo');
+                while (mergedTags.length < 8) mergedTags.push('#contexto');
+
+                const totalScore = sorted.reduce((s, [, v]) => s + v, 0);
+                const primaryScore = sorted[0][1];
+                const confidence = Math.min(98, Math.round(58 + (primaryScore / Math.max(totalScore, 1)) * 37 + Math
+                    .floor(Math.random() * 4)));
+
+                return {
+                    specialists: mergedSpec.slice(0, 4),
+                    contexts: mergedCtx.slice(0, 4),
+                    tags: mergedTags.slice(0, 10),
+                    focus: primaryData.focus,
+                    topSpec: primaryData.topSpec,
+                    confidence
+                };
+            }
+
+            function updateSidebarList(listEl, items) {
+                const existing = Array.from(listEl.querySelectorAll('.sidebar-item')).map(e => e.textContent
+                .trim());
+                const needsUpdate = items.length !== existing.length || items.some((v, i) => v !== existing[i]);
+                if (!needsUpdate) return;
+                listEl.style.opacity = '0.45';
+                listEl.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    listEl.innerHTML = '';
+                    items.forEach((item, i) => {
+                        const li = document.createElement('li');
+                        li.className = 'sidebar-item';
+                        li.textContent = item;
+                        if (i === items.length - 1) li.classList.add('active');
+                        listEl.appendChild(li);
+                    });
+                    listEl.style.opacity = '1';
+                }, 220);
+            }
+
+            function updateHeaderIndicators(analysis) {
+                if (focusVal.textContent !== analysis.focus) {
+                    focusVal.style.opacity = '0';
+                    setTimeout(() => { focusVal.textContent = analysis.focus;
+                        focusVal.style.opacity = '1'; }, 140);
+                    focusVal.style.transition = 'opacity 0.3s ease';
+                }
+                if (specVal.textContent !== analysis.topSpec) {
+                    specVal.style.opacity = '0';
+                    setTimeout(() => { specVal.textContent = analysis.topSpec;
+                        specVal.style.opacity = '1'; }, 140);
+                    specVal.style.transition = 'opacity 0.3s ease';
+                }
+                const confText = analysis.confidence + '%';
+                if (confVal.textContent !== confText) {
+                    confVal.style.transform = 'scale(1.1)';
+                    confVal.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+                    confVal.textContent = confText;
+                    setTimeout(() => { confVal.style.transform = 'scale(1)'; }, 350);
+                }
+            }
+
+            function updateTags(analysis) {
+                const allTags = analysis.tags;
+                const containerWidth = window.innerWidth;
+                const containerHeight = window.innerHeight;
+                const sidebarWidth = containerWidth > 768 ? (containerWidth > 1100 ? 280 : 240) : 0;
+                const safeLeft = sidebarWidth + 30;
+                const safeRight = 30;
+                const safeTop = 30;
+                const safeBottom = 160;
+                const usableWidth = containerWidth - safeLeft - safeRight;
+                const usableHeight = containerHeight - safeTop - safeBottom;
+
+                const sizes = ['size-sm', 'size-sm', 'size-md', 'size-md', 'size-md', 'size-lg', 'size-lg', 'size-sm',
+                    'size-md', 'size-lg'
+                ];
+
+                let html = '';
+                allTags.forEach((tag, i) => {
+                    const sizeClass = sizes[i] || 'size-md';
+                    const isHighlight = i === 0 || i === allTags.length - 1;
+                    const highlightClass = isHighlight ? 'highlight-tag' : '';
+                    const left = safeLeft + (usableWidth * (0.05 + (i * 0.092) % 0.9));
+                    const top = safeTop + (usableHeight * (0.05 + (i * 0.13) % 0.85));
+                    const delay = (i * 0.7) % 6;
+                    html += `<span class="floating-tag ${sizeClass} ${highlightClass}"
+                          style="left:${Math.min(left, containerWidth - 120)}px; top:${Math.min(top, containerHeight - 70)}px; --tag-delay:${delay}s;"
+                          title="${tag}">${tag}</span>`;
+                });
+                tagsOrchestra.innerHTML = html;
+            }
+
+            function addMessage(type, content) {
+                const div = document.createElement('div');
+                div.className = `msg ${type}`;
+                const label = document.createElement('span');
+                label.className = 'msg-label';
+                label.textContent = type === 'user' ? 'Você' : 'IDEnza';
+                const p = document.createElement('p');
+                p.className = 'msg-content';
+                p.textContent = content;
+                const time = document.createElement('span');
+                time.className = 'msg-time';
+                const now = new Date();
+                time.textContent =
+                    `— ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                div.appendChild(label);
+                div.appendChild(p);
+                div.appendChild(time);
+                chatMessages.appendChild(div);
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+                });
+            }
+
+            function generateResponse(text, analysis) {
+                const lower = text.toLowerCase();
+                if (lower.includes('saas') || lower.includes('plataforma') || lower.includes('multi')) {
+                    return 'Análise cognitiva: foco em arquitetura SaaS. Recomenda-se modelo multi-tenant com isolamento lógico, API gateway unificado e estratégia de precificação escalonada. O especialista em Plataformas SaaS está contextualizado.';
+                }
+                if (lower.includes('blockchain') || lower.includes('web3') || lower.includes('token')) {
+                    return 'Contexto blockchain ativado. Sugere-se avaliação de consenso, tokenomics e smart contracts. O especialista Blockchain está disponível para aprofundamento.';
+                }
+                if (lower.includes('negócio') || lower.includes('estratégia') || lower.includes('crescimento')) {
+                    return 'Perspectiva estratégica detectada. Análise de mercado, modelo de receita e go-to-market são vetores principais. O estrategista de negócios está contextualizado.';
+                }
+                if (lower.includes('ia') || lower.includes('inteligência artificial') || lower.includes('modelo')) {
+                    return 'Domínio de IA identificado. Arquitetura de modelo, pipeline de treinamento e orquestração de agentes são recomendados. O cientista de dados está ativo.';
+                }
+                if (lower.includes('design') || lower.includes('ux') || lower.includes('interface')) {
+                    return 'Perspectiva de design ativada. Foco em usabilidade, acessibilidade e coesão visual premium. O designer de experiência está contextualizado.';
+                }
+                if (lower.includes('segurança') || lower.includes('lgpd') || lower.includes('compliance')) {
+                    return 'Camada de segurança ativada. Zero trust, criptografia e conformidade regulatória são prioridades. O especialista em segurança está disponível.';
+                }
+                return `Análise cognitiva concluída. Foco: ${analysis.focus}. Especialista ${analysis.topSpec} contextualizado. Confiança: ${analysis.confidence}%.`;
+            }
+
+            function handleSubmit() {
+                const text = userInput.value.trim();
+                if (!text) return;
+                addMessage('user', text);
+                const analysis = analyzeInput(text);
+                updateSidebarList(specialistList, analysis.specialists);
+                updateSidebarList(contextList, analysis.contexts);
+                updateHeaderIndicators(analysis);
+                updateTags(analysis);
+                userInput.value = '';
+                userInput.style.height = 'auto';
+                userInput.focus();
+                const delay = 550 + Math.floor(Math.random() * 650);
+                setTimeout(() => {
+                    const response = generateResponse(text, analysis);
+                    addMessage('ai', response);
+                }, delay);
+            }
+
+            sendBtn.addEventListener('click', handleSubmit);
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                }
+            });
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+                const text = this.value.trim();
+                if (text.length > 3) {
+                    clearTimeout(this._typingTimer);
+                    this._typingTimer = setTimeout(() => {
+                        const analysis = analyzeInput(text);
+                        updateSidebarList(specialistList, analysis.specialists);
+                        updateSidebarList(contextList, analysis.contexts);
+                        updateHeaderIndicators(analysis);
+                        updateTags(analysis);
+                    }, 380);
+                }
+            });
+
+            themeSwitcher.addEventListener('click', function(e) {
+                const dot = e.target.closest('.theme-dot');
+                if (!dot) return;
+                const theme = dot.dataset.theme;
+                document.body.className = theme === 'default' ? '' : theme;
+                document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                try { localStorage.setItem('idenza-theme', theme); } catch (e) {}
+            });
+
+            let resizeDebounce;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeDebounce);
+                resizeDebounce = setTimeout(() => {
+                    const currentText = userInput.value.trim();
+                    const analysis = currentText.length > 3 ? analyzeInput(currentText) : defaultState;
+                    updateTags(analysis);
+                }, 400);
+            });
+
+            function init() {
+                try {
+                    const saved = localStorage.getItem('idenza-theme');
+                    if (saved && saved !== 'default') {
+                        document.body.className = saved;
+                        document.querySelectorAll('.theme-dot').forEach(d => {
+                            d.classList.toggle('active', d.dataset.theme === saved);
+                        });
+                    }
+                } catch (e) {}
+
+                updateSidebarList(specialistList, defaultState.specialists);
+                updateSidebarList(contextList, defaultState.contexts);
+                updateTags(defaultState);
+                updateHeaderIndicators(defaultState);
+                setTimeout(() => userInput.focus(), 500);
+            }
+
+            init();
+
+            console.log('%c IDEnza %c Plataforma Cognitiva Premium %c Navy Copper Edition ',
+                'color:#C87A4F;font-size:18px;font-weight:700;font-family:serif;',
+                'color:#8A9CAF;font-size:12px;',
+                'color:#5A6A7A;');
+        })();
+    </script>
+</body>
+</html>

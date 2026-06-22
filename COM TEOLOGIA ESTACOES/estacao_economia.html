@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Estação de Pesquisa — Economia e Ciências Econômicas</title>
+    <style>
+        /* ==================== CSS COMPLETO ==================== */
+        :root {
+            --bg: #f8f5f0;
+            --card-bg: #ffffff;
+            --petroleum: #0d4f5c;
+            --petroleum-light: #1a6e7a;
+            --gold-dark: #8B6914;
+            --gold: #b8860b;
+            --gold-light: #e6c66a;
+            --text: #1e1e1e;
+            --text-soft: #555;
+            --border: #d0c8b8;
+            --shadow-sm: 2px 2px 6px rgba(0, 0, 0, 0.08);
+            --shadow-md: 3px 3px 10px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 4px 4px 16px rgba(0, 0, 0, 0.12);
+            --success: #0d5c3a;
+            --success-bg: #e0f5e8;
+            --warning: #b8860b;
+            --warning-bg: #fefce8;
+            --error: #b91c1c;
+            --error-bg: #fef2f2;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+            --econ-green: #0d5c3a;
+            --econ-green-light: #1a7a4a;
+            --econ-blue: #1a3a5c;
+            --econ-blue-light: #2a5a8a;
+            --scroll-bg: #f5efe6;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 16px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-left: 6px solid var(--econ-green);
+        }
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--econ-green);
+            letter-spacing: 1px;
+        }
+        .badge {
+            background: var(--gold-dark);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-econ {
+            background: var(--econ-green);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-inst {
+            background: var(--econ-blue);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .redis-connection-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            box-shadow: var(--shadow-sm);
+        }
+        .redis-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+        .redis-status-dot.disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+        .redis-status-dot.sending {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .explain-panel {
+            background: var(--scroll-bg);
+            border: 1px solid var(--econ-green-light);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            border-left: 4px solid var(--econ-green);
+        }
+        .explain-panel .section-title {
+            margin-bottom: 10px;
+            color: var(--econ-green);
+        }
+        .explain-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .explain-item strong {
+            color: var(--econ-green);
+            font-size: 0.7rem;
+        }
+        .explain-item div {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 2px;
+        }
+        .explain-confidence {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin-top: 4px;
+        }
+        .explain-code {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 8px;
+            font-family: var(--font-mono);
+        }
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 14px;
+            border: none;
+            background: #f0ece6;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            color: #666;
+            border-right: 1px solid var(--border);
+        }
+        .tab-btn:last-child {
+            border-right: none;
+        }
+        .tab-btn:hover {
+            background: #e8e0d8;
+        }
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--econ-green);
+            border-bottom: 3px solid var(--gold-dark);
+            box-shadow: inset 0 -3px 0 var(--gold-dark);
+        }
+        .tab-btn.active.econ-tab {
+            color: var(--econ-green);
+            border-bottom: 3px solid var(--econ-green);
+            box-shadow: inset 0 -3px 0 var(--econ-green);
+        }
+        .tab-btn.active.inst-tab {
+            color: #1a2a3a;
+            border-bottom: 3px solid var(--econ-blue);
+            box-shadow: inset 0 -3px 0 var(--econ-blue);
+        }
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--econ-green);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title.econ-title {
+            color: var(--econ-green);
+        }
+        .section-title.inst-title {
+            color: #1a2a3a;
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: var(--gold-dark);
+            color: white;
+            border: 1px solid #6a4f0a;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--econ-green-light);
+            color: var(--econ-green);
+        }
+        .btn-econ {
+            background: var(--econ-green);
+            color: white;
+            border: 1px solid #0a3a20;
+        }
+        .btn-inst {
+            background: var(--econ-blue);
+            color: white;
+            border: 1px solid #0a1a2a;
+        }
+        .btn-petroleum {
+            background: var(--petroleum);
+            color: white;
+            border: 1px solid #0a3a44;
+        }
+        .btn-data {
+            background: #0d5c3a;
+            color: white;
+            border: 1px solid #064025;
+        }
+        .btn-purple {
+            background: #1a3a5c;
+            color: white;
+            border: 1px solid #0a1a2a;
+        }
+        .btn-gold:hover,
+        .btn-econ:hover,
+        .btn-inst:hover,
+        .btn-petroleum:hover,
+        .btn-data:hover,
+        .btn-purple:hover {
+            opacity: 0.9;
+        }
+        .btn-outline:hover {
+            background: #f5efe6;
+        }
+        .raw-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: vertical;
+            color: var(--text);
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .raw-textarea.econ-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--econ-green);
+        }
+        .raw-textarea.inst-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--econ-blue);
+        }
+        .generated-question {
+            width: 100%;
+            min-height: 120px;
+            background: #f5efe6;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .camadas-preview {
+            background: #f5efe6;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+        }
+        .econ-json-preview,
+        .inst-json-preview {
+            background: #f5efe6;
+            border: 1px solid #c4b0a0;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 12px;
+            color: #1e1e1e;
+        }
+        .inst-json-preview {
+            background: #f5efe6;
+            border-color: var(--econ-blue);
+        }
+        .status-msg {
+            font-size: 0.7rem;
+            color: var(--petroleum-light);
+            margin-top: 6px;
+        }
+        .redis-feedback {
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            border-left: 4px solid var(--petroleum-light);
+            background: #f0f8f9;
+            display: none;
+            line-height: 1.6;
+        }
+        .redis-feedback.show {
+            display: block;
+        }
+        .redis-feedback.success {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .redis-feedback.error {
+            border-color: var(--error);
+            background: var(--error-bg);
+            color: var(--error);
+        }
+        .redis-feedback.loading {
+            border-color: var(--warning);
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .expando {
+            border: 1px solid var(--border);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            margin-top: 6px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 32px;
+        }
+        .expando.open {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .expando-toggle {
+            padding: 6px 14px;
+            font-size: 0.65rem;
+            color: var(--text-soft);
+            cursor: pointer;
+            text-align: left;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            background: #fafafa;
+            border-bottom: 1px solid transparent;
+        }
+        .expando.open .expando-toggle {
+            border-bottom-color: var(--border);
+        }
+        .expando-body {
+            padding: 10px 14px;
+            font-size: 0.7rem;
+            display: none;
+        }
+        .expando.open .expando-body {
+            display: block;
+        }
+        .agent-select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            padding: 6px;
+            background: #fafbfc;
+        }
+        .agent-select-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .agent-select-item:hover {
+            background: #f5efe6;
+        }
+        .agent-select-item input[type="radio"] {
+            margin: 0;
+        }
+        .hum-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-type-card {
+            border: 1px solid var(--border);
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafdfd;
+            text-align: center;
+        }
+        .hum-type-card:hover {
+            border-color: var(--econ-green);
+            box-shadow: var(--shadow-md);
+            background: #f5efe6;
+        }
+        .hum-type-card.selected {
+            border-color: var(--econ-green);
+            background: #dce8dc;
+            box-shadow: var(--shadow-md);
+        }
+        .hum-type-card .type-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hum-type-card .type-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--econ-green);
+        }
+        .hum-type-card .type-code {
+            font-size: 0.5rem;
+            color: #888;
+            font-family: var(--font-mono);
+        }
+        .hum-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-metric-item {
+            background: #f5efe6;
+            padding: 8px;
+            border: 1px solid #d0c8b8;
+            text-align: center;
+        }
+        .hum-metric-item .label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+        .hum-metric-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--econ-green);
+            font-family: var(--font-mono);
+        }
+        .hum-resposta-box {
+            background: #fff;
+            border: 1px solid var(--econ-green-light);
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        .hum-alert-box {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-left: 5px solid #ccc;
+            background: #f9f9f9;
+            font-size: 0.75rem;
+        }
+        .hum-alert-box.baixo {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .hum-alert-box.medio {
+            border-color: #eab308;
+            background: #fefce8;
+        }
+        .hum-alert-box.alto {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+        .econ-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .econ-card {
+            border: 1px solid #b0c4b0;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f7faf7;
+            text-align: center;
+        }
+        .econ-card:hover {
+            border-color: var(--econ-green);
+            box-shadow: var(--shadow-md);
+            background: #ebf5eb;
+        }
+        .econ-card.selected {
+            border-color: var(--econ-green);
+            background: #d5e8d5;
+            box-shadow: var(--shadow-md);
+        }
+        .econ-card .econ-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .econ-card .econ-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--econ-green);
+        }
+        .econ-card .econ-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .econ-card .econ-tema {
+            font-size: 0.5rem;
+            color: var(--econ-green);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .econ-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            margin: 4px 0;
+            border-radius: 3px !important;
+            overflow: hidden;
+        }
+        .econ-progress-bar .fill {
+            height: 100%;
+            background: var(--econ-green);
+            transition: width 0.3s;
+        }
+        .inst-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .inst-card {
+            border: 1px solid var(--econ-blue);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f5f8fa;
+            text-align: center;
+        }
+        .inst-card:hover {
+            border-color: #2a5a8a;
+            box-shadow: var(--shadow-md);
+            background: #e8f0f5;
+        }
+        .inst-card.selected {
+            border-color: #2a5a8a;
+            background: #d0dde8;
+            box-shadow: var(--shadow-md);
+        }
+        .inst-card .inst-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .inst-card .inst-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #1a2a3a;
+        }
+        .inst-card .inst-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .inst-card .inst-period {
+            font-size: 0.5rem;
+            color: var(--econ-blue);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .fabrica-tipo-btn.active {
+            background: var(--econ-green);
+            color: white;
+            border: 1px solid #0a3a20;
+        }
+        .eng-payload-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .eng-payload-table th {
+            background: #f5efe6;
+            padding: 8px 10px;
+            text-align: left;
+            color: var(--econ-green);
+            border-bottom: 2px solid var(--econ-green-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .eng-payload-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-soft);
+        }
+        .multi-redis-hub {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+        @media (max-width: 800px) {
+            .multi-redis-hub {
+                grid-template-columns: 1fr;
+            }
+        }
+        .redis-cluster-panel {
+            border: 2px solid #ccc;
+            background: #fcfcfc;
+            box-shadow: var(--shadow-lg);
+            padding: 16px;
+        }
+        .redis-cluster-panel.science-cluster {
+            border-color: var(--econ-green-light);
+            background: #f0f5f0;
+        }
+        .redis-cluster-panel.ops-cluster {
+            border-color: var(--econ-blue);
+            background: #f2f5f8;
+        }
+        .redis-slot-card {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        .redis-slot-card.connected {
+            border-left: 5px solid #22c55e;
+            background: #f9fef9;
+        }
+        .redis-slot-card.disconnected {
+            border-left: 5px solid #ef4444;
+            background: #fef9f9;
+        }
+        .redis-slot-card .slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .redis-slot-card .slot-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text);
+            font-family: var(--font-mono);
+            flex: 1;
+            min-width: 120px;
+        }
+        .redis-slot-card .slot-name input {
+            border: 1px solid transparent;
+            background: transparent;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            width: 100%;
+            padding: 4px;
+            color: var(--text);
+            transition: border 0.2s;
+        }
+        .redis-slot-card .slot-name input:focus {
+            border-color: var(--border);
+            background: #fff;
+            outline: none;
+        }
+        .redis-slot-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-slot-dot.on {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+        }
+        .redis-slot-dot.off {
+            background: #ef4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+        }
+        .redis-slot-dot.testing {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        .slot-credentials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .slot-credentials input {
+            border: 1px solid var(--border);
+            padding: 5px 7px;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            width: 100%;
+            color: var(--text);
+        }
+        .slot-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .mini-status-text {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .diretorio-interligado {
+            margin-top: 16px;
+            padding: 12px;
+            border: 1px dashed var(--border);
+            background: #f9f9f9;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .diretorio-interligado .cluster-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px !important;
+            font-size: 0.6rem;
+        }
+        .cluster-line.science {
+            border-color: var(--econ-green-light);
+            color: var(--econ-green);
+        }
+        .cluster-line.ops {
+            border-color: var(--econ-blue);
+            color: #1a2a3a;
+        }
+        .cluster-line .linked-icon {
+            font-size: 0.8rem;
+        }
+        #multiRedisSlotBar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 6px;
+        }
+        .redis-slot-mini-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50% !important;
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .redis-slot-mini-dot.connected-dot {
+            border-color: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+        .redis-slot-mini-dot.disconnected-dot {
+            border-color: #ef4444;
+            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+        }
+        .redis-slot-mini-dot:hover {
+            transform: scale(1.3);
+            z-index: 2;
+        }
+        .slot-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .slot-modal-overlay.open {
+            display: flex;
+        }
+        .slot-modal {
+            background: white;
+            border: 2px solid var(--econ-green-light);
+            padding: 24px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-mono);
+            border-radius: 6px !important;
+        }
+        .slot-modal h3 {
+            font-size: 0.9rem;
+            color: var(--econ-green);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .slot-modal label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--econ-green);
+            display: block;
+            margin: 8px 0 2px;
+        }
+        .slot-modal input {
+            width: 100%;
+            padding: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+            background: #fafbfc;
+            margin-bottom: 4px;
+        }
+        .slot-modal .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .slot-modal .test-status {
+            font-size: 0.6rem;
+            margin-top: 4px;
+            color: #555;
+        }
+        .econ-code-display {
+            background: var(--econ-green);
+            color: #c0d4c0;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        .inst-code-display {
+            background: var(--econ-blue);
+            color: #c0d0e0;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 0.58rem;
+            }
+            .hum-metric-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            .hum-type-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .econ-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            .inst-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== BARRA REDIS ==================== -->
+    <div class="redis-connection-bar">
+        <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+        <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+        <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+    </div>
+
+    <!-- ========== ASSISTENTE FIXO ========== -->
+    <div id="assistenteFixo" style="
+    background: linear-gradient(135deg, #0d5c3a 0%, #1a7a4a 100%);
+    color: white;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">📊</span>
+            <div>
+                <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;">Olá! Sou seu assistente de Economia e Ciências Econômicas</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em Macro, Micro, Finanças e História Econômica</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="assistenteInput" placeholder="Digite sua dúvida sobre Economia..."
+            style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+            <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Enviar</button>
+        </div>
+        <div id="assistenteResposta" style="
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px !important;
+      padding: 12px 16px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #f0f0f0;
+    "></div>
+    </div>
+
+    <!-- ==================== PAINEL DE TRANSPARÊNCIA ==================== -->
+    <div class="explain-panel" id="explainPanel">
+        <div class="section-title">🔍 Transparência da Resposta</div>
+        <div class="explain-grid">
+            <div class="explain-item"><strong>Fontes utilizadas</strong><div id="explainSources">—</div></div>
+            <div class="explain-item"><strong>Camadas executadas</strong><div id="explainLayers">—</div></div>
+            <div class="explain-item"><strong>Nível de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+            <div class="explain-item"><strong>Próxima revisão</strong><div id="explainReview">—</div></div>
+        </div>
+        <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+    </div>
+
+    <!-- ==================== HEADER ==================== -->
+    <header>
+        <h1>📊 Estação de Pesquisa — Economia e Ciências Econômicas</h1>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="badge-econ">📈 Economia</span>
+            <span class="badge-inst">🏛️ Instituições</span>
+            <span class="badge">7 Camadas</span>
+            <span class="badge" style="background:#0d5c3a;color:white;">Super Prompts</span>
+        </div>
+    </header>
+
+    <!-- ==================== NAVEGAÇÃO ==================== -->
+    <div class="tab-nav">
+        <button class="tab-btn active econ-tab" data-tab="tab-economia">📈 Economia</button>
+        <button class="tab-btn inst-tab" data-tab="tab-instituicoes">🏛️ Instituições Econômicas</button>
+        <button class="tab-btn" data-tab="tab-humanoides">🤖 Humanoides</button>
+        <button class="tab-btn" data-tab="tab-cognitivo">🏭 Fábrica Cognitiva</button>
+        <button class="tab-btn" data-tab="tab-pesquisa">🔬 Pesquisa</button>
+    </div>
+
+    <!-- ==================== TAB 1: ECONOMIA ==================== -->
+    <div class="tab-content active" id="tab-economia">
+        <div class="section">
+            <div class="section-title econ-title"><span>📈</span> Agentes de Economia — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Cada agente econômico possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione um agente, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:var(--econ-green);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-econ" id="btnGerarEconomia">🚀 Gerar Todos os Agentes Econômicos</button>
+                <button class="btn btn-outline" id="btnExportarEconomia">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="economiaFeedback"></div>
+            <div class="status-msg" id="economiaStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Área</label>
+                <input type="text" id="economiaFiltro" placeholder="Ex: Macro, Micro, Finanças..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="economiaGrid" class="econ-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE COM FUNCIONALIDADES DE PESQUISA -->
+        <div class="section" id="economiaDetalhe" style="display:none;">
+            <div class="section-title econ-title"><span>📈</span> <span id="economiaDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="econ-code-display" id="economiaDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-econ" id="economiaDetalheArea"></span>
+                <span class="badge" id="economiaDetalheBloco"></span>
+                <span class="badge" style="background:#1a2a3a;color:white;" id="economiaDetalheProgresso"></span>
+            </div>
+            <div style="margin-top:8px;"><div class="econ-progress-bar"><div class="fill" id="economiaDetalheBarra" style="width:0%;"></div></div></div>
+
+            <!-- SUPER PROMPT -->
+            <div style="margin-top:16px; background:#ebf5eb; padding:16px; border-left:4px solid var(--econ-green);">
+                <strong style="font-size:0.8rem;color:var(--econ-green);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="economiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #b0c0b0; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarEconomiaPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONEconomia">📋 Copiar JSON</button>
+            </div>
+
+            <!-- COLAR RESPOSTA DA IA -->
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:var(--econ-green); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea econ-textarea" id="economiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-econ" id="btnEstruturarEconomia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="economiaCamadasPreview" style="display:none;"></div>
+            <div class="econ-json-preview" id="economiaJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparEconomiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-econ" id="btnEnviarEconomiaRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="economiaFeedbackDetalhe"></div>
+            <div class="status-msg" id="economiaStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 2: INSTITUIÇÕES ECONÔMICAS ==================== -->
+    <div class="tab-content" id="tab-instituicoes">
+        <div class="section">
+            <div class="section-title inst-title"><span>🏛️</span> Agentes de Instituições Econômicas — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Cada agente institucional possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione uma instituição, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:#1a2a3a;">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-inst" id="btnGerarInstituicoes">🚀 Gerar Todos os Agentes Institucionais</button>
+                <button class="btn btn-outline" id="btnExportarInstituicoes">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="instituicoesFeedback"></div>
+            <div class="status-msg" id="instituicoesStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:#1a2a3a;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Instituição ou Período</label>
+                <input type="text" id="instituicoesFiltro" placeholder="Ex: FMI, Bretton Woods, 1929..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="instituicoesGrid" class="inst-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE INSTITUIÇÕES -->
+        <div class="section" id="instituicoesDetalhe" style="display:none;">
+            <div class="section-title inst-title"><span>🏛️</span> <span id="instituicoesDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="inst-code-display" id="instituicoesDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-inst" id="instituicoesDetalheLocal"></span>
+                <span class="badge" style="background:#1a2a3a;color:white;" id="instituicoesDetalhePeriodo"></span>
+            </div>
+
+            <!-- SUPER PROMPT -->
+            <div style="margin-top:16px; background:#e8f0f5; padding:16px; border-left:4px solid var(--econ-blue);">
+                <strong style="font-size:0.8rem;color:#1a2a3a;">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="instituicoesDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #b0c0d0; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarInstituicoesPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONInstituicoes">📋 Copiar JSON</button>
+            </div>
+
+            <!-- COLAR RESPOSTA DA IA -->
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:#1a2a3a; text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea inst-textarea" id="instituicoesRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-inst" id="btnEstruturarInstituicoes" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="instituicoesCamadasPreview" style="display:none;"></div>
+            <div class="inst-json-preview" id="instituicoesJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparInstituicoesJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-inst" id="btnEnviarInstituicoesRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="instituicoesFeedbackDetalhe"></div>
+            <div class="status-msg" id="instituicoesStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 3: HUMANOIDES ==================== -->
+    <div class="tab-content" id="tab-humanoides">
+        <div class="section">
+            <div class="section-title econ-title"><span>🤖</span> Humanoides Especializados</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Humanoides cognitivos para Economia, Finanças e Política Econômica.</strong>
+                Selecione um tipo, insira o contexto e processe nas 7 camadas com Super Prompts.
+            </p>
+            <div class="hum-type-grid" id="humTypeGrid"></div>
+            <div id="humPanel" style="display:none; margin-top:16px;">
+                <div class="section-title econ-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código Base: <span class="econ-code-display" id="humCodigoBase"></span></p>
+                <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--econ-green); text-transform:uppercase; letter-spacing:1px;">👤 Nome do Usuário:</label>
+                    <input type="text" class="raw-textarea" id="humNomeUsuario" placeholder="Ex: Carlos, Ana..." style="min-height:36px; width:100%;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--econ-green); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto:</label>
+                    <textarea class="raw-textarea econ-textarea" id="humEntrada" placeholder="Descreva a situação, dúvida econômica ou financeira..."></textarea>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                    <button class="btn btn-gold" id="btnProcessarHum">Processar (7 Camadas)</button>
+                    <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
+                    <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
+                    <button class="btn btn-econ" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="redisFeedbackHum"></div>
+                <div class="status-msg" id="humStatusMsg"></div>
+                <div id="humResultados" style="display:none;">
+                    <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+                    <div class="section-title econ-title" style="margin-top:16px;"><span>📊</span> Métricas</div>
+                    <p style="font-size:0.6rem; color:#888;">Código: <span class="econ-code-display" id="humCodigoRastreio"></span></p>
+                    <div class="hum-metric-grid" id="humMetricGrid"></div>
+                    <div class="section-title econ-title" style="margin-top:16px;"><span>💬</span> Resposta (Camada 7)</div>
+                    <div class="hum-resposta-box" id="humResposta"></div>
+                    <div class="section-title econ-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo</div>
+                    <div class="econ-json-preview" id="humJsonCompleto" contenteditable="true" style="white-space:pre-wrap;"></div>
+                    <button class="btn btn-outline" id="btnLimparHumJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: FÁBRICA COGNITIVA ==================== -->
+    <div class="tab-content" id="tab-cognitivo">
+        <div class="section">
+            <div class="section-title econ-title"><span>🏭</span> Fábrica Cognitiva — Economia e Finanças</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Gere novos Especialistas, Humanoides e Objetos Redis</strong> com Super Prompts completos.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;" id="fabricaTipoGrid">
+                <button class="btn btn-outline fabrica-tipo-btn active" data-tipo="especialista">Especialista Digital</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="humanoide">Humanoide Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="perfil">Perfil Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
+            </div>
+            <div id="fabricaPainelConfig">
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;">Nome</label>
+                    <input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Agente de Política Monetária" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;">Domínio</label>
+                    <input type="text" class="raw-textarea" id="fabricaDominio" placeholder="Ex: Macroeconomia" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;">Especialidade</label>
+                    <input type="text" class="raw-textarea" id="fabricaEspecialidade" placeholder="Ex: Análise de Taxa Selic e Inflação" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave</label>
+                    <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="Selic, inflação, juros, Bacen" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--econ-green);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
+                    <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
+                        <option value="L7">L7 - Essência Econômica</option>
+                        <option value="L6">L6 - Teoria e Modelos</option>
+                        <option value="L5">L5 - Estruturas e Métricas</option>
+                        <option value="L4" selected>L4 - Aplicação Prática</option>
+                        <option value="L3">L3 - Contextualização</option>
+                        <option value="L2">L2 - Inferência Guiada</option>
+                        <option value="L1">L1 - Resposta Imediata</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+                    <button class="btn btn-econ" id="fabricaBtnGerar">Gerar</button>
+                    <button class="btn btn-outline" id="fabricaBtnLimpar">Limpar</button>
+                    <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+                    <button class="btn btn-econ" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+                    <button class="btn btn-purple" id="fabricaBtnExportarCatalogo" style="display:none;">📋 Exportar p/ Catálogo</button>
+                </div>
+            </div>
+            <div id="fabricaResultado" style="display:none;margin-top:20px;">
+                <div class="section-title econ-title"><span>📊</span> Resultado</div>
+                <p style="font-size:0.6rem;color:#888;">Código: <span class="econ-code-display" id="fabricaCodigoUniversal"></span></p>
+                <div class="econ-json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+                <button class="btn btn-outline" id="btnLimparJSONFabrica" style="margin-top:6px;">🗑️ Limpar JSON</button>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+                    <button class="btn btn-outline" id="fabricaBtnCopiarJSON2">Copiar JSON</button>
+                    <button class="btn btn-econ" id="fabricaBtnEnviarRedis2">Enviar para Redis</button>
+                    <button class="btn btn-outline" id="fabricaBtnLimparResultado" style="color:#b91c1c;border-color:#b91c1c;">🗑️ Limpar Resultado</button>
+                </div>
+            </div>
+            <div class="redis-feedback" id="fabricaFeedback"></div>
+            <div class="status-msg" id="fabricaStatusMsg"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 5: PESQUISA ==================== -->
+    <div class="tab-content" id="tab-pesquisa">
+        <div class="section">
+            <div class="section-title econ-title"><span>🔬</span> Pesquisa com Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                Selecione um agente do catálogo (gerado nas abas anteriores) e realize a pesquisa completa.
+            </p>
+            <div id="catalogoPesquisa"></div>
+            <div id="panelPesquisa" style="display:none; margin-top:16px;">
+                <div class="section-title econ-title"><span>📈</span> <span id="pesquisaNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código: <span class="econ-code-display" id="pesquisaCodigo"></span></p>
+                <div style="margin-top:12px;">
+                    <strong style="font-size:0.7rem;color:var(--econ-green);">⚡ SUPER PROMPT GERADO:</strong>
+                    <textarea class="generated-question" id="pesquisaSuperPrompt" style="min-height:200px;"></textarea>
+                </div>
+                <button class="btn btn-outline" id="btnCopiarPesquisaPrompt">📋 Copiar Prompt</button>
+                <div style="margin-top:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--econ-green); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                    <textarea class="raw-textarea" id="pesquisaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+                </div>
+                <button class="btn btn-econ" id="btnEstruturarPesquisa" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+                <div class="camadas-preview" id="pesquisaCamadasPreview" style="display:none;"></div>
+                <div class="econ-json-preview" id="pesquisaJSONPreview" contenteditable="true" style="display:none;"></div>
+                <div style="margin-top:12px;">
+                    <button class="btn btn-econ" id="btnEnviarPesquisaRedis" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="pesquisaFeedback"></div>
+                <div class="status-msg" id="pesquisaStatusMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CENTRAL REDIS ==================== -->
+    <div class="section" id="multiRedisSection">
+        <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+        <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Configure até 6 conexões Redis independentes.</p>
+        <div class="multi-redis-hub">
+            <div class="redis-cluster-panel science-cluster">
+                <div class="section-title sci-title"><span>🧪</span> Cluster Econômico</div>
+                <div id="scienceSlotsContainer"></div>
+            </div>
+            <div class="redis-cluster-panel ops-cluster">
+                <div class="section-title ops-title"><span>⚡</span> Cluster Institucional</div>
+                <div id="opsSlotsContainer"></div>
+            </div>
+        </div>
+        <div class="diretorio-interligado" id="diretorioInterligado">
+            <strong style="font-size:0.65rem;color:#555;">📡 Diretório Interligado:</strong>
+            <span id="diretorioStatus" style="color:#888;">Aguardando conexões...</span>
+        </div>
+    </div>
+
+    <!-- ==================== MODAIS ==================== -->
+    <div class="slot-modal-overlay" id="slotModalOverlay">
+        <div class="slot-modal">
+            <h3>Configurar Slot</h3>
+            <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome">
+            <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+            <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+            <div class="test-status" id="slotModalStatus"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+                <button class="btn btn-econ" id="slotModalSalvar">Salvar</button>
+                <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ==================== CONFIGURAÇÃO REDIS ====================
+        const REDIS_CONFIG = {
+            url: 'https://welcomed-satyr-116661.upstash.io',
+            token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+        };
+
+        // ==================== AUXILIARES ====================
+        function gerarCodigoUnico(prefixo) {
+            return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
+        }
+
+        async function copiarTextoParaClipboard(texto) {
+            if (!texto) { console.warn('Nada para copiar.'); return false; }
+            try {
+                await navigator.clipboard.writeText(texto);
+                return true;
+            } catch (e) {
+                console.warn('Clipboard API falhou, usando fallback:', e);
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = texto;
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    return ok;
+                } catch (e2) { console.error('Falha no fallback de cópia:', e2); return false; }
+            }
+        }
+
+        function updateRedisStatus(status) {
+            const dot = document.getElementById('redisStatusDot');
+            const label = document.getElementById('redisStatusLabel');
+            dot.className = 'redis-status-dot';
+            switch (status) {
+                case 'connected':
+                    dot.classList.add('connected');
+                    label.textContent = 'Redis: Conectado';
+                    break;
+                case 'disconnected':
+                    dot.classList.add('disconnected');
+                    label.textContent = 'Redis: Desconectado';
+                    break;
+                case 'sending':
+                    dot.classList.add('sending');
+                    label.textContent = 'Redis: Enviando...';
+                    break;
+            }
+        }
+
+        async function testarConexaoRedis() {
+            updateRedisStatus('sending');
+            try {
+                const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, {
+                    headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` }
+                });
+                if (response.ok) updateRedisStatus('connected');
+                else updateRedisStatus('disconnected');
+            } catch { updateRedisStatus('disconnected'); }
+        }
+        testarConexaoRedis();
+
+        // ==================== TABS ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ==================== SISTEMA COGNITIVO ====================
+        const COGNITIVE_SYSTEM = {
+            regulatory: {
+                addMetadata(data) {
+                    return {
+                        ...data,
+                        metadata: {
+                            data_validacao: new Date().toISOString(),
+                            data_revisao: data.alertaRevisao || new Date(Date.now() + 90 * 86400000).toISOString(),
+                            criticidade: 'baixa',
+                            status_regulatorio: 'validado',
+                            nivel_confianca: data.score_confianca || 0.85
+                        }
+                    };
+                }
+            },
+            protection: {
+                sanitizeOutput(data) {
+                    const sanitized = { ...data };
+                    delete sanitized._internal;
+                    return sanitized;
+                }
+            }
+        };
+
+        // ==================== ECONOMIA ====================
+        const AREAS_ECONOMIA = {
+            'Macroeconomia': { topicos: 12, grupo: 'Teoria Econômica',
+                icone: '🌍', temas: 'PIB, Inflação, Desemprego, Política Fiscal e Monetária' },
+            'Microeconomia': { topicos: 10, grupo: 'Teoria Econômica',
+            icone: '🔬', temas: 'Oferta/Demanda, Elasticidade, Teoria do Consumidor, Estruturas de Mercado' },
+            'Economia Internacional': { topicos: 8, grupo: 'Economia Aplicada',
+                icone: '🌐', temas: 'Balança de Pagamentos, Câmbio, Comércio Exterior, Globalização' },
+            'Desenvolvimento Econômico': { topicos: 9, grupo: 'Economia Aplicada',
+                icone: '📈', temas: 'IDH, Crescimento, Pobreza, Desigualdade, Sustentabilidade' },
+            'Econometria': { topicos: 7, grupo: 'Métodos Quantitativos',
+                icone: '📐', temas: 'Regressão, Séries Temporais, Modelos, Inferência Causal' },
+            'Finanças': { topicos: 10, grupo: 'Economia Aplicada',
+                icone: '💰', temas: 'Mercado de Capitais, Risco, Valuation, Investimentos' },
+            'Política Monetária': { topicos: 6, grupo: 'Política Econômica',
+                icone: '🏦', temas: 'Taxa de Juros, Inflação, Bacen, Metas de Inflação' },
+            'Economia do Trabalho': { topicos: 5, grupo: 'Economia Aplicada',
+                icone: '👷', temas: 'Salários, Emprego, Produtividade, Capital Humano' },
+            'Economia Comportamental': { topicos: 6, grupo: 'Economia Aplicada',
+                icone: '🧠', temas: 'Vieses Cognitivos, Tomada de Decisão, Nudge' },
+            'História Econômica': { topicos: 8, grupo: 'Economia Aplicada',
+                icone: '📜', temas: 'Revolução Industrial, Bretton Woods, Crises, Ciclos' },
+            'Crescimento Econômico': { topicos: 7, grupo: 'Teoria Econômica',
+                icone: '🚀', temas: 'Modelos de Crescimento, Solow, Schumpeter, Inovação' },
+            'Economia Digital': { topicos: 6, grupo: 'Economia Aplicada',
+                icone: '💻', temas: 'Plataformas, Criptomoedas, Fintechs, Dados' }
+        };
+
+        // ==================== GERADOR DE SUPER PROMPT ECONÔMICO ====================
+        function gerarSuperPromptEconomico(area, inicio, fim, tema) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO ECONÔMICO ⚡
+
+        Você é um nó especializado em Economia e Ciências Econômicas do Ecossistema IDENZA.
+        Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre o bloco de ${area} ${inicio}-${fim}.
+
+        ## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS ECONÔMICAS
+
+        ### 7. ESSÊNCIA ECONÔMICA
+        - Qual é o princípio fundamental revelado neste bloco?
+        - Qual é a verdade central e imutável sobre ${area}?
+        - Quais os axiomas que sustentam esta área?
+
+        ### 6. TEORIA E MODELOS
+        - Como este bloco se conecta à teoria econômica geral?
+        - Quais modelos são aplicáveis?
+        - Que escolas de pensamento (Keynesiana, Monetarista, etc.) são relevantes?
+
+        ### 5. ESTRUTURAS E MÉTRICAS
+        - Quais são os indicadores e métricas principais?
+        - Como se estruturam os dados e análises?
+        - Qual é a metodologia de medição?
+
+        ### 4. APLICAÇÃO PRÁTICA
+        - Como este conhecimento se aplica à economia real?
+        - Quais políticas públicas ou estratégias empresariais derivam?
+        - Que implicações para investidores e gestores?
+
+        ### 3. CONTEXTUALIZAÇÃO HISTÓRICA
+        - Qual é o contexto histórico e institucional?
+        - Que eventos moldaram esta área?
+        - Quais são os principais debates contemporâneos?
+
+        ### 2. USO PROFISSIONAL
+        - Como este conhecimento pode ser usado na prática profissional?
+        - Que ferramentas e frameworks são recomendados?
+        - Qual é a aplicação para análise de cenários?
+
+        ### 1. DICAS RÁPIDAS E TENDÊNCIAS
+        - Quais fatos interessantes sobre este bloco?
+        - Que tendências atuais impactam esta área?
+        - Quais curiosidades históricas ou dados surpreendentes?
+
+        ## 📜 REGRAS IMUTÁVEIS
+        1. Cada camada deve conter pelo menos 3 referências ou dados concretos
+        2. Cite fontes (autores, instituições, papers, relatórios)
+        3. Linguagem natural e acessível, como um economista experiente
+        4. **NUNCA utilize o símbolo cerquilha (#) para títulos ou listas**
+        5. Inclua metadados ao final
+
+        ## 🎯 BLOCO A SER ANALISADO
+        **Área**: ${area} (${AREAS_ECONOMIA[area]?.grupo || 'Economia'})
+        **Tópicos**: ${inicio} a ${fim}
+        **Tema Central**: ${tema}
+
+        ## 🔍 METADADOS OBRIGATÓRIOS AO FINAL
+        Data de validação sugerida: ${new Date(Date.now() + 90*86400000).toISOString().split('T')[0]}
+        Nível de confiança: 0.90
+        Domínio(s): economia, ciencias_economicas
+        Código de rastreio: [gerado automaticamente]
+        Conflitos detectados: Nenhum até o momento
+        Humanoides recomendados: Economista Chefe, Analista Macro, Consultor Financeiro
+        Palavras-chave: ${area.toLowerCase()}, economia, teoria, análise, métricas
+
+        Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        // ==================== GERADOR DE AGENTES ECONÔMICOS ====================
+        let agentesEconomicos = [];
+        let agenteEconomicoSelecionado = null;
+        let economiaEstruturado = null;
+
+        function gerarAgentesEconomicos(area, totalTopicos, bloco = 4) {
+            const agentes = [];
+            const totalBlocos = Math.ceil(totalTopicos / bloco);
+            const temaBase = AREAS_ECONOMIA[area]?.temas || 'Estudo Econômico';
+            const abreviacao = area.substring(0, 4).toUpperCase();
+            const icone = AREAS_ECONOMIA[area]?.icone || '📊';
+
+            for (let i = 0; i < totalBlocos; i++) {
+                const inicio = i * bloco + 1;
+                const fim = Math.min(inicio + bloco - 1, totalTopicos);
+                const numBloco = i + 1;
+                const codigo = `econ.${area.toLowerCase().replace(/[^a-z0-9]/g, '_')}.idenza.${numBloco}`;
+
+                let nome;
+                if (totalBlocos <= 3) {
+                    nome = `Agente de ${area} — Tópicos ${inicio}-${fim}`;
+                } else {
+                    const nomesBloco = {
+                        'Macroeconomia': ['Contas Nacionais', 'Inflação', 'Desemprego', 'Política Fiscal',
+                            'Política Monetária'
+                        ],
+                        'Microeconomia': ['Teoria do Consumidor', 'Teoria da Firma', 'Estruturas de Mercado',
+                            'Falhas de Mercado'
+                        ],
+                        'Finanças': ['Mercado de Capitais', 'Risco e Retorno', 'Valuation', 'Derivativos']
+                    };
+                    const nomes = nomesBloco[area] || [`Parte ${numBloco}`];
+                    const nomeBloco = nomes[i] || `Parte ${numBloco}`;
+                    nome = `${area} — ${nomeBloco} (Tópicos ${inicio}-${fim})`;
+                }
+
+                const superPrompt = gerarSuperPromptEconomico(area, inicio, fim, temaBase);
+
+                const agente = {
+                    codigo_universal: codigo,
+                    nome: nome,
+                    dominio: 'economia',
+                    especialidade: `Análise econômica de ${area} ${inicio}-${fim}`,
+                    economia: {
+                        area: area,
+                        icone: icone,
+                        abreviacao: abreviacao,
+                        grupo: AREAS_ECONOMIA[area]?.grupo || 'Economia',
+                        topico_inicio: inicio,
+                        topico_fim: fim,
+                        bloco_atual: numBloco,
+                        total_blocos: totalBlocos,
+                        tema_central: temaBase,
+                        super_prompt: superPrompt,
+                        proximo_bloco: i < totalBlocos - 1 ?
+                            `${area} ${fim+1}-${Math.min(fim+bloco, totalTopicos)}` : null,
+                        link_proximo: i < totalBlocos - 1 ?
+                            `econ.${area.toLowerCase().replace(/[^a-z0-9]/g, '_')}.idenza.${numBloco + 1}` : null
+                    },
+                    camadas: [
+                        { nivel: 7, nome: 'Essência Econômica', subtemas: [
+                                `Qual é o princípio fundamental de ${area} ${inicio}-${fim}?`] },
+                        { nivel: 6, nome: 'Teoria e Modelos', subtemas: [`Modelos aplicáveis a ${area}`] },
+                        { nivel: 5, nome: 'Estruturas e Métricas', subtemas: [`Indicadores principais`] },
+                        { nivel: 4, nome: 'Aplicação Prática', subtemas: [`Como aplicar na economia real`] },
+                        { nivel: 3, nome: 'Contextualização', subtemas: [`Histórico e institucional`] },
+                        { nivel: 2, nome: 'Uso Profissional', subtemas: [`Ferramentas e frameworks`] },
+                        { nivel: 1, nome: 'Dicas Rápidas', subtemas: [`Tendências e curiosidades`] }
+                    ],
+                    fonte: 'IDEnza-Gerador-Economico',
+                    data_geracao: new Date().toISOString(),
+                    score_confianca: 0.90,
+                    alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                    metadata: {
+                        data_validacao: new Date().toISOString(),
+                        data_revisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                        nivel_confianca: 0.90,
+                        criticidade: 'baixa',
+                        status_regulatorio: 'validado',
+                        palavras_chave: [area.toLowerCase(), 'economia', 'análise', 'métricas']
+                    },
+                    tags: ['economia', area.toLowerCase(), 'analise', AREAS_ECONOMIA[area]?.grupo.toLowerCase()]
+                };
+                agentes.push(agente);
+            }
+            return agentes;
+        }
+
+        function gerarTodosEconomicos(bloco = 4) {
+            const todos = [];
+            for (const area of Object.keys(AREAS_ECONOMIA)) {
+                const { topicos } = AREAS_ECONOMIA[area];
+                todos.push(...gerarAgentesEconomicos(area, topicos, bloco));
+            }
+            return todos;
+        }
+
+        function renderizarEconomia(agentes) {
+            const grid = document.getElementById('economiaGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML =
+                '<p style="font-size:0.8rem;color:#888;">Nenhum agente econômico gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('economiaFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a =>
+                a.economia.area.toLowerCase().includes(filtro) ||
+                a.nome.toLowerCase().includes(filtro)
+            );
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'econ-card';
+                card.innerHTML = `
+              <span class="econ-icon">${a.economia.icone || '📊'}</span>
+              <div class="econ-name">${a.economia.area}</div>
+              <div class="econ-detail">Tópicos ${a.economia.topico_inicio}-${a.economia.topico_fim}</div>
+              <div class="econ-tema">Bloco ${a.economia.bloco_atual}/${a.economia.total_blocos}</div>
+              <div class="econ-progress-bar"><div class="fill" style="width:${a.economia.bloco_atual / a.economia.total_blocos * 100}%;"></div></div>
+            `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.econ-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteEconomicoSelecionado = a;
+                    exibirDetalheEconomia(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheEconomia(a) {
+            const panel = document.getElementById('economiaDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('economiaDetalheNome').textContent = a.nome;
+            document.getElementById('economiaDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('economiaDetalheArea').textContent = `📈 ${a.economia.area} (${a.economia.grupo})`;
+            document.getElementById('economiaDetalheBloco').textContent =
+                `📊 Tópicos ${a.economia.topico_inicio}-${a.economia.topico_fim}`;
+            document.getElementById('economiaDetalheProgresso').textContent =
+                `Bloco ${a.economia.bloco_atual}/${a.economia.total_blocos}`;
+            document.getElementById('economiaDetalheBarra').style.width = `${(a.economia.bloco_atual / a.economia.total_blocos) * 100}%`;
+
+            document.getElementById('economiaDetalheSuperPrompt').textContent = a.economia.super_prompt ||
+                'Super Prompt não disponível';
+
+            document.getElementById('economiaRespostaIA').value = '';
+            document.getElementById('economiaCamadasPreview').style.display = 'none';
+            document.getElementById('economiaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarEconomiaRedis').style.display = 'none';
+            document.getElementById('economiaFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('economiaStatusDetalhe').textContent = '';
+            economiaEstruturado = null;
+        }
+
+        // ==================== EVENTOS ECONOMIA ====================
+        document.getElementById('btnGerarEconomia').addEventListener('click', () => {
+            const agentes = gerarTodosEconomicos(4);
+            agentesEconomicos = agentes;
+            renderizarEconomia(agentes);
+            document.getElementById('economiaStatusMsg').textContent =
+                `✅ ${agentes.length} agentes econômicos gerados com Super Prompts!`;
+            setTimeout(() => { document.getElementById('economiaStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarEconomiaPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('economiaStatusDetalhe');
+            if (!agenteEconomicoSelecionado) {
+                statusEl.textContent = '⚠️ Selecione um agente econômico primeiro.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const prompt = agenteEconomicoSelecionado.economia.super_prompt;
+            if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+                statusEl.textContent = '⚠️ Super Prompt não disponível para este agente.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const ok = await copiarTextoParaClipboard(prompt);
+            statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => statusEl.textContent = '', 4000);
+        });
+
+        document.getElementById('btnCopiarJSONEconomia').addEventListener('click', async () => {
+            if (!agenteEconomicoSelecionado) {
+                document.getElementById('economiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.';
+                return;
+            }
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteEconomicoSelecionado, null, 2));
+            document.getElementById('economiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' :
+                '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('economiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('economiaFiltro').addEventListener('input', () => {
+            renderizarEconomia(agentesEconomicos);
+        });
+
+        document.getElementById('btnLimparEconomiaJSON').addEventListener('click', () => {
+            document.getElementById('economiaJSONPreview').textContent = '';
+        });
+
+        document.getElementById('btnEstruturarEconomia').addEventListener('click', () => {
+            if (!agenteEconomicoSelecionado) {
+                document.getElementById('economiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.';
+                return;
+            }
+            const texto = document.getElementById('economiaRespostaIA').value.trim();
+            if (!texto) {
+                document.getElementById('economiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA primeiro.';
+                return;
+            }
+            const camadas = extrairCamadas(texto);
+            const codigo = agenteEconomicoSelecionado.codigo_universal;
+            const jsonResult = {
+                codigo_universal: codigo,
+                nome: agenteEconomicoSelecionado.nome,
+                dominio: 'economia',
+                area: agenteEconomicoSelecionado.economia.area,
+                topico_inicio: agenteEconomicoSelecionado.economia.topico_inicio,
+                topico_fim: agenteEconomicoSelecionado.economia.topico_fim,
+                data_analise: new Date().toISOString(),
+                texto_original: texto,
+                camadas: camadas,
+                total_camadas: camadas.length,
+                fonte: 'IA_Externa',
+                score_confianca: 0.85,
+                alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                tags: ['economia', agenteEconomicoSelecionado.economia.area.toLowerCase(), 'analise']
+            };
+            economiaEstruturado = jsonResult;
+            document.getElementById('economiaCamadasPreview').style.display = 'block';
+            document.getElementById('economiaCamadasPreview').textContent = camadas.map(c =>
+                `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('economiaJSONPreview').style.display = 'block';
+            document.getElementById('economiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarEconomiaRedis').style.display = 'inline-flex';
+            document.getElementById('economiaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+            setTimeout(() => { document.getElementById('economiaStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({
+                fontes: ['IA Externa', 'Super Prompt IDEnza'],
+                camadas: camadas,
+                score_confianca: 0.85,
+                alertaRevisao: jsonResult.alertaRevisao,
+                codigo: jsonResult.codigo_universal
+            });
+        });
+
+        document.getElementById('btnEnviarEconomiaRedis').addEventListener('click', async () => {
+            if (!economiaEstruturado) return;
+            document.getElementById('economiaStatusDetalhe').textContent = 'Enviando...';
+            await enviarDiretoRedis(economiaEstruturado, 'economia', economiaEstruturado.codigo_universal,
+                'economiaFeedbackDetalhe');
+            document.getElementById('economiaStatusDetalhe').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('economiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        // ==================== INSTITUIÇÕES ECONÔMICAS ====================
+        const INSTITUICOES_ECONOMICAS = [
+            { nome: 'Bretton Woods', local: 'EUA', periodo: '1944 - 1971',
+                descobertas: 'Sistema de câmbio fixo, criação do FMI e Banco Mundial',
+                relevancia: 'Base do sistema financeiro internacional pós-guerra',
+            referencias: ['Acordo de Bretton Woods', 'FMI', 'Banco Mundial'] },
+            { nome: 'FMI', local: 'Washington D.C.', periodo: '1945 - Presente',
+                descobertas: 'Direitos Especiais de Saque, programas de ajuste estrutural',
+                relevancia: 'Estabilidade financeira global', referencias: ['Crise da Dívida', 'Crise de 2008'] },
+            { nome: 'Banco Mundial', local: 'Washington D.C.', periodo: '1944 - Presente',
+                descobertas: 'Financiamento de desenvolvimento, Bird, AID', relevancia: 'Desenvolvimento global',
+                referencias: ['Projetos de infraestrutura', 'Redução da pobreza'] },
+            { nome: 'Federal Reserve', local: 'EUA', periodo: '1913 - Presente',
+                descobertas: 'Política monetária americana, FOMC', relevancia: 'Banco central mais influente do mundo',
+                referencias: ['Crise de 1929', 'Crise de 2008', 'Quantitative Easing'] },
+            { nome: 'Banco Central Europeu', local: 'Frankfurt', periodo: '1998 - Presente',
+                descobertas: 'Política monetária da zona do euro', relevancia: 'Estabilidade do euro',
+            referencias: ['Crise da dívida soberana', 'Draghi'] },
+            { nome: 'OMC', local: 'Genebra', periodo: '1995 - Presente',
+                descobertas: 'Regulação do comércio internacional', relevancia: 'Liberalização comercial',
+            referencias: ['Rodada Doha', 'GATT'] },
+            { nome: 'OCDE', local: 'Paris', periodo: '1961 - Presente',
+                descobertas: 'Relatórios econômicos, recomendações de políticas', relevancia: 'Cooperação econômica',
+            referencias: ['PISA', 'Relatórios de produtividade'] },
+            { nome: 'Crise de 1929', local: 'Global', periodo: '1929 - 1939',
+                descobertas: 'Grande Depressão, quebra da Bolsa de NY', relevancia: 'Maior crise econômica do século XX',
+                referencias: ['New Deal', 'Keynes'] },
+            { nome: 'Crise de 2008', local: 'Global', periodo: '2007 - 2009', descobertas: 'Bolha imobiliária, Lehman Brothers',
+                relevancia: 'Maior crise financeira desde 1929', referencias: ['Subprime', 'Too Big to Fail'] },
+            { nome: 'Plano Marshall', local: 'Europa', periodo: '1948 - 1952',
+                descobertas: 'Reconstrução europeia pós-guerra', relevancia: 'Recuperação econômica da Europa',
+            referencias: ['Reconstrução', 'Guerra Fria'] }
+        ];
+
+        function gerarSuperPromptInstitucional(inst) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO INSTITUCIONAL ⚡
+
+        Você é um nó especializado em Instituições Econômicas do Ecossistema IDENZA.
+        Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre ${inst.nome}.
+
+        ## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS INSTITUCIONAIS
+
+        ### 7. SIGNIFICADO ECONÔMICO
+        - Qual é a importância de ${inst.nome} para a economia global?
+        - Que contribuição única esta instituição oferece?
+        - Qual é o legado para o sistema econômico?
+
+        ### 6. PRINCIPAIS REALIZAÇÕES
+        - Quais são as realizações mais significativas de ${inst.nome}?
+        - Que políticas e programas foram implementados?
+        - Qual é a datação e o contexto histórico?
+
+        ### 5. CORRELAÇÕES COM A TEORIA ECONÔMICA
+        - Como as ações desta instituição confirmam ou desafiam teorias econômicas?
+        - Quais conceitos econômicos são diretamente relacionados?
+        - Que novas abordagens surgem a partir desta instituição?
+
+        ### 4. CONTEXTO HISTÓRICO
+        - Qual é o período histórico e o contexto geopolítico?
+        - Quais foram os principais atores envolvidos?
+        - Como esta instituição se relaciona com outras?
+
+        ### 3. METODOLOGIAS E GOVERNANÇA
+        - Como funciona a governança de ${inst.nome}?
+        - Quais são os mecanismos de decisão?
+        - Quais são os desafios e controvérsias?
+
+        ### 2. APLICAÇÃO PRÁTICA
+        - Como este conhecimento enriquece a análise econômica?
+        - Que lições podem ser aprendidas para hoje?
+        - Como profissionais usam dados desta instituição?
+
+        ### 1. CURIOSIDADES E FATOS INTERESSANTES
+        - Quais fatos surpreendentes sobre ${inst.nome}?
+        - Que conexões inesperadas foram descobertas?
+        - Quais debates ainda permanecem?
+
+        ## 📜 REGRAS IMUTÁVEIS
+        1. Cada camada deve conter referências específicas
+        2. Cite fontes institucionais e acadêmicas
+        3. Linguagem acessível mas precisa
+        4. **NUNCA utilize o símbolo cerquilha (#)**
+        5. Inclua metadados ao final
+
+        ## 🎯 INSTITUIÇÃO A SER ANALISADA
+        **Nome**: ${inst.nome}
+        **Localização**: ${inst.local}
+        **Período**: ${inst.periodo}
+        **Principais Realizações**: ${inst.descobertas}
+        **Relevância Econômica**: ${inst.relevancia}
+        **Referências**: ${inst.referencias.join(', ')}
+
+        ## 🔍 METADADOS OBRIGATÓRIOS
+        Data de validação: ${new Date(Date.now() + 90*86400000).toISOString().split('T')[0]}
+        Nível de confiança: 0.90
+        Domínio: instituicoes_economicas
+        Código de rastreio: [gerado automaticamente]
+        Humanoides recomendados: Economista Institucional, Historiador Econômico
+
+        Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        let agentesInstituicoes = [];
+        let agenteInstituicaoSelecionado = null;
+        let instituicaoEstruturado = null;
+
+        function gerarAgentesInstituicoes() {
+            return INSTITUICOES_ECONOMICAS.map((inst, idx) => {
+                const codigo = `econinst.${inst.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.idenza.${idx + 1}`;
+                const superPrompt = gerarSuperPromptInstitucional(inst);
+                return {
+                    codigo_universal: codigo,
+                    nome: `Instituição: ${inst.nome}`,
+                    dominio: 'instituicoes_economicas',
+                    especialidade: `Análise institucional de ${inst.nome}`,
+                    instituicao: {
+                        nome_instituicao: inst.nome,
+                        localizacao: inst.local,
+                        periodo: inst.periodo,
+                        realizacoes: inst.descobertas,
+                        relevancia_economica: inst.relevancia,
+                        referencias: inst.referencias,
+                        super_prompt: superPrompt
+                    },
+                    camadas: [
+                        { nivel: 7, nome: 'Significado Econômico', subtemas: [`Importância de ${inst.nome}`] },
+                        { nivel: 6, nome: 'Principais Realizações', subtemas: [inst.descobertas] },
+                        { nivel: 5, nome: 'Correlações com a Teoria', subtemas: inst.referencias },
+                        { nivel: 4, nome: 'Contexto Histórico', subtemas: [`Período ${inst.periodo} em ${inst.local}`] },
+                        { nivel: 3, nome: 'Metodologias e Governança', subtemas: ['Estrutura de governança'] },
+                        { nivel: 2, nome: 'Aplicação Prática', subtemas: [`Como usar dados de ${inst.nome}`] },
+                        { nivel: 1, nome: 'Curiosidades', subtemas: [`Fatos interessantes sobre ${inst.nome}`] }
+                    ],
+                    fonte: 'IDEnza-Gerador-Institucional',
+                    data_geracao: new Date().toISOString(),
+                    score_confianca: 0.90,
+                    alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                    metadata: {
+                        data_validacao: new Date().toISOString(),
+                        data_revisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                        nivel_confianca: 0.90,
+                        criticidade: 'baixa',
+                        status_regulatorio: 'validado',
+                        palavras_chave: [inst.nome.toLowerCase(), 'instituicao', 'economia', inst.local.toLowerCase()]
+                    },
+                    tags: ['instituicao', 'economica', inst.nome.toLowerCase(), inst.local.toLowerCase()]
+                };
+            });
+        }
+
+        function renderizarInstituicoes(agentes) {
+            const grid = document.getElementById('instituicoesGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML =
+                    '<p style="font-size:0.8rem;color:#888;">Nenhum agente institucional gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('instituicoesFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a =>
+                a.instituicao.nome_instituicao.toLowerCase().includes(filtro) ||
+                a.instituicao.localizacao.toLowerCase().includes(filtro) ||
+                a.instituicao.periodo.toLowerCase().includes(filtro)
+            );
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'inst-card';
+                card.innerHTML = `
+              <span class="inst-icon">🏛️</span>
+              <div class="inst-name">${a.instituicao.nome_instituicao}</div>
+              <div class="inst-detail">${a.instituicao.localizacao}</div>
+              <div class="inst-period">${a.instituicao.periodo}</div>
+            `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.inst-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteInstituicaoSelecionado = a;
+                    exibirDetalheInstituicao(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheInstituicao(a) {
+            const panel = document.getElementById('instituicoesDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('instituicoesDetalheNome').textContent = a.nome;
+            document.getElementById('instituicoesDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('instituicoesDetalheLocal').textContent = `📍 ${a.instituicao.localizacao}`;
+            document.getElementById('instituicoesDetalhePeriodo').textContent = `📅 ${a.instituicao.periodo}`;
+            document.getElementById('instituicoesDetalheSuperPrompt').textContent = a.instituicao.super_prompt ||
+                'Super Prompt não disponível';
+            document.getElementById('instituicoesRespostaIA').value = '';
+            document.getElementById('instituicoesCamadasPreview').style.display = 'none';
+            document.getElementById('instituicoesJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarInstituicoesRedis').style.display = 'none';
+            document.getElementById('instituicoesFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('instituicoesStatusDetalhe').textContent = '';
+            instituicaoEstruturado = null;
+        }
+
+        // ==================== EVENTOS INSTITUIÇÕES ====================
+        document.getElementById('btnGerarInstituicoes').addEventListener('click', () => {
+            const agentes = gerarAgentesInstituicoes();
+            agentesInstituicoes = agentes;
+            renderizarInstituicoes(agentes);
+            document.getElementById('instituicoesStatusMsg').textContent =
+                `✅ ${agentes.length} agentes institucionais gerados com Super Prompts!`;
+            setTimeout(() => { document.getElementById('instituicoesStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarInstituicoesPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('instituicoesStatusDetalhe');
+            if (!agenteInstituicaoSelecionado) {
+                statusEl.textContent = '⚠️ Selecione uma instituição primeiro.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const prompt = agenteInstituicaoSelecionado.instituicao.super_prompt;
+            if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+                statusEl.textContent = '⚠️ Super Prompt não disponível.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const ok = await copiarTextoParaClipboard(prompt);
+            statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => statusEl.textContent = '', 4000);
+        });
+
+        document.getElementById('btnCopiarJSONInstituicoes').addEventListener('click', async () => {
+            if (!agenteInstituicaoSelecionado) return;
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteInstituicaoSelecionado, null, 2));
+            document.getElementById('instituicoesStatusDetalhe').textContent = ok ? '✅ JSON copiado!' :
+                '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('instituicoesStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('instituicoesFiltro').addEventListener('input', () => {
+            renderizarInstituicoes(agentesInstituicoes);
+        });
+
+        document.getElementById('btnLimparInstituicoesJSON').addEventListener('click', () => {
+            document.getElementById('instituicoesJSONPreview').textContent = '';
+        });
+
+        document.getElementById('btnEstruturarInstituicoes').addEventListener('click', () => {
+            if (!agenteInstituicaoSelecionado) {
+                document.getElementById('instituicoesStatusDetalhe').textContent =
+                '⚠️ Selecione uma instituição primeiro.';
+                return;
+            }
+            const texto = document.getElementById('instituicoesRespostaIA').value.trim();
+            if (!texto) {
+                document.getElementById('instituicoesStatusDetalhe').textContent =
+                '⚠️ Cole a resposta da IA primeiro.';
+                return;
+            }
+            const camadas = extrairCamadas(texto);
+            const codigo = agenteInstituicaoSelecionado.codigo_universal;
+            const jsonResult = {
+                codigo_universal: codigo,
+                nome: agenteInstituicaoSelecionado.nome,
+                dominio: 'instituicoes_economicas',
+                instituicao: agenteInstituicaoSelecionado.instituicao.nome_instituicao,
+                localizacao: agenteInstituicaoSelecionado.instituicao.localizacao,
+                periodo: agenteInstituicaoSelecionado.instituicao.periodo,
+                data_analise: new Date().toISOString(),
+                texto_original: texto,
+                camadas: camadas,
+                total_camadas: camadas.length,
+                fonte: 'IA_Externa',
+                score_confianca: 0.85,
+                alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                tags: ['instituicao', 'economica', agenteInstituicaoSelecionado.instituicao.nome_instituicao
+                    .toLowerCase()
+                ]
+            };
+            instituicaoEstruturado = jsonResult;
+            document.getElementById('instituicoesCamadasPreview').style.display = 'block';
+            document.getElementById('instituicoesCamadasPreview').textContent = camadas.map(c =>
+                `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('instituicoesJSONPreview').style.display = 'block';
+            document.getElementById('instituicoesJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarInstituicoesRedis').style.display = 'inline-flex';
+            document.getElementById('instituicoesStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+            setTimeout(() => { document.getElementById('instituicoesStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({
+                fontes: ['IA Externa', 'Super Prompt IDEnza'],
+                camadas: camadas,
+                score_confianca: 0.85,
+                alertaRevisao: jsonResult.alertaRevisao,
+                codigo: jsonResult.codigo_universal
+            });
+        });
+
+        document.getElementById('btnEnviarInstituicoesRedis').addEventListener('click', async () => {
+            if (!instituicaoEstruturado) return;
+            document.getElementById('instituicoesStatusDetalhe').textContent = 'Enviando...';
+            await enviarDiretoRedis(instituicaoEstruturado, 'instituicao', instituicaoEstruturado.codigo_universal,
+                'instituicoesFeedbackDetalhe');
+            document.getElementById('instituicoesStatusDetalhe').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('instituicoesStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        // ==================== FUNÇÃO AUXILIAR: extrairCamadas ====================
+        function extrairCamadas(texto) {
+            if (!texto || typeof texto !== 'string') return [];
+            const linhas = texto.split('\n');
+            const camadas = [];
+            let camadaAtual = null;
+            const padraoCamada =
+                /(\d+)\.\s*\*?\*?\s*(ESSÊNCIA|TEORIA|ESTRUTURAS|APLICAÇÕES|PRÁTICAS|USO|DICAS|COTIDIANO|SIGNIFICADO|REALIZAÇÕES|CORRELAÇÕES|CONTEXTO|METODOLOGIAS|APLICAÇÃO|CURIOSIDADES|MODELOS|MÉTRICAS|PROFISSIONAL|TENDÊNCIAS|GOVERNANÇA)/i;
+            for (let linha of linhas) {
+                linha = linha.trim();
+                if (!linha) continue;
+                const match = linha.match(padraoCamada);
+                if (match) {
+                    const nivel = parseInt(match[1]);
+                    let nome = match[2].trim().toUpperCase();
+                    if (nome.includes('COTIDIANO')) nome = 'Cotidiano e Dicas';
+                    if (nome.includes('USO')) nome = 'Uso Profissional';
+                    if (nome.includes('PRÁTICAS')) nome = 'Práticas Profissionais';
+                    if (nome.includes('APLICAÇÕES') || nome.includes('APLICAÇÃO')) nome = 'Aplicação Prática';
+                    if (nome.includes('ESTRUTURAS') || nome.includes('MÉTRICAS')) nome = 'Estruturas e Métricas';
+                    if (nome.includes('TEORIA') || nome.includes('MODELOS')) nome = 'Teoria e Modelos';
+                    if (nome.includes('ESSÊNCIA')) nome = 'Essência Econômica';
+                    if (nome.includes('SIGNIFICADO')) nome = 'Significado Econômico';
+                    if (nome.includes('REALIZAÇÕES')) nome = 'Principais Realizações';
+                    if (nome.includes('CORRELAÇÕES')) nome = 'Correlações com a Teoria';
+                    if (nome.includes('CONTEXTO')) nome = 'Contexto Histórico';
+                    if (nome.includes('METODOLOGIAS') || nome.includes('GOVERNANÇA')) nome =
+                        'Metodologias e Governança';
+                    if (nome.includes('CURIOSIDADES')) nome = 'Curiosidades';
+                    if (nome.includes('PROFISSIONAL')) nome = 'Uso Profissional';
+                    if (nome.includes('TENDÊNCIAS') || nome.includes('DICAS')) nome = 'Dicas Rápidas e Tendências';
+                    camadaAtual = { nivel, nome, subtemas: [] };
+                    camadas.push(camadaAtual);
+                } else if (camadaAtual && linha.length > 15) {
+                    let conteudo = linha.replace(/\*\*/g, '').replace(/---/g, '').replace(/^\d+\.\s*/, '').trim();
+                    if (conteudo.length > 10) camadaAtual.subtemas.push(conteudo);
+                }
+            }
+            if (camadas.length < 7) {
+                const nomesPadrao = ['Dicas Rápidas e Tendências', 'Uso Profissional', 'Contextualização',
+                    'Aplicação Prática', 'Estruturas e Métricas', 'Teoria e Modelos', 'Essência Econômica'
+                ];
+                for (let i = 1; i <= 7; i++) {
+                    if (!camadas.find(c => c.nivel === i)) {
+                        camadas.push({ nivel: i, nome: nomesPadrao[i - 1], subtemas: [texto.substring(0, 200) +
+                                '...'
+                            ] });
+                    }
+                }
+                camadas.sort((a, b) => a.nivel - b.nivel);
+            }
+            return camadas;
+        }
+
+        // ==================== PAINEL DE TRANSPARÊNCIA ====================
+        function mostrarExplicacao(meta) {
+            const panel = document.getElementById('explainPanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+            let camadasNome = '—';
+            if (meta.camadas && Array.isArray(meta.camadas) && meta.camadas.length > 0) {
+                camadasNome = meta.camadas.map(c => c.nome || `Camada ${c.nivel}`).join(' → ');
+            }
+            document.getElementById('explainLayers').textContent = camadasNome;
+            const confianca = meta.score_confianca || 0.85;
+            document.getElementById('explainConfidence').textContent = (confianca * 100).toFixed(0) + '%';
+            document.getElementById('explainReview').textContent = meta.alertaRevisao || 'Não definida';
+            document.getElementById('explainCode').textContent = meta.codigo || '—';
+        }
+
+        // ==================== ENVIO DIRETO AO REDIS ====================
+        async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+            const feedbackEl = document.getElementById(feedbackElementId);
+            const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+            const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+            updateRedisStatus('sending');
+            if (feedbackEl) {
+                feedbackEl.className = 'redis-feedback show loading';
+                feedbackEl.textContent = '⏳ Enviando para o Redis...';
+            }
+            try {
+                const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+                const redisKey = `idenza:${tipo}:${codigo}`;
+                const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`,
+                        'Content-Type': 'application/json' },
+                    body: JSON.stringify(sanitizedPayload)
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                const resultado = await response.json();
+                updateRedisStatus('connected');
+                if (feedbackEl) {
+                    feedbackEl.className = 'redis-feedback show success';
+                    feedbackEl.innerHTML =
+                        `✅ <strong>Enviado com sucesso!</strong><br>📁 Chave: <code>${redisKey}</code><br>📏 Tamanho: ${JSON.stringify(sanitizedPayload).length} bytes<br>🕐 Timestamp: ${new Date().toLocaleString('pt-BR')}`;
+                }
+                return { sucesso: true, redisKey, resultado };
+            } catch (error) {
+                console.error('Erro ao enviar para Redis:', error);
+                updateRedisStatus('disconnected');
+                if (feedbackEl) {
+                    feedbackEl.className = 'redis-feedback show error';
+                    feedbackEl.innerHTML = `❌ <strong>Erro no envio!</strong><br>📝 ${error.message}`;
+                }
+                return { sucesso: false, erro: error.message };
+            }
+        }
+
+        // ==================== HUMANOIDES ====================
+        const tiposHumanoides = [
+            { icone: '📈', nome: 'Economista Chefe', codigo: 'hum.economista',
+                desc: 'Especialista em análise macroeconômica e cenários', exemplo: 'Analise o cenário de inflação atual' },
+            { icone: '🏦', nome: 'Analista de Política Monetária', codigo: 'hum.monetarista',
+                desc: 'Especialista em bancos centrais e política monetária',
+            exemplo: 'Projeção da taxa Selic para o próximo trimestre' },
+            { icone: '💰', nome: 'Consultor Financeiro', codigo: 'hum.financeiro',
+                desc: 'Especialista em investimentos e mercado de capitais',
+            exemplo: 'Diversificação de portfólio em cenário de volatilidade' },
+            { icone: '🌐', nome: 'Economista Internacional', codigo: 'hum.internacional',
+                desc: 'Focado em comércio exterior e globalização', exemplo: 'Impacto das tarifas comerciais no PIB' }
+        ];
+
+        let humanoideSelecionado = null;
+        let resultadoHum = null;
+
+        const humGrid = document.getElementById('humTypeGrid');
+        tiposHumanoides.forEach(t => {
+            const card = document.createElement('div');
+            card.className = 'hum-type-card';
+            card.innerHTML =
+                `<span class="type-icon">${t.icone}</span><span class="type-name">${t.nome}</span><span class="type-code">${t.codigo}.idenza.*</span>`;
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                humanoideSelecionado = t;
+                abrirPainelHumanoide(t);
+            });
+            humGrid.appendChild(card);
+        });
+
+        function abrirPainelHumanoide(t) {
+            document.getElementById('humPanel').style.display = 'block';
+            document.getElementById('humIcone').textContent = t.icone;
+            document.getElementById('humNome').textContent = t.nome;
+            document.getElementById('humCodigoBase').textContent = t.codigo + '.idenza.*';
+            document.getElementById('humDescricao').textContent = t.desc;
+            document.getElementById('humEntrada').value = '';
+            document.getElementById('humEntrada').placeholder = 'Ex: "' + t.exemplo + '"';
+            document.getElementById('humResultados').style.display = 'none';
+            document.getElementById('btnEnviarWorkerHum').style.display = 'none';
+            resultadoHum = null;
+        }
+
+        function processarHumanoide(entrada, tipo, nomeUsuario) {
+            const codigo = gerarCodigoUnico(tipo.codigo);
+            const texto = entrada.trim();
+            const palavras = texto.split(/\s+/).filter(w => w.length > 3);
+            const resultado = {
+                codigo: codigo,
+                tipo: tipo.nome,
+                dominio: tipo.codigo,
+                entrada: texto,
+                nome_usuario: nomeUsuario || 'Usuário',
+                analise: {
+                    palavras_chave: palavras.slice(0, 10),
+                    profundidade: 4,
+                    emocao_dominante: 'neutro'
+                },
+                camada7_resposta: `Como ${tipo.nome}, analiso sua questão com profundidade:\n\n${texto}\n\nCom base na teoria econômica e nos dados disponíveis, sugiro considerar o contexto macroeconômico, os indicadores relevantes e as projeções de mercado.`,
+                fonte: 'IDEnza-Humanoide-Economico',
+                dataCriacao: new Date().toISOString(),
+                alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                score_confianca: 0.85,
+                tags: ['humanoide', tipo.codigo, 'economico']
+            };
+            return resultado;
+        }
+
+        document.getElementById('btnProcessarHum').addEventListener('click', () => {
+            if (!humanoideSelecionado) return;
+            const entrada = document.getElementById('humEntrada').value.trim();
+            const nomeUsuario = document.getElementById('humNomeUsuario')?.value?.trim() || '';
+            if (!entrada || entrada.length < 5) {
+                document.getElementById('humStatusMsg').textContent = '❌ Insira uma descrição mais detalhada.';
+                return;
+            }
+            document.getElementById('humStatusMsg').textContent = 'Processando...';
+            resultadoHum = processarHumanoide(entrada, humanoideSelecionado, nomeUsuario);
+            document.getElementById('humResultados').style.display = 'block';
+            document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+            document.getElementById('humCodigoRastreio').textContent = resultadoHum.codigo;
+            document.getElementById('humResposta').textContent = resultadoHum.camada7_resposta;
+            document.getElementById('humJsonCompleto').textContent = JSON.stringify(resultadoHum, null, 2);
+            const emocoes = { confiante: 0.7, neutro: 0.2, cauteloso: 0.1 };
+            let m = '';
+            Object.entries(emocoes).sort((a, b) => b[1] - a[1]).slice(0, 4).forEach(([k, v]) => {
+                m +=
+                    `<div class="hum-metric-item"><div class="label">${k}</div><div class="value">${(v*100).toFixed(0)}%</div></div>`;
+            });
+            document.getElementById('humMetricGrid').innerHTML = m;
+            document.getElementById('humStatusMsg').textContent = '✅ Processado!';
+            setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('btnLimparHum').addEventListener('click', () => {
+            document.getElementById('humEntrada').value = '';
+            document.getElementById('humNomeUsuario').value = '';
+            document.getElementById('humResultados').style.display = 'none';
+            resultadoHum = null;
+        });
+
+        document.getElementById('btnCopiarJSONHum').addEventListener('click', async () => {
+            if (!resultadoHum) return;
+            await copiarTextoParaClipboard(JSON.stringify(resultadoHum, null, 2));
+            document.getElementById('humStatusMsg').textContent = '✅ JSON copiado!';
+            setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('btnLimparHumJSON').addEventListener('click', () => {
+            document.getElementById('humJsonCompleto').textContent = '';
+        });
+
+        document.getElementById('btnEnviarWorkerHum').addEventListener('click', async () => {
+            if (!resultadoHum) return;
+            document.getElementById('humStatusMsg').textContent = 'Enviando...';
+            await enviarDiretoRedis(resultadoHum, 'humanoide', resultadoHum.codigo, 'redisFeedbackHum');
+            document.getElementById('humStatusMsg').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+        });
+
+        // ==================== FÁBRICA COGNITIVA ====================
+        (function() {
+            let tipoGeracao = 'especialista';
+            let resultadoFabrica = null;
+
+            document.querySelectorAll('.fabrica-tipo-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.fabrica-tipo-btn').forEach(b => b.classList.remove(
+                        'active'));
+                    btn.classList.add('active');
+                    tipoGeracao = btn.dataset.tipo;
+                });
+            });
+
+            document.getElementById('fabricaBtnGerar').addEventListener('click', function() {
+                const nome = document.getElementById('fabricaNome')?.value?.trim();
+                const dominio = document.getElementById('fabricaDominio')?.value?.trim();
+                const especialidade = document.getElementById('fabricaEspecialidade')?.value?.trim();
+                const palavrasChave = document.getElementById('fabricaPalavrasChave')?.value?.trim()?.split(
+                    ',').map(s => s.trim()).filter(Boolean) || [];
+                const camadaDestino = document.getElementById('fabricaCamadaDestino')?.value || 'L4';
+                if (!nome || !dominio || !especialidade) {
+                    document.getElementById('fabricaStatusMsg').textContent =
+                        '❌ Preencha Nome, Domínio e Especialidade.';
+                    return;
+                }
+                const codigo = gerarCodigoUnico(dominio.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0,
+                    20));
+                const superPrompt =
+                    `⚡ SUPER PROMPT — ${nome} ⚡\n\nVocê é um especialista em ${dominio} com foco em ${especialidade}.\n\n## 7 CAMADAS COGNITIVAS:\n\n7. ESSÊNCIA — Qual é o fundamento desta área?\n6. TEORIA — Quais são os princípios fundamentais?\n5. ESTRUTURA — Como este conhecimento se organiza?\n4. APLICAÇÃO — Como aplicar na prática?\n3. MÉTODOS — Quais ferramentas e abordagens?\n2. USO PROFISSIONAL — Como usar no dia a dia?\n1. DICAS — Recomendações práticas.\n\nPalavras-chave: ${palavrasChave.join(', ')}\nCamada de destino: ${camadaDestino}`;
+                const baseData = {
+                    codigo_universal: codigo,
+                    tipo_geracao: tipoGeracao,
+                    nome,
+                    dominio,
+                    especialidade,
+                    palavras_chave: palavrasChave,
+                    super_prompt: superPrompt,
+                    data_geracao: new Date().toISOString(),
+                    fonte: 'IDEnza-Fabrica-Economica',
+                    score_confianca: 0.85,
+                    camada_origem: camadaDestino,
+                    status_regulatorio: 'pending_validation',
+                    alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                    tags: ['fabrica', 'cognitivo', dominio.toLowerCase()]
+                };
+                if (tipoGeracao === 'especialista' || tipoGeracao === 'completo') {
+                    baseData.perfil_cognitivo = { nome, dominio, especialidade, camada_origem: camadaDestino,
+                        criticidade: 'medium', palavras_chave: palavrasChave };
+                }
+                if (tipoGeracao === 'humanoide' || tipoGeracao === 'completo') {
+                    baseData.humanoide = {
+                        codigo: `hum.${dominio.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0,15)}.idenza.${Date.now().toString(36)}`,
+                        nome,
+                        funcao: especialidade,
+                        dominio,
+                        profundidade: camadaDestino
+                    };
+                }
+                resultadoFabrica = baseData;
+                document.getElementById('fabricaResultado').style.display = 'block';
+                document.getElementById('fabricaCodigoUniversal').textContent = codigo;
+                document.getElementById('fabricaPreviewJSON').textContent = JSON.stringify(baseData, null, 2);
+                document.getElementById('fabricaBtnExportarCatalogo').style.display = 'inline-flex';
+                document.getElementById('fabricaStatusMsg').textContent = '✅ Gerado com sucesso!';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+                atualizarCatalogoPesquisa();
+            });
+
+            document.getElementById('fabricaBtnExportarCatalogo').addEventListener('click', () => {
+                if (!resultadoFabrica) return;
+                if (!window.agentesFabrica) window.agentesFabrica = [];
+                window.agentesFabrica.push({
+                    nome: resultadoFabrica.nome,
+                    base: resultadoFabrica.dominio.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+                    codigo: resultadoFabrica.codigo_universal,
+                    dominio: resultadoFabrica.dominio
+                });
+                document.getElementById('fabricaStatusMsg').textContent = '✅ Exportado para o Catálogo!';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+                atualizarCatalogoPesquisa();
+            });
+
+            document.getElementById('fabricaBtnLimpar').addEventListener('click', () => {
+                document.getElementById('fabricaNome').value = '';
+                document.getElementById('fabricaDominio').value = '';
+                document.getElementById('fabricaEspecialidade').value = '';
+                document.getElementById('fabricaPalavrasChave').value = '';
+                document.getElementById('fabricaResultado').style.display = 'none';
+                document.getElementById('fabricaBtnExportarCatalogo').style.display = 'none';
+                resultadoFabrica = null;
+            });
+
+            document.getElementById('fabricaBtnCopiarJSON').addEventListener('click', async () => {
+                if (!resultadoFabrica) return;
+                await copiarTextoParaClipboard(JSON.stringify(resultadoFabrica, null, 2));
+                document.getElementById('fabricaStatusMsg').textContent = '✅ JSON copiado!';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+            });
+
+            document.getElementById('fabricaBtnCopiarJSON2').addEventListener('click', async () => {
+                if (!resultadoFabrica) return;
+                await copiarTextoParaClipboard(JSON.stringify(resultadoFabrica, null, 2));
+                document.getElementById('fabricaStatusMsg').textContent = '✅ JSON copiado!';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+            });
+
+            document.getElementById('fabricaBtnLimparResultado').addEventListener('click', () => {
+                document.getElementById('fabricaResultado').style.display = 'none';
+                document.getElementById('fabricaPreviewJSON').textContent = '';
+                document.getElementById('fabricaBtnExportarCatalogo').style.display = 'none';
+                resultadoFabrica = null;
+            });
+
+            document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async () => {
+                if (!resultadoFabrica) return;
+                document.getElementById('fabricaStatusMsg').textContent = 'Enviando...';
+                await enviarDiretoRedis(resultadoFabrica, 'fabrica', resultadoFabrica.codigo_universal,
+                    'fabricaFeedback');
+                document.getElementById('fabricaStatusMsg').textContent = 'Concluído.';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+            });
+
+            document.getElementById('fabricaBtnEnviarRedis2').addEventListener('click', async () => {
+                if (!resultadoFabrica) return;
+                document.getElementById('fabricaStatusMsg').textContent = 'Enviando...';
+                await enviarDiretoRedis(resultadoFabrica, 'fabrica', resultadoFabrica.codigo_universal,
+                    'fabricaFeedback');
+                document.getElementById('fabricaStatusMsg').textContent = 'Concluído.';
+                setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+            });
+        })();
+
+        // ==================== PESQUISA ====================
+        window.agentesFabrica = window.agentesFabrica || [];
+        let pesquisaEstruturado = null;
+
+        function atualizarCatalogoPesquisa() {
+            const container = document.getElementById('catalogoPesquisa');
+            if (!container) return;
+            const todos = [];
+            if (agentesEconomicos && agentesEconomicos.length) {
+                agentesEconomicos.forEach(a => {
+                    todos.push({
+                        nome: a.nome,
+                        base: 'economia',
+                        codigo: a.codigo_universal,
+                        dominio: 'economia',
+                        super_prompt: a.economia.super_prompt
+                    });
+                });
+            }
+            if (agentesInstituicoes && agentesInstituicoes.length) {
+                agentesInstituicoes.forEach(a => {
+                    todos.push({
+                        nome: a.nome,
+                        base: 'instituicoes_economicas',
+                        codigo: a.codigo_universal,
+                        dominio: 'instituicoes_economicas',
+                        super_prompt: a.instituicao.super_prompt
+                    });
+                });
+            }
+            if (window.agentesFabrica && window.agentesFabrica.length) {
+                window.agentesFabrica.forEach(a => {
+                    todos.push({
+                        nome: a.nome,
+                        base: a.base || 'fabrica',
+                        codigo: a.codigo,
+                        dominio: a.dominio || 'fabrica',
+                        super_prompt: null
+                    });
+                });
+            }
+            if (todos.length === 0) {
+                container.innerHTML =
+                    '<p style="font-size:0.7rem;color:#888;">Nenhum agente disponível. Gere agentes econômicos, institucionais ou na fábrica.</p>';
+                return;
+            }
+            let html = '<div class="agent-select-list">';
+            todos.forEach(a => {
+                html +=
+                    `<label class="agent-select-item"><input type="radio" name="pesquisaRadio" value="${a.nome}" data-base="${a.base}" data-code="${a.codigo}" data-dominio="${a.dominio}" data-super="${a.super_prompt || ''}"> ${a.nome}</label>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+            document.querySelectorAll('#catalogoPesquisa input[name="pesquisaRadio"]').forEach(r => {
+                r.addEventListener('change', () => {
+                    if (r.checked) {
+                        const nome = r.value;
+                        const codigo = r.dataset.code;
+                        const dominio = r.dataset.dominio;
+                        let superPrompt = r.dataset.super;
+                        if (!superPrompt) {
+                            superPrompt =
+                                `⚡ SUPER PROMPT — ${nome} ⚡\n\nVocê é um especialista em ${dominio}. Gere conhecimento estruturado em 7 camadas sobre: ${nome}.\n\n### 7. ESSÊNCIA\n### 6. TEORIA\n### 5. ESTRUTURA\n### 4. APLICAÇÃO\n### 3. MÉTODOS\n### 2. USO PROFISSIONAL\n### 1. DICAS\n\nInicie agora.`;
+                        }
+                        document.getElementById('panelPesquisa').style.display = 'block';
+                        document.getElementById('pesquisaNome').textContent = nome;
+                        document.getElementById('pesquisaCodigo').textContent = codigo;
+                        document.getElementById('pesquisaSuperPrompt').value = superPrompt;
+                        document.getElementById('pesquisaRespostaIA').value = '';
+                        document.getElementById('pesquisaCamadasPreview').style.display = 'none';
+                        document.getElementById('pesquisaJSONPreview').style.display = 'none';
+                        document.getElementById('btnEnviarPesquisaRedis').style.display = 'none';
+                        document.getElementById('pesquisaFeedback').className = 'redis-feedback';
+                        document.getElementById('pesquisaStatusMsg').textContent = '';
+                        pesquisaEstruturado = null;
+                    }
+                });
+            });
+        }
+
+        document.getElementById('btnCopiarPesquisaPrompt').addEventListener('click', async function() {
+            const prompt = document.getElementById('pesquisaSuperPrompt').value;
+            if (!prompt || prompt.trim() === '') {
+                document.getElementById('pesquisaStatusMsg').textContent =
+                    '⚠️ Nenhum prompt disponível. Selecione um agente.';
+                setTimeout(() => document.getElementById('pesquisaStatusMsg').textContent = '', 3000);
+                return;
+            }
+            const ok = await copiarTextoParaClipboard(prompt);
+            document.getElementById('pesquisaStatusMsg').textContent = ok ? '✅ Prompt copiado!' :
+                '❌ Falha ao copiar.';
+            setTimeout(() => document.getElementById('pesquisaStatusMsg').textContent = '', 3000);
+        });
+
+        document.getElementById('btnEstruturarPesquisa').addEventListener('click', () => {
+            const texto = document.getElementById('pesquisaRespostaIA').value.trim();
+            if (!texto) {
+                document.getElementById('pesquisaStatusMsg').textContent = '⚠️ Cole a resposta da IA primeiro.';
+                return;
+            }
+            const camadas = extrairCamadas(texto);
+            const codigo = document.getElementById('pesquisaCodigo').textContent || gerarCodigoUnico('pesquisa');
+            const jsonResult = {
+                codigo_universal: codigo,
+                nome: document.getElementById('pesquisaNome').textContent,
+                data_analise: new Date().toISOString(),
+                texto_original: texto,
+                camadas: camadas,
+                total_camadas: camadas.length,
+                fonte: 'IA_Externa',
+                score_confianca: 0.85,
+                alertaRevisao: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+                tags: ['pesquisa', 'economico']
+            };
+            pesquisaEstruturado = jsonResult;
+            document.getElementById('pesquisaCamadasPreview').style.display = 'block';
+            document.getElementById('pesquisaCamadasPreview').textContent = camadas.map(c =>
+                `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('pesquisaJSONPreview').style.display = 'block';
+            document.getElementById('pesquisaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarPesquisaRedis').style.display = 'inline-flex';
+            document.getElementById('pesquisaStatusMsg').textContent = '✅ Estruturado com sucesso!';
+            setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+            mostrarExplicacao({
+                fontes: ['IA Externa'],
+                camadas: camadas,
+                score_confianca: 0.85,
+                alertaRevisao: jsonResult.alertaRevisao,
+                codigo: jsonResult.codigo_universal
+            });
+        });
+
+        document.getElementById('btnEnviarPesquisaRedis').addEventListener('click', async () => {
+            if (!pesquisaEstruturado) return;
+            document.getElementById('pesquisaStatusMsg').textContent = 'Enviando...';
+            await enviarDiretoRedis(pesquisaEstruturado, 'pesquisa', pesquisaEstruturado.codigo_universal,
+                'pesquisaFeedback');
+            document.getElementById('pesquisaStatusMsg').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+        });
+
+        // ==================== MULTI-REDIS ====================
+        const multiRedisSlots = [
+            { id: 'sci1', cluster: 'science', nome: 'Econômico 1', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-green)' },
+            { id: 'sci2', cluster: 'science', nome: 'Econômico 2', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-green-light)' },
+            { id: 'sci3', cluster: 'science', nome: 'Econômico 3', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-green-light)' },
+            { id: 'ops1', cluster: 'ops', nome: 'Institucional 1', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-blue)' },
+            { id: 'ops2', cluster: 'ops', nome: 'Institucional 2', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-blue-light)' },
+            { id: 'ops3', cluster: 'ops', nome: 'Institucional 3', url: '', token: '', status: 'disconnected',
+                cor: 'var(--econ-blue-light)' }
+        ];
+
+        function renderizarMultiRedisSlots() {
+            const scienceContainer = document.getElementById('scienceSlotsContainer');
+            const opsContainer = document.getElementById('opsSlotsContainer');
+            if (!scienceContainer || !opsContainer) return;
+            scienceContainer.innerHTML = '';
+            opsContainer.innerHTML = '';
+            multiRedisSlots.forEach(slot => {
+                const card = document.createElement('div');
+                card.className = `redis-slot-card ${slot.status}`;
+                card.id = `slot-card-${slot.id}`;
+                card.style.borderLeftColor = slot.cor;
+                card.innerHTML = `
+              <div class="slot-header">
+                <div class="slot-name">
+                  <input type="text" value="${slot.nome}" data-slot-id="${slot.id}" class="slot-name-input" placeholder="Nome">
+                </div>
+                <span class="redis-slot-dot ${slot.status === 'connected' ? 'on' : 'off'}" id="dot-${slot.id}"></span>
+              </div>
+              <div class="slot-credentials">
+                <input type="text" placeholder="URL" value="${slot.url}" data-slot-id="${slot.id}" class="slot-url-input">
+                <input type="password" placeholder="Token" value="${slot.token}" data-slot-id="${slot.id}" class="slot-token-input">
+              </div>
+              <div class="slot-actions">
+                <button class="btn btn-outline btn-test-slot" data-slot-id="${slot.id}" style="font-size:0.6rem;padding:4px 10px;">🔌 Testar</button>
+                <button class="btn btn-outline btn-clear-slot" data-slot-id="${slot.id}" style="font-size:0.6rem;padding:4px 10px;">🗑️ Limpar</button>
+              </div>
+              <div class="mini-status-text" id="mini-status-${slot.id}">Status: ${slot.status === 'connected' ? '✅ Conectado' : '⚪ Não configurado'}</div>
+            `;
+                if (slot.cluster === 'science') scienceContainer.appendChild(card);
+                else opsContainer.appendChild(card);
+            });
+            document.querySelectorAll('.slot-url-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const slotId = e.target.dataset.slotId;
+                    const slot = multiRedisSlots.find(s => s.id === slotId);
+                    if (slot) { slot.url = e.target.value;
+                        slot.status = 'disconnected';
+                        atualizarSlotVisual(slot); }
+                });
+            });
+            document.querySelectorAll('.slot-token-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const slotId = e.target.dataset.slotId;
+                    const slot = multiRedisSlots.find(s => s.id === slotId);
+                    if (slot) { slot.token = e.target.value;
+                        slot.status = 'disconnected';
+                        atualizarSlotVisual(slot); }
+                });
+            });
+            document.querySelectorAll('.btn-test-slot').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const slotId = e.target.dataset.slotId;
+                    const slot = multiRedisSlots.find(s => s.id === slotId);
+                    if (!slot || !slot.url || !slot.token) {
+                        document.getElementById(`mini-status-${slotId}`).textContent =
+                            '⚠️ Preencha URL e Token.';
+                        return;
+                    }
+                    document.getElementById(`dot-${slotId}`).className = 'redis-slot-dot testing';
+                    document.getElementById(`mini-status-${slotId}`).textContent = '⏳ Testando...';
+                    try {
+                        const response = await fetch(`${slot.url.replace(/\/$/, '')}/ping`, {
+                            headers: { 'Authorization': `Bearer ${slot.token}` }
+                        });
+                        if (response.ok) {
+                            slot.status = 'connected';
+                            document.getElementById(`dot-${slotId}`).className = 'redis-slot-dot on';
+                            document.getElementById(`mini-status-${slotId}`).textContent =
+                                '✅ Conectado!';
+                        } else {
+                            slot.status = 'disconnected';
+                            document.getElementById(`dot-${slotId}`).className = 'redis-slot-dot off';
+                            document.getElementById(`mini-status-${slotId}`).textContent = '❌ Falha.';
+                        }
+                    } catch {
+                        slot.status = 'disconnected';
+                        document.getElementById(`dot-${slotId}`).className = 'redis-slot-dot off';
+                        document.getElementById(`mini-status-${slotId}`).textContent = '❌ Erro.';
+                    }
+                    atualizarSlotVisual(slot);
+                });
+            });
+            document.querySelectorAll('.btn-clear-slot').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const slotId = e.target.dataset.slotId;
+                    const slot = multiRedisSlots.find(s => s.id === slotId);
+                    if (slot) {
+                        slot.url = '';
+                        slot.token = '';
+                        slot.status = 'disconnected';
+                        document.querySelector(`.slot-url-input[data-slot-id="${slotId}"]`).value = '';
+                        document.querySelector(`.slot-token-input[data-slot-id="${slotId}"]`).value = '';
+                        atualizarSlotVisual(slot);
+                    }
+                });
+            });
+        }
+
+        function atualizarSlotVisual(slot) {
+            const card = document.getElementById(`slot-card-${slot.id}`);
+            if (card) card.className = `redis-slot-card ${slot.status}`;
+            const dot = document.getElementById(`dot-${slot.id}`);
+            if (dot) dot.className = `redis-slot-dot ${slot.status === 'connected' ? 'on' : 'off'}`;
+            const miniStatus = document.getElementById(`mini-status-${slot.id}`);
+            if (miniStatus) miniStatus.textContent = slot.status === 'connected' ? '✅ Conectado' :
+                '⚪ Não configurado';
+        }
+        renderizarMultiRedisSlots();
+
+        // ==================== ASSISTENTE FIXO ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('assistenteInput');
+            const btn = document.getElementById('assistenteBtn');
+            const respostaDiv = document.getElementById('assistenteResposta');
+
+            function enviarMensagem() {
+                const texto = input.value.trim();
+                if (!texto || texto.length < 3) return;
+                respostaDiv.style.display = 'block';
+                respostaDiv.innerHTML = '📊 Buscando dados econômicos...';
+                setTimeout(() => {
+                    const respostas = [
+                        '📈 "A economia é a arte de tirar o máximo proveito da vida." — George Bernard Shaw',
+                        '🏦 "O mercado pode permanecer irracional por mais tempo do que você pode permanecer solvente." — Keynes',
+                        '💰 "Juros compostos são a oitava maravilha do mundo." — Albert Einstein (sobre economia)',
+                        '🔍 "Não é preciso ser economista para saber que a economia real importa mais que os índices."'
+                    ];
+                    respostaDiv.innerHTML = respostas[Math.floor(Math.random() * respostas.length)];
+                }, 800);
+            }
+            btn.addEventListener('click', enviarMensagem);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') enviarMensagem();
+            });
+        });
+
+        // ==================== INICIALIZAÇÃO ====================
+        atualizarCatalogoPesquisa();
+        console.log('📊 Estação de Pesquisa — Economia e Ciências Econômicas carregada!');
+        console.log('🏛️ Clique em "Gerar Todos" para criar os agentes com Super Prompts.');
+    </script>
+</body>
+</html>

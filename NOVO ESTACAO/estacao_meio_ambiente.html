@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Estação de Pesquisa — Meio Ambiente</title>
+    <style>
+        /* ==================== CSS COMPLETO (mantido exatamente igual) ==================== */
+        :root {
+            --bg: #f8f5f0;
+            --card-bg: #ffffff;
+            --petroleum: #0d4f5c;
+            --petroleum-light: #1a6e7a;
+            --gold-dark: #8B6914;
+            --gold: #b8860b;
+            --gold-light: #e6c66a;
+            --text: #1e1e1e;
+            --text-soft: #555;
+            --border: #d0c8b8;
+            --shadow-sm: 2px 2px 6px rgba(0, 0, 0, 0.08);
+            --shadow-md: 3px 3px 10px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 4px 4px 16px rgba(0, 0, 0, 0.12);
+            --success: #0d5c3a;
+            --success-bg: #e0f5e8;
+            --warning: #b8860b;
+            --warning-bg: #fefce8;
+            --error: #b91c1c;
+            --error-bg: #fef2f2;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+            --theo-purple: #0d4f5c;
+            --theo-purple-light: #1a6e7a;
+            --arch-sand: #c4a882;
+            --arch-sand-light: #dcc8b0;
+            --scroll-bg: #f5efe6;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 16px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-left: 6px solid var(--theo-purple);
+        }
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--theo-purple);
+            letter-spacing: 1px;
+        }
+        .badge {
+            background: var(--gold-dark);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-theo {
+            background: var(--theo-purple);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-arch {
+            background: var(--arch-sand);
+            color: #2a1a0a;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .redis-connection-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            box-shadow: var(--shadow-sm);
+        }
+        .redis-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+        .redis-status-dot.disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+        .redis-status-dot.sending {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .explain-panel {
+            background: var(--scroll-bg);
+            border: 1px solid var(--theo-purple-light);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            border-left: 4px solid var(--theo-purple);
+        }
+        .explain-panel .section-title {
+            margin-bottom: 10px;
+            color: var(--theo-purple);
+        }
+        .explain-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .explain-item strong {
+            color: var(--theo-purple);
+            font-size: 0.7rem;
+        }
+        .explain-item div {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 2px;
+        }
+        .explain-confidence {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin-top: 4px;
+        }
+        .explain-code {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 8px;
+            font-family: var(--font-mono);
+        }
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 14px;
+            border: none;
+            background: #f0ece6;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            color: #666;
+            border-right: 1px solid var(--border);
+        }
+        .tab-btn:last-child {
+            border-right: none;
+        }
+        .tab-btn:hover {
+            background: #e8e0d8;
+        }
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--theo-purple);
+            border-bottom: 3px solid var(--gold-dark);
+            box-shadow: inset 0 -3px 0 var(--gold-dark);
+        }
+        .tab-btn.active.theo-tab {
+            color: var(--theo-purple);
+            border-bottom: 3px solid var(--theo-purple);
+            box-shadow: inset 0 -3px 0 var(--theo-purple);
+        }
+        .tab-btn.active.arch-tab {
+            color: #4a2a0a;
+            border-bottom: 3px solid var(--arch-sand);
+            box-shadow: inset 0 -3px 0 var(--arch-sand);
+        }
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--theo-purple);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title.theo-title {
+            color: var(--theo-purple);
+        }
+        .section-title.arch-title {
+            color: #4a2a0a;
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: var(--gold-dark);
+            color: white;
+            border: 1px solid #6a4f0a;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--theo-purple-light);
+            color: var(--theo-purple);
+        }
+        .btn-theo {
+            background: var(--theo-purple);
+            color: white;
+            border: 1px solid #0a3a44;
+        }
+        .btn-arch {
+            background: var(--arch-sand);
+            color: #2a1a0a;
+            border: 1px solid #a08870;
+        }
+        .btn-petroleum {
+            background: var(--petroleum);
+            color: white;
+            border: 1px solid #0a3a44;
+        }
+        .btn-data {
+            background: #0d5c3a;
+            color: white;
+            border: 1px solid #064025;
+        }
+        .btn-purple {
+            background: #6b21a8;
+            color: white;
+            border: 1px solid #4c1d7a;
+        }
+        .btn-gold:hover,
+        .btn-theo:hover,
+        .btn-arch:hover,
+        .btn-petroleum:hover,
+        .btn-data:hover,
+        .btn-purple:hover {
+            opacity: 0.9;
+        }
+        .btn-outline:hover {
+            background: #f5efe6;
+        }
+        .raw-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: vertical;
+            color: var(--text);
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .raw-textarea.theo-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--theo-purple);
+        }
+        .raw-textarea.arch-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--arch-sand);
+        }
+        .generated-question {
+            width: 100%;
+            min-height: 120px;
+            background: #f5efe6;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .camadas-preview {
+            background: #f5efe6;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+        }
+        .theo-json-preview,
+        .arch-json-preview {
+            background: #f5efe6;
+            border: 1px solid #c4b0a0;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 12px;
+            color: #1e1e1e;
+        }
+        .arch-json-preview {
+            background: #f5efe6;
+            border-color: var(--arch-sand);
+        }
+        .status-msg {
+            font-size: 0.7rem;
+            color: var(--petroleum-light);
+            margin-top: 6px;
+        }
+        .redis-feedback {
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            border-left: 4px solid var(--petroleum-light);
+            background: #f0f8f9;
+            display: none;
+            line-height: 1.6;
+        }
+        .redis-feedback.show {
+            display: block;
+        }
+        .redis-feedback.success {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .redis-feedback.error {
+            border-color: var(--error);
+            background: var(--error-bg);
+            color: var(--error);
+        }
+        .redis-feedback.loading {
+            border-color: var(--warning);
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .expando {
+            border: 1px solid var(--border);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            margin-top: 6px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 32px;
+        }
+        .expando.open {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .expando-toggle {
+            padding: 6px 14px;
+            font-size: 0.65rem;
+            color: var(--text-soft);
+            cursor: pointer;
+            text-align: left;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            background: #fafafa;
+            border-bottom: 1px solid transparent;
+        }
+        .expando.open .expando-toggle {
+            border-bottom-color: var(--border);
+        }
+        .expando-body {
+            padding: 10px 14px;
+            font-size: 0.7rem;
+            display: none;
+        }
+        .expando.open .expando-body {
+            display: block;
+        }
+        .agent-select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            padding: 6px;
+            background: #fafbfc;
+        }
+        .agent-select-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .agent-select-item:hover {
+            background: #f5efe6;
+        }
+        .agent-select-item input[type="radio"] {
+            margin: 0;
+        }
+        .hum-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-type-card {
+            border: 1px solid var(--border);
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafdfd;
+            text-align: center;
+        }
+        .hum-type-card:hover {
+            border-color: var(--theo-purple);
+            box-shadow: var(--shadow-md);
+            background: #f5efe6;
+        }
+        .hum-type-card.selected {
+            border-color: var(--theo-purple);
+            background: #e0f0f3;
+            box-shadow: var(--shadow-md);
+        }
+        .hum-type-card .type-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hum-type-card .type-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+        }
+        .hum-type-card .type-code {
+            font-size: 0.5rem;
+            color: #888;
+            font-family: var(--font-mono);
+        }
+        .hum-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-metric-item {
+            background: #f5efe6;
+            padding: 8px;
+            border: 1px solid #d0c8b8;
+            text-align: center;
+        }
+        .hum-metric-item .label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+        .hum-metric-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+            font-family: var(--font-mono);
+        }
+        .hum-resposta-box {
+            background: #fff;
+            border: 1px solid var(--theo-purple-light);
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        .hum-alert-box {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-left: 5px solid #ccc;
+            background: #f9f9f9;
+            font-size: 0.75rem;
+        }
+        .hum-alert-box.baixo {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .hum-alert-box.medio {
+            border-color: #eab308;
+            background: #fefce8;
+        }
+        .hum-alert-box.alto {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+        .theo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .theo-card {
+            border: 1px solid #a0c4c8;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f0f7f8;
+            text-align: center;
+        }
+        .theo-card:hover {
+            border-color: var(--theo-purple);
+            box-shadow: var(--shadow-md);
+            background: #e0f0f3;
+        }
+        .theo-card.selected {
+            border-color: var(--theo-purple);
+            background: #cce5e8;
+            box-shadow: var(--shadow-md);
+        }
+        .theo-card .theo-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .theo-card .theo-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+        }
+        .theo-card .theo-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .theo-card .theo-versiculo {
+            font-size: 0.5rem;
+            color: var(--theo-purple);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .theo-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            margin: 4px 0;
+            border-radius: 3px !important;
+            overflow: hidden;
+        }
+        .theo-progress-bar .fill {
+            height: 100%;
+            background: var(--theo-purple);
+            transition: width 0.3s;
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .arch-card {
+            border: 1px solid var(--arch-sand);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fdf8f0;
+            text-align: center;
+        }
+        .arch-card:hover {
+            border-color: #8a6a4a;
+            box-shadow: var(--shadow-md);
+            background: #f5ede0;
+        }
+        .arch-card.selected {
+            border-color: #8a6a4a;
+            background: #ede0d0;
+            box-shadow: var(--shadow-md);
+        }
+        .arch-card .arch-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .arch-card .arch-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4a2a0a;
+        }
+        .arch-card .arch-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .arch-card .arch-period {
+            font-size: 0.5rem;
+            color: #8a6a4a;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .fabrica-tipo-btn.active {
+            background: var(--theo-purple);
+            color: white;
+            border: 1px solid #0a3a44;
+        }
+        .eng-payload-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .eng-payload-table th {
+            background: #f5efe6;
+            padding: 8px 10px;
+            text-align: left;
+            color: var(--theo-purple);
+            border-bottom: 2px solid var(--theo-purple-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .eng-payload-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-soft);
+        }
+        .multi-redis-hub {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+        @media (max-width: 800px) {
+            .multi-redis-hub {
+                grid-template-columns: 1fr;
+            }
+        }
+        .redis-cluster-panel {
+            border: 2px solid #ccc;
+            background: #fcfcfc;
+            box-shadow: var(--shadow-lg);
+            padding: 16px;
+        }
+        .redis-cluster-panel.science-cluster {
+            border-color: var(--theo-purple-light);
+            background: #f0f7f8;
+        }
+        .redis-cluster-panel.ops-cluster {
+            border-color: var(--arch-sand);
+            background: #f8f2ea;
+        }
+        .redis-slot-card {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        .redis-slot-card.connected {
+            border-left: 5px solid #22c55e;
+            background: #f9fef9;
+        }
+        .redis-slot-card.disconnected {
+            border-left: 5px solid #ef4444;
+            background: #fef9f9;
+        }
+        .redis-slot-card .slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .redis-slot-card .slot-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text);
+            font-family: var(--font-mono);
+            flex: 1;
+            min-width: 120px;
+        }
+        .redis-slot-card .slot-name input {
+            border: 1px solid transparent;
+            background: transparent;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            width: 100%;
+            padding: 4px;
+            color: var(--text);
+            transition: border 0.2s;
+        }
+        .redis-slot-card .slot-name input:focus {
+            border-color: var(--border);
+            background: #fff;
+            outline: none;
+        }
+        .redis-slot-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-slot-dot.on {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+        }
+        .redis-slot-dot.off {
+            background: #ef4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+        }
+        .redis-slot-dot.testing {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        .slot-credentials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .slot-credentials input {
+            border: 1px solid var(--border);
+            padding: 5px 7px;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            width: 100%;
+            color: var(--text);
+        }
+        .slot-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .mini-status-text {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .diretorio-interligado {
+            margin-top: 16px;
+            padding: 12px;
+            border: 1px dashed var(--border);
+            background: #f9f9f9;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .diretorio-interligado .cluster-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px !important;
+            font-size: 0.6rem;
+        }
+        .cluster-line.science {
+            border-color: var(--theo-purple-light);
+            color: var(--theo-purple);
+        }
+        .cluster-line.ops {
+            border-color: var(--arch-sand);
+            color: #4a2a0a;
+        }
+        .cluster-line .linked-icon {
+            font-size: 0.8rem;
+        }
+        #multiRedisSlotBar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 6px;
+        }
+        .redis-slot-mini-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50% !important;
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .redis-slot-mini-dot.connected-dot {
+            border-color: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+        .redis-slot-mini-dot.disconnected-dot {
+            border-color: #ef4444;
+            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+        }
+        .redis-slot-mini-dot:hover {
+            transform: scale(1.3);
+            z-index: 2;
+        }
+        .slot-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .slot-modal-overlay.open {
+            display: flex;
+        }
+        .slot-modal {
+            background: white;
+            border: 2px solid var(--theo-purple-light);
+            padding: 24px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-mono);
+            border-radius: 6px !important;
+        }
+        .slot-modal h3 {
+            font-size: 0.9rem;
+            color: var(--theo-purple);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .slot-modal label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+            display: block;
+            margin: 8px 0 2px;
+        }
+        .slot-modal input {
+            width: 100%;
+            padding: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+            background: #fafbfc;
+            margin-bottom: 4px;
+        }
+        .slot-modal .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .slot-modal .test-status {
+            font-size: 0.6rem;
+            margin-top: 4px;
+            color: #555;
+        }
+        .theo-code-display {
+            background: var(--theo-purple);
+            color: #c0d8dc;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        .arch-code-display {
+            background: var(--arch-sand);
+            color: #2a1a0a;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 0.58rem;
+            }
+            .hum-metric-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            .hum-type-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .theo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            .arch-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+		.top-nav-special {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: #2d5a27;
+    border-bottom: 2px solid var(--gold-dark);
+}
+.top-nav-special a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    transition: 0.2s;
+    border-radius: 4px !important;
+}
+.top-nav-special a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+<div class="top-nav-special">
+    <a href="governanca.html">🛡️ Governança (Sala de Controle)</a>
+    <a href="painel.html" target="_blank" class="painel-link">🌐 IDENZA Painel</a>
+    <a href="https://idenza.pages.dev" target="_blank" class="client-link">🌐 IDENZA Client</a>
+</div>
+    <!-- ==================== BARRA REDIS ==================== -->
+    <div class="redis-connection-bar">
+        <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+        <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+        <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+    </div>
+
+    <!-- ========== ASSISTENTE FIXO ========== -->
+    <div id="assistenteFixo" style="
+    background: linear-gradient(135deg, #0d4f5c 0%, #1a6e7a 100%);
+    color: white;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">🌎</span>
+            <div>
+                <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;">Olá! Sou seu assistente de Meio Ambiente</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em Sustentabilidade, Gestão Ambiental, Energias Renováveis, Recursos Hídricos e Mudanças Climáticas</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="assistenteInput" placeholder="Digite sua dúvida sobre meio ambiente..."
+            style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+            <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Enviar</button>
+        </div>
+        <div id="assistenteResposta" style="
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px !important;
+      padding: 12px 16px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #f0f0f0;
+    "></div>
+    </div>
+
+    <!-- ==================== PAINEL DE TRANSPARÊNCIA ==================== -->
+    <div class="explain-panel" id="explainPanel">
+        <div class="section-title">🔍 Transparência da Resposta</div>
+        <div class="explain-grid">
+            <div class="explain-item"><strong>Fontes utilizadas</strong><div id="explainSources">—</div></div>
+            <div class="explain-item"><strong>Camadas executadas</strong><div id="explainLayers">—</div></div>
+            <div class="explain-item"><strong>Nível de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+            <div class="explain-item"><strong>Próxima revisão</strong><div id="explainReview">—</div></div>
+        </div>
+        <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+    </div>
+
+    <!-- ==================== HEADER ==================== -->
+    <header>
+        <h1>🌎 Estação de Pesquisa — Meio Ambiente</h1>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="badge-theo">🌱 Sustentabilidade</span>
+            <span class="badge-arch">🌍 Gestão Ambiental</span>
+            <span class="badge">⚡ Energias Renováveis</span>
+            <span class="badge" style="background:#0d4f5c;color:white;">💧 Recursos Hídricos</span>
+            <span class="badge" style="background:#8B6914;color:white;">🌡️ Clima</span>
+            <span class="badge" style="background:#4a2a0a;color:white;">7 Camadas</span>
+            <span class="badge" style="background:#0d5c3a;color:white;">Super Prompts</span>
+        </div>
+    </header>
+
+    <!-- ==================== NAVEGAÇÃO ==================== -->
+    <div class="tab-nav">
+        <button class="tab-btn active theo-tab" data-tab="tab-teologia">🌱 Sustentabilidade & Recursos</button>
+        <button class="tab-btn arch-tab" data-tab="tab-arqueologia">🌍 Teorias Ambientais</button>
+        <button class="tab-btn" data-tab="tab-humanoides">🤖 Humanoides Ambientais</button>
+        <button class="tab-btn" data-tab="tab-cognitivo">🏭 Fábrica Cognitiva</button>
+        <button class="tab-btn" data-tab="tab-pesquisa">🔬 Pesquisa</button>
+    </div>
+
+    <!-- ==================== TAB 1: SUSTENTABILIDADE & RECURSOS ==================== -->
+    <div class="tab-content active" id="tab-teologia">
+        <div class="section">
+            <div class="section-title theo-title"><span>🌱</span> Agentes de Sustentabilidade & Recursos — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Cada agente ambiental possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione um domínio, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:var(--theo-purple);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-theo" id="btnGerarTeologia">🚀 Gerar Todos os Agentes Ambientais</button>
+                <button class="btn btn-outline" id="btnExportarTeologia">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="teologiaFeedback"></div>
+            <div class="status-msg" id="teologiaStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Área</label>
+                <input type="text" id="teologiaFiltro" placeholder="Ex: Sustentabilidade, Energias Renováveis, Recursos Hídricos..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="teologiaGrid" class="theo-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE -->
+        <div class="section" id="teologiaDetalhe" style="display:none;">
+            <div class="section-title theo-title"><span>🌱</span> <span id="teologiaDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="teologiaDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-theo" id="teologiaDetalheLivro"></span>
+                <span class="badge" id="teologiaDetalheBloco"></span>
+                <span class="badge" style="background:#4a2a0a;color:white;" id="teologiaDetalheProgresso"></span>
+            </div>
+            <div style="margin-top:8px;"><div class="theo-progress-bar"><div class="fill" id="teologiaDetalheBarra" style="width:0%;"></div></div></div>
+
+            <div style="margin-top:16px; background:#e0f0f3; padding:16px; border-left:4px solid var(--theo-purple);">
+                <strong style="font-size:0.8rem;color:var(--theo-purple);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="teologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #a0c4c8; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarTeologiaPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONTeologia">📋 Copiar JSON</button>
+            </div>
+
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea theo-textarea" id="teologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-theo" id="btnEstruturarTeologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="teologiaCamadasPreview" style="display:none;"></div>
+            <div class="theo-json-preview" id="teologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparTeologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-theo" id="btnEnviarTeologiaRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="teologiaFeedbackDetalhe"></div>
+            <div class="status-msg" id="teologiaStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 2: TEORIAS AMBIENTAIS ==================== -->
+    <div class="tab-content" id="tab-arqueologia">
+        <div class="section">
+            <div class="section-title arch-title"><span>🌍</span> Agentes de Teorias Ambientais — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Cada agente de teoria ambiental possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione uma escola, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:#4a2a0a;">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-arch" id="btnGerarArqueologia">🚀 Gerar Todos os Agentes de Teorias</button>
+                <button class="btn btn-outline" id="btnExportarArqueologia">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="arqueologiaFeedback"></div>
+            <div class="status-msg" id="arqueologiaStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:#4a2a0a;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Escola ou Teórico</label>
+                <input type="text" id="arqueologiaFiltro" placeholder="Ex: Desenvolvimento Sustentável, Economia Circular, Ecologia Profunda..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="arqueologiaGrid" class="arch-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE -->
+        <div class="section" id="arqueologiaDetalhe" style="display:none;">
+            <div class="section-title arch-title"><span>🌍</span> <span id="arqueologiaDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="arch-code-display" id="arqueologiaDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-arch" id="arqueologiaDetalheLocal"></span>
+                <span class="badge" style="background:#4a2a0a;color:white;" id="arqueologiaDetalhePeriodo"></span>
+            </div>
+
+            <div style="margin-top:16px; background:#f5ede0; padding:16px; border-left:4px solid var(--arch-sand);">
+                <strong style="font-size:0.8rem;color:#4a2a0a;">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="arqueologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #d0c0a0; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarArqueologiaPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONArqueologia">📋 Copiar JSON</button>
+            </div>
+
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:#4a2a0a; text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea arch-textarea" id="arqueologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-arch" id="btnEstruturarArqueologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="arqueologiaCamadasPreview" style="display:none;"></div>
+            <div class="arch-json-preview" id="arqueologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparArqueologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-arch" id="btnEnviarArqueologiaRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="arqueologiaFeedbackDetalhe"></div>
+            <div class="status-msg" id="arqueologiaStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 3: HUMANOIDES ==================== -->
+    <div class="tab-content" id="tab-humanoides">
+        <div class="section">
+            <div class="section-title theo-title"><span>🤖</span> Humanoides da Sustentabilidade e Ambiente</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Humanoides cognitivos para Meio Ambiente, Sustentabilidade, Gestão de Recursos e Clima.</strong>
+                Selecione um tipo, insira o contexto e processe nas 7 camadas com Super Prompts.
+            </p>
+            <div class="hum-type-grid" id="humTypeGrid"></div>
+            <div id="humPanel" style="display:none; margin-top:16px;">
+                <div class="section-title theo-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código Base: <span class="theo-code-display" id="humCodigoBase"></span></p>
+                <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">👤 Nome do Usuário:</label>
+                    <input type="text" class="raw-textarea" id="humNomeUsuario" placeholder="Ex: Gestor, Engenheiro, Ativista..." style="min-height:36px; width:100%;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto:</label>
+                    <textarea class="raw-textarea theo-textarea" id="humEntrada" placeholder="Descreva a questão ambiental, projeto ou desafio..."></textarea>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                    <button class="btn btn-gold" id="btnProcessarHum">Processar (7 Camadas)</button>
+                    <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
+                    <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
+                    <button class="btn btn-theo" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="redisFeedbackHum"></div>
+                <div class="status-msg" id="humStatusMsg"></div>
+                <div id="humResultados" style="display:none;">
+                    <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>📊</span> Métricas</div>
+                    <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="humCodigoRastreio"></span></p>
+                    <div class="hum-metric-grid" id="humMetricGrid"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>💬</span> Resposta (Camada 7)</div>
+                    <div class="hum-resposta-box" id="humResposta"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo</div>
+                    <div class="theo-json-preview" id="humJsonCompleto" contenteditable="true" style="white-space:pre-wrap;"></div>
+                    <button class="btn btn-outline" id="btnLimparHumJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: FÁBRICA COGNITIVA ==================== -->
+    <div class="tab-content" id="tab-cognitivo">
+        <div class="section">
+            <div class="section-title theo-title"><span>🏭</span> Fábrica Cognitiva — Meio Ambiente</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                <strong>Gere novos Especialistas, Humanoides e Objetos Redis</strong> com Super Prompts completos.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;" id="fabricaTipoGrid">
+                <button class="btn btn-outline fabrica-tipo-btn active" data-tipo="especialista">Especialista Digital</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="humanoide">Humanoide Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="perfil">Perfil Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
+            </div>
+            <div id="fabricaPainelConfig">
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Nome</label>
+                    <input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Agente de Mudanças Climáticas" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Domínio</label>
+                    <input type="text" class="raw-textarea" id="fabricaDominio" placeholder="Ex: Climatologia" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Especialidade</label>
+                    <input type="text" class="raw-textarea" id="fabricaEspecialidade" placeholder="Ex: Mitigação, Adaptação, Inventário de GEE" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave</label>
+                    <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="ipcc, carbono, resiliência, ODS" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
+                    <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
+                        <option value="L7">L7 - Essência do Ecossistema</option>
+                        <option value="L6">L6 - Teorias e Políticas</option>
+                        <option value="L5">L5 - Gestão e Práticas</option>
+                        <option value="L4" selected>L4 - Tecnologia e Inovação</option>
+                        <option value="L3">L3 - Métodos de Análise</option>
+                        <option value="L2">L2 - Ação e Cotidiano</option>
+                        <option value="L1">L1 - Curiosidades e Casos</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+                    <button class="btn btn-theo" id="fabricaBtnGerar">Gerar</button>
+                    <button class="btn btn-outline" id="fabricaBtnLimpar">Limpar</button>
+                    <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+                    <button class="btn btn-theo" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+                </div>
+            </div>
+            <div id="fabricaResultado" style="display:none;margin-top:20px;">
+                <div class="section-title theo-title"><span>📊</span> Resultado</div>
+                <p style="font-size:0.6rem;color:#888;">Código: <span class="theo-code-display" id="fabricaCodigoUniversal"></span></p>
+                <div class="theo-json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+                <button class="btn btn-outline" id="btnLimparJSONFabrica" style="margin-top:6px;">🗑️ Limpar JSON</button>
+            </div>
+            <div class="redis-feedback" id="fabricaFeedback"></div>
+            <div class="status-msg" id="fabricaStatusMsg"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 5: PESQUISA ==================== -->
+    <div class="tab-content" id="tab-pesquisa">
+        <div class="section">
+            <div class="section-title theo-title"><span>🔬</span> Pesquisa com Super Prompts</div>
+            <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+                Selecione um agente do catálogo (gerado nas abas anteriores) e realize a pesquisa completa.
+            </p>
+            <div id="catalogoPesquisa"></div>
+            <div id="panelPesquisa" style="display:none; margin-top:16px;">
+                <div class="section-title theo-title"><span>📖</span> <span id="pesquisaNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="pesquisaCodigo"></span></p>
+                <div style="margin-top:12px;">
+                    <strong style="font-size:0.7rem;color:var(--theo-purple);">⚡ SUPER PROMPT GERADO:</strong>
+                    <textarea class="generated-question" id="pesquisaSuperPrompt" style="min-height:200px;"></textarea>
+                </div>
+                <button class="btn btn-outline" id="btnCopiarPesquisaPrompt">📋 Copiar Prompt</button>
+                <div style="margin-top:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                    <textarea class="raw-textarea" id="pesquisaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+                </div>
+                <button class="btn btn-theo" id="btnEstruturarPesquisa" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+                <div class="camadas-preview" id="pesquisaCamadasPreview" style="display:none;"></div>
+                <div class="theo-json-preview" id="pesquisaJSONPreview" contenteditable="true" style="display:none;"></div>
+                <div style="margin-top:12px;">
+                    <button class="btn btn-theo" id="btnEnviarPesquisaRedis" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="pesquisaFeedback"></div>
+                <div class="status-msg" id="pesquisaStatusMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CENTRAL REDIS ==================== -->
+    <div class="section" id="multiRedisSection">
+        <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+        <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Configure até 6 conexões Redis independentes.</p>
+        <div class="multi-redis-hub">
+            <div class="redis-cluster-panel science-cluster">
+                <div class="section-title sci-title"><span>🧪</span> Cluster de Sustentabilidade</div>
+                <div id="scienceSlotsContainer"></div>
+            </div>
+            <div class="redis-cluster-panel ops-cluster">
+                <div class="section-title ops-title"><span>⚡</span> Cluster de Gestão Ambiental</div>
+                <div id="opsSlotsContainer"></div>
+            </div>
+        </div>
+        <div class="diretorio-interligado" id="diretorioInterligado">
+            <strong style="font-size:0.65rem;color:#555;">📡 Diretório Interligado:</strong>
+            <span id="diretorioStatus" style="color:#888;">Aguardando conexões...</span>
+        </div>
+    </div>
+
+    <!-- ==================== MODAIS ==================== -->
+    <div class="slot-modal-overlay" id="slotModalOverlay">
+        <div class="slot-modal">
+            <h3>Configurar Slot</h3>
+            <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome">
+            <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+            <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+            <div class="test-status" id="slotModalStatus"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+                <button class="btn btn-theo" id="slotModalSalvar">Salvar</button>
+                <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        const REDIS_CONFIG = {
+            url: 'https://welcomed-satyr-116661.upstash.io',
+            token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+        };
+
+        function gerarCodigoUnico(prefixo) {
+            return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
+        }
+
+        async function copiarTextoParaClipboard(texto) {
+            if (!texto) { console.warn('Nada para copiar.'); return false; }
+            try { await navigator.clipboard.writeText(texto); return true; } catch (e) {
+                console.warn('Clipboard API falhou, usando fallback:', e);
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = texto;
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    return ok;
+                } catch (e2) { console.error('Falha no fallback de cópia:', e2); return false; }
+            }
+        }
+
+        function updateRedisStatus(status) {
+            const dot = document.getElementById('redisStatusDot');
+            const label = document.getElementById('redisStatusLabel');
+            dot.className = 'redis-status-dot';
+            switch (status) {
+                case 'connected': dot.classList.add('connected'); label.textContent = 'Redis: Conectado'; break;
+                case 'disconnected': dot.classList.add('disconnected'); label.textContent = 'Redis: Desconectado'; break;
+                case 'sending': dot.classList.add('sending'); label.textContent = 'Redis: Enviando...'; break;
+            }
+        }
+
+        async function testarConexaoRedis() {
+            updateRedisStatus('sending');
+            try {
+                const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, {
+                    headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` }
+                });
+                if (response.ok) updateRedisStatus('connected'); else updateRedisStatus('disconnected');
+            } catch { updateRedisStatus('disconnected'); }
+        }
+        testarConexaoRedis();
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        const COGNITIVE_SYSTEM = {
+            regulatory: {
+                addMetadata(data) {
+                    return { ...data, metadata: {
+                        data_validacao: new Date().toISOString(),
+                        data_revisao: data.alertaRevisao || new Date(Date.now() + 90*86400000).toISOString(),
+                        criticidade: 'baixa',
+                        status_regulatorio: 'validado',
+                        nivel_confianca: data.score_confianca || 0.85
+                    }};
+                }
+            },
+            protection: {
+                sanitizeOutput(data) {
+                    const sanitized = { ...data };
+                    delete sanitized._internal;
+                    return sanitized;
+                }
+            }
+        };
+
+        // ==================== DISCIPLINAS DE MEIO AMBIENTE ====================
+        const ENVIRONMENT_STACK = {
+            'Sustentabilidade': { caps: 20, grupo: 'Eixos Transversais' },
+            'Gestão Ambiental': { caps: 18, grupo: 'Políticas e Práticas' },
+            'Energias Renováveis': { caps: 16, grupo: 'Tecnologia e Inovação' },
+            'Recursos Hídricos': { caps: 18, grupo: 'Gestão de Recursos' },
+            'Mudanças Climáticas': { caps: 20, grupo: 'Clima e Atmosfera' }
+        };
+
+        const TEMAS_POR_AREA = {
+            'Sustentabilidade': 'Triple Bottom Line, ODS, Economia Circular, Ciclo de Vida, Indicadores',
+            'Gestão Ambiental': 'Licenciamento, EIA/RIMA, ISO 14001, Auditoria, Políticas Públicas',
+            'Energias Renováveis': 'Solar, Eólica, Biomassa, Hidrelétrica, Geotérmica, Armazenamento',
+            'Recursos Hídricos': 'Bacias Hidrográficas, Qualidade da Água, Saneamento, Gestão Integrada, Escassez',
+            'Mudanças Climáticas': 'Efeito Estufa, Mitigação, Adaptação, Acordos Internacionais, Cenários IPCC'
+        };
+
+        function gerarSuperPromptMeioAmbiente(area, inicio, fim, tema) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE MEIO AMBIENTE ⚡
+
+Você é um nó especializado em Meio Ambiente do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre ${area} (tópicos ${inicio}-${fim}).
+
+## 🌎 ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS AMBIENTAIS
+
+### 7. ESSÊNCIA DO ECOSSISTEMA
+- Qual o princípio ecológico fundamental?
+- Qual a visão integradora e sistêmica?
+- Quais conceitos-chave regem o entendimento?
+
+### 6. TEORIAS E POLÍTICAS AMBIENTAIS
+- Quais correntes teóricas (ecologia profunda, decrescimento, modernização ecológica)?
+- Como se conectam com políticas públicas e acordos internacionais?
+- Que fundamentos científicos embasam as decisões?
+
+### 5. GESTÃO E PRÁTICAS
+- Quais instrumentos de gestão (EIA, licenciamento, certificações)?
+- Como se implementam programas de sustentabilidade?
+- Exemplos de boas práticas e casos de sucesso.
+
+### 4. TECNOLOGIA E INOVAÇÃO
+- Quais tecnologias limpas e renováveis são aplicáveis?
+- Como a inovação contribui para a economia circular e a eficiência?
+- Sistemas de monitoramento, modelagem e controle ambiental.
+
+### 3. MÉTODOS DE ANÁLISE E AVALIAÇÃO
+- Quais metodologias (ACV, pegada ecológica, inventários)?
+- Ferramentas de geoprocessamento e sensoriamento remoto?
+- Como medir e comunicar impactos?
+
+### 2. AÇÃO E COTIDIANO
+- Dicas práticas para indivíduos e comunidades
+- Consumo consciente e redução de resíduos
+- Engajamento e educação ambiental
+
+### 1. CURIOSIDADES E CASOS INSPIRADORES
+- Histórias de sucesso, projetos inovadores
+- Fatos surpreendentes sobre o planeta
+- Conexões entre meio ambiente e outras áreas
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter pelo menos 3 referências (autores, relatórios, conceitos)
+2. Cite fontes como IPCC, ODS, relatórios de sustentabilidade
+3. Linguagem acessível, como um educador ambiental experiente
+4. **NUNCA utilize o símbolo cerquilha (#) para títulos ou listas**
+5. Inclua metadados ao final
+
+## 🎯 ÁREA A SER ANALISADA
+**Área**: ${area} (${ENVIRONMENT_STACK[area]?.grupo || 'Meio Ambiente'})
+**Tópicos**: ${inicio} a ${fim}
+**Tema Central**: ${tema}
+
+## 🔍 METADADOS OBRIGATÓRIOS AO FINAL
+Data de validação sugerida: ${new Date(Date.now() + 90*86400000).toISOString().split('T')[0]}
+Nível de confiança: 0.90
+Domínio(s): meio_ambiente, sustentabilidade, gestao
+Código de rastreio: [gerado automaticamente]
+Humanoides recomendados: Gestor Ambiental, Climatologista, Engenheiro de Energias
+Palavras-chave: ${area.toLowerCase()}, ambiental, sustentável, recurso
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise textual, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Essência do Ecossistema", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 6, "nome": "Teorias e Políticas", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 5, "nome": "Gestão e Práticas", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 4, "nome": "Tecnologia e Inovação", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 3, "nome": "Métodos de Análise", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 2, "nome": "Ação e Cotidiano", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades e Casos", "subtemas": ["..."], "referencias": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        // ==================== AGENTES DE MEIO AMBIENTE ====================
+        let agentesAmbiente = [];
+        let agenteAmbienteSelecionado = null;
+        let ambienteEstruturado = null;
+
+        function gerarAgentesAmbiente(area, totalTopicos, bloco = 10) {
+            const agentes = [];
+            const totalBlocos = Math.ceil(totalTopicos / bloco);
+            const temaBase = TEMAS_POR_AREA[area] || 'Estudo Ambiental';
+            const icones = {
+                'Sustentabilidade':'🌱','Gestão Ambiental':'🌍','Energias Renováveis':'⚡',
+                'Recursos Hídricos':'💧','Mudanças Climáticas':'🌡️'
+            };
+            const icone = icones[area] || '🌿';
+
+            for (let i = 0; i < totalBlocos; i++) {
+                const inicio = i * bloco + 1;
+                const fim = Math.min(inicio + bloco - 1, totalTopicos);
+                const codigo = `env.${area.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${String(inicio).padStart(3,'0')}-${String(fim).padStart(3,'0')}.ptbr.idenza.v1`;
+                const nome = (totalBlocos <= 3)
+                    ? `Agente de ${area} — Tópicos ${inicio}-${fim}`
+                    : `${area} — Bloco ${i+1} (Tópicos ${inicio}-${fim})`;
+
+                const agente = {
+                    codigo_universal: codigo,
+                    versao: 'v1',
+                    hash: btoa(`${codigo}-${new Date().toISOString()}`).substring(0, 16),
+                    escopo: {
+                        dominio: 'meio_ambiente',
+                        area: area,
+                        topico_inicio: inicio,
+                        topico_fim: fim,
+                        idioma: 'pt-BR',
+                        grupo: ENVIRONMENT_STACK[area]?.grupo || 'Ambiental'
+                    },
+                    conteudo: {
+                        resumo: `Análise de ${area} (tópicos ${inicio}-${fim}) aguardando estruturação.`,
+                        camadas: [
+                            { nivel: 7, nome: 'Essência do Ecossistema', subtemas: [`Conceito fundamental de ${area}`], referencias: [] },
+                            { nivel: 6, nome: 'Teorias e Políticas', subtemas: [`Correntes aplicáveis`], referencias: [] },
+                            { nivel: 5, nome: 'Gestão e Práticas', subtemas: [`Instrumentos e práticas`], referencias: [] },
+                            { nivel: 4, nome: 'Tecnologia e Inovação', subtemas: [`Tecnologias limpas`], referencias: [] },
+                            { nivel: 3, nome: 'Métodos de Análise', subtemas: [`Métodos de avaliação`], referencias: [] },
+                            { nivel: 2, nome: 'Ação e Cotidiano', subtemas: [`Dicas práticas`], referencias: [] },
+                            { nivel: 1, nome: 'Curiosidades e Casos', subtemas: [`Exemplos`], referencias: [] }
+                        ]
+                    },
+                    indexacao: {
+                        tags: ['meio_ambiente', area.toLowerCase(), ENVIRONMENT_STACK[area]?.grupo.toLowerCase()],
+                        palavras_chave: [temaBase]
+                    },
+                    governanca: {
+                        score_confianca: 0.90,
+                        autor: 'IDEnza',
+                        revisor: 'Especialista Ambiental',
+                        aprovado_por: 'Conselho Acadêmico',
+                        criado_em: new Date().toISOString(),
+                        revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0]
+                    },
+                    origem: {
+                        tipo: 'ia_externa',
+                        modelo: 'DeepSeek',
+                        data_geracao: new Date().toISOString(),
+                        hash_original: null,
+                        uri_original: null
+                    },
+                    licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+                };
+                agentes.push(agente);
+            }
+            return agentes;
+        }
+
+        function gerarTodosAmbiente(bloco = 10) {
+            const todos = [];
+            for (const area of Object.keys(ENVIRONMENT_STACK)) {
+                const { caps } = ENVIRONMENT_STACK[area];
+                todos.push(...gerarAgentesAmbiente(area, caps, bloco));
+            }
+            return todos;
+        }
+
+        function renderizarAmbiente(agentes) {
+            const grid = document.getElementById('teologiaGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('teologiaFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a =>
+                a.escopo.area.toLowerCase().includes(filtro) ||
+                a.codigo_universal.toLowerCase().includes(filtro)
+            );
+            const icones = {
+                'Sustentabilidade':'🌱','Gestão Ambiental':'🌍','Energias Renováveis':'⚡',
+                'Recursos Hídricos':'💧','Mudanças Climáticas':'🌡️'
+            };
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'theo-card';
+                const icone = icones[a.escopo.area] || '🌿';
+                card.innerHTML = `
+          <span class="theo-icon">${icone}</span>
+          <div class="theo-name">${a.escopo.area}</div>
+          <div class="theo-detail">Tópicos ${a.escopo.topico_inicio}-${a.escopo.topico_fim}</div>
+          <div class="theo-versiculo">${a.escopo.grupo} • ${a.escopo.idioma}</div>
+          <div class="theo-progress-bar"><div class="fill" style="width:${((a.escopo.topico_fim - a.escopo.topico_inicio + 1) / ENVIRONMENT_STACK[a.escopo.area]?.caps * 100) || 30}%;"></div></div>
+        `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.theo-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteAmbienteSelecionado = a;
+                    exibirDetalheAmbiente(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheAmbiente(a) {
+            const panel = document.getElementById('teologiaDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('teologiaDetalheNome').textContent = `${a.escopo.area} (Tópicos ${a.escopo.topico_inicio}-${a.escopo.topico_fim})`;
+            document.getElementById('teologiaDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('teologiaDetalheLivro').textContent = `🌱 ${a.escopo.area} (${ENVIRONMENT_STACK[a.escopo.area]?.grupo || 'Ambiental'})`;
+            document.getElementById('teologiaDetalheBloco').textContent = `📋 ${a.escopo.area} Tópicos ${a.escopo.topico_inicio}-${a.escopo.topico_fim}`;
+            document.getElementById('teologiaDetalheProgresso').textContent = `${a.escopo.grupo} • ${a.escopo.idioma}`;
+            const totalCaps = ENVIRONMENT_STACK[a.escopo.area]?.caps || 1;
+            const progresso = ((a.escopo.topico_fim - a.escopo.topico_inicio + 1) / totalCaps) * 100;
+            document.getElementById('teologiaDetalheBarra').style.width = Math.min(progresso, 100) + '%';
+            const prompt = gerarSuperPromptMeioAmbiente(a.escopo.area, a.escopo.topico_inicio, a.escopo.topico_fim, TEMAS_POR_AREA[a.escopo.area] || '');
+            document.getElementById('teologiaDetalheSuperPrompt').textContent = prompt;
+            document.getElementById('teologiaRespostaIA').value = '';
+            document.getElementById('teologiaCamadasPreview').style.display = 'none';
+            document.getElementById('teologiaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarTeologiaRedis').style.display = 'none';
+            document.getElementById('teologiaFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('teologiaStatusDetalhe').textContent = '';
+            ambienteEstruturado = null;
+        }
+
+        // ==================== EXTRAIR CAMADAS ====================
+        function extrairCamadas(texto) {
+            if (!texto || typeof texto !== 'string') return [];
+            try {
+                const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/);
+                if (jsonMatch) {
+                    const obj = JSON.parse(jsonMatch[0]);
+                    if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+                        return obj.camadas.map(c => ({
+                            nivel: c.nivel,
+                            nome: c.nome,
+                            subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [],
+                            referencias: c.referencias || [],
+                            fontes: c.fontes || []
+                        }));
+                    }
+                }
+            } catch (e) {}
+            const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
+            const camadas = [];
+            let camadaAtual = null;
+            const titulos = [
+                { nivel: 7, regex: /\b(7|sete)[\.\)\-\s:]*\s*(ESS[EÊ]NCIA|ECOSSISTEMA|FUNDAMENTO|PRINC[IÍ]PIO|SIST[EÊ]MICO)/i, nome: 'Essência do Ecossistema' },
+                { nivel: 6, regex: /\b(6|seis)[\.\)\-\s:]*\s*(TEORIAS|POL[IÍ]TICAS|CORRENTES|ACORDOS|CONVEN[CÇ][OÕ]ES)/i, nome: 'Teorias e Políticas' },
+                { nivel: 5, regex: /\b(5|cinco)[\.\)\-\s:]*\s*(GEST[AÃ]O|PR[AÁ]TICAS|INSTRUMENTOS|IMPLEMENTA[CÇ][AÃ]O)/i, nome: 'Gestão e Práticas' },
+                { nivel: 4, regex: /\b(4|quatro)[\.\)\-\s:]*\s*(TECNOLOGIA|INOVA[CÇ][AÃ]O|LIMPA|RENOV[AÁ]VEL|MONITORAMENTO)/i, nome: 'Tecnologia e Inovação' },
+                { nivel: 3, regex: /\b(3|tr[EÊ]s)[\.\)\-\s:]*\s*(M[EÉ]TODOS|AN[AÁ]LISE|AVALIA[CÇ][AÃ]O|ACV|PEGADA|INDICADORES)/i, nome: 'Métodos de Análise' },
+                { nivel: 2, regex: /\b(2|dois)[\.\)\-\s:]*\s*(A[CÇ][AÃ]O|COTIDIANO|DICAS|CONSUMO|EDUCA[CÇ][AÃ]O)/i, nome: 'Ação e Cotidiano' },
+                { nivel: 1, regex: /\b(1|um)[\.\)\-\s:]*\s*(CURIOSIDADES|CASOS|INSPIRADORES|EXEMPLOS|FATOS)/i, nome: 'Curiosidades e Casos' }
+            ];
+            for (const linha of linhas) {
+                let match = null;
+                for (const t of titulos) {
+                    const m = linha.match(t.regex);
+                    if (m) { match = { nivel: t.nivel, nome: t.nome }; break; }
+                }
+                if (match) {
+                    const existente = camadas.findIndex(c => c.nivel === match.nivel);
+                    if (existente !== -1) camadas.splice(existente, 1);
+                    camadaAtual = { nivel: match.nivel, nome: match.nome, subtemas: [], referencias: [], fontes: [] };
+                    camadas.push(camadaAtual);
+                } else if (camadaAtual) {
+                    const limpo = linha.replace(/^[-*#\s]+/, '').trim();
+                    if (limpo.length > 0 && !/^---+$/.test(limpo) && !/^\*\*?[\s\*]*$/.test(limpo)) {
+                        camadaAtual.subtemas.push(limpo);
+                    }
+                }
+            }
+            for (const t of titulos) {
+                if (!camadas.find(c => c.nivel === t.nivel)) {
+                    camadas.push({ nivel: t.nivel, nome: t.nome, subtemas: ['Conteúdo não encontrado na resposta.'], referencias: [], fontes: [] });
+                }
+            }
+            camadas.sort((a, b) => b.nivel - a.nivel);
+            return camadas;
+        }
+
+        // ==================== EVENTOS MEIO AMBIENTE ====================
+        document.getElementById('btnGerarTeologia').addEventListener('click', () => {
+            const agentes = gerarTodosAmbiente(10);
+            agentesAmbiente = agentes;
+            renderizarAmbiente(agentes);
+            document.getElementById('teologiaStatusMsg').textContent = `✅ ${agentes.length} agentes ambientais gerados!`;
+            setTimeout(() => { document.getElementById('teologiaStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarTeologiaPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('teologiaStatusDetalhe');
+            if (!agenteAmbienteSelecionado) {
+                statusEl.textContent = '⚠️ Selecione um agente primeiro.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const prompt = gerarSuperPromptMeioAmbiente(
+                agenteAmbienteSelecionado.escopo.area,
+                agenteAmbienteSelecionado.escopo.topico_inicio,
+                agenteAmbienteSelecionado.escopo.topico_fim,
+                TEMAS_POR_AREA[agenteAmbienteSelecionado.escopo.area] || ''
+            );
+            const ok = await copiarTextoParaClipboard(prompt);
+            statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => statusEl.textContent = '', 4000);
+        });
+
+        document.getElementById('btnCopiarJSONTeologia').addEventListener('click', async () => {
+            if (!agenteAmbienteSelecionado) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente.'; return; }
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteAmbienteSelecionado, null, 2));
+            document.getElementById('teologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('teologiaFiltro').addEventListener('input', () => { renderizarAmbiente(agentesAmbiente); });
+        document.getElementById('btnLimparTeologiaJSON').addEventListener('click', () => { document.getElementById('teologiaJSONPreview').textContent = ''; });
+
+        document.getElementById('btnEstruturarTeologia').addEventListener('click', () => {
+            if (!agenteAmbienteSelecionado) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente.'; return; }
+            const texto = document.getElementById('teologiaRespostaIA').value.trim();
+            if (!texto) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA.'; return; }
+            const camadas = extrairCamadas(texto);
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+            const codigo = agenteAmbienteSelecionado.codigo_universal;
+            const agora = new Date().toISOString();
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + texto).substring(0, 16),
+                escopo: {
+                    dominio: agenteAmbienteSelecionado.escopo.dominio,
+                    area: agenteAmbienteSelecionado.escopo.area,
+                    topico_inicio: agenteAmbienteSelecionado.escopo.topico_inicio,
+                    topico_fim: agenteAmbienteSelecionado.escopo.topico_fim,
+                    idioma: agenteAmbienteSelecionado.escopo.idioma,
+                    grupo: agenteAmbienteSelecionado.escopo.grupo
+                },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: agenteAmbienteSelecionado.indexacao.tags, palavras_chave: agenteAmbienteSelecionado.indexacao.palavras_chave },
+                governanca: {
+                    score_confianca: 0.85, autor: 'IDEnza', revisor: 'Especialista Ambiental', aprovado_por: 'Conselho Acadêmico',
+                    criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0]
+                },
+                origem: {
+                    tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora,
+                    hash_original: btoa(texto).substring(0, 20),
+                    uri_original: `/storage/environment/${agenteAmbienteSelecionado.escopo.area.toLowerCase()}/${agenteAmbienteSelecionado.escopo.topico_inicio}-${agenteAmbienteSelecionado.escopo.topico_fim}.md`
+                },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            ambienteEstruturado = jsonResult;
+            document.getElementById('teologiaCamadasPreview').style.display = 'block';
+            document.getElementById('teologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('teologiaJSONPreview').style.display = 'block';
+            document.getElementById('teologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarTeologiaRedis').style.display = 'inline-flex';
+            document.getElementById('teologiaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({ fontes: ['IA Externa', 'Super Prompt IDEnza'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+        });
+
+        document.getElementById('btnEnviarTeologiaRedis').addEventListener('click', async () => {
+            if (!ambienteEstruturado) return;
+            await enviarDiretoRedis(ambienteEstruturado, 'meio_ambiente', ambienteEstruturado.codigo_universal, 'teologiaFeedbackDetalhe');
+            document.getElementById('teologiaStatusDetalhe').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        // ==================== TEORIAS AMBIENTAIS ====================
+        const ESCOLAS_AMBIENTAIS = [
+            { nome: 'Desenvolvimento Sustentável', local: 'Política Global', periodo: '1987 (Relatório Brundtland)', descobertas: 'Triple Bottom Line, Equidade intergeracional, ODS', relevancia: 'Eixo das políticas ambientais e acordos internacionais', referencias: ['Comissão Brundtland', 'Jeffrey Sachs', 'John Elkington'] },
+            { nome: 'Ecologia Profunda', local: 'Filosofia Ambiental', periodo: '1973', descobertas: 'Igualitarismo biocêntrico, Valor intrínseco da natureza', relevancia: 'Inspiração para movimentos de conservação e ética ecológica', referencias: ['Arne Næss', 'George Sessions', 'Bill Devall'] },
+            { nome: 'Economia Circular', local: 'Economia e Produção', periodo: 'Década de 1990', descobertas: 'Cradle to Cradle, Reuso, Remanufatura, Logística reversa', relevancia: 'Modelo de negócio que elimina o conceito de resíduo', referencias: ['Walter Stahel', 'Michael Braungart', 'Ellen MacArthur'] },
+            { nome: 'Pegada Ecológica', local: 'Indicadores de Sustentabilidade', periodo: '1990', descobertas: 'Biocapacidade, Hectare global, Déficit ecológico', relevancia: 'Métrica que compara demanda humana com capacidade regenerativa do planeta', referencias: ['Mathis Wackernagel', 'William Rees', 'Global Footprint Network'] },
+            { nome: 'Justiça Ambiental', local: 'Movimento Social', periodo: 'Década de 1980', descobertas: 'Racismo ambiental, Equidade distributiva, Participação cidadã', relevancia: 'Denuncia a exposição desproporcional de minorias a riscos ambientais', referencias: ['Robert Bullard', 'Laura Pulido', 'David Pellow'] },
+            { nome: 'Hipótese Gaia', local: 'Ciência do Sistema Terra', periodo: '1970', descobertas: 'Homeostase planetária, Coevolução, Albedo', relevancia: 'Visão da Terra como organismo autorregulador', referencias: ['James Lovelock', 'Lynn Margulis', 'Tim Lenton'] },
+            { nome: 'Decrescimento', local: 'Economia Ecológica', periodo: 'Década de 2000', descobertas: 'Suficiência, Convivialidade, Pós-extrativismo', relevancia: 'Alternativa ao crescimento infinito num planeta finito', referencias: ['Serge Latouche', 'Tim Jackson', 'Giacomo D\'Alisa'] },
+            { nome: 'Ecoeficiência', local: 'Gestão Empresarial', periodo: '1992', descobertas: 'Produção mais limpa, Fator 4, Desmaterialização', relevancia: 'Estratégia para reduzir o impacto ambiental por unidade de produto', referencias: ['World Business Council for Sustainable Development', 'Friedrich Schmidt‑Bleek', 'Ernst von Weizsäcker'] },
+            { nome: 'Serviços Ecossistêmicos', local: 'Ecologia e Economia', periodo: '2005 (Millennium Ecosystem Assessment)', descobertas: 'Provisão, Regulação, Suporte, Culturais', relevancia: 'Valoração dos benefícios que a natureza fornece à sociedade', referencias: ['Millennium Ecosystem Assessment', 'Robert Costanza', 'Gretchen Daily'] },
+            { nome: 'Resiliência Socioecológica', local: 'Ecologia e Sociedade', periodo: 'Década de 2000', descobertas: 'Limiares, Regime shifts, Panarquia', relevancia: 'Capacidade de sistemas acoplados de absorver perturbações e se reorganizar', referencias: ['Crawford Holling', 'Carl Folke', 'Brian Walker'] },
+            { nome: 'Antropoceno', local: 'Geologia e Ciências Sociais', periodo: '2000 (Paul Crutzen)', descobertas: 'Aceleração humana, Grande aceleração, Limites planetários', relevancia: 'Reconhecimento da humanidade como força geológica', referencias: ['Paul Crutzen', 'Will Steffen', 'Johan Rockström'] },
+            { nome: 'Cidades Sustentáveis', local: 'Planejamento Urbano', periodo: 'Década de 1990', descobertas: 'Compactação, Mobilidade ativa, Infraestrutura verde', relevancia: 'Estratégias para reduzir a pegada ecológica urbana', referencias: ['Peter Newman', 'Jeffrey Kenworthy', 'Jan Gehl'] },
+            { nome: 'Agroecologia', local: 'Agricultura e Ecologia', periodo: 'Década de 1980', descobertas: 'Policultivos, Controle biológico, Soberania alimentar', relevancia: 'Modelo agrícola que alia produtividade à conservação dos ecossistemas', referencias: ['Miguel Altieri', 'Stephen Gliessman', 'Ana Primavesi'] }
+        ];
+
+        function gerarSuperPromptEscolaAmbiental(esc) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE TEORIA AMBIENTAL ⚡
+
+Você é um nó especializado em Teorias Ambientais do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre ${esc.nome}.
+
+## 🌍 ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS TEÓRICAS
+
+### 7. SIGNIFICADO TEÓRICO
+- Importância para o pensamento ambiental e a sustentabilidade
+### 6. CONCEITOS E AUTORES
+- Ideias centrais e pensadores fundamentais
+### 5. CORRELAÇÕES INTERDISCIPLINARES
+- Conexões com economia, ecologia, sociologia
+### 4. CONTEXTO HISTÓRICO-INTELECTUAL
+- Surgimento e evolução da corrente
+### 3. METODOLOGIAS DE APLICAÇÃO
+- Como a teoria se traduz em indicadores, políticas ou práticas
+### 2. IMPACTO PRÁTICO
+- Influência em políticas públicas, empresas e sociedade civil
+### 1. CURIOSIDADES E DEBATES
+- Controvérsias e fatos interessantes
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter referências específicas
+2. Cite fontes (livros, artigos, relatórios)
+3. Linguagem acessível e precisa
+4. **NUNCA utilize o símbolo cerquilha (#)**
+5. Inclua metadados ao final
+
+## 🎯 ESCOLA A SER ANALISADA
+**Nome**: ${esc.nome}
+**Âmbito**: ${esc.local}
+**Período**: ${esc.periodo}
+**Descobertas**: ${esc.descobertas}
+**Relevância**: ${esc.relevancia}
+**Referências**: ${esc.referencias.join(', ')}
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise, forneça OBRIGATORIAMENTE um bloco JSON válido:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Significado Teórico", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 6, "nome": "Conceitos e Autores", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 5, "nome": "Correlações Interdisciplinares", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 4, "nome": "Contexto Histórico-Intelectual", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 3, "nome": "Metodologias de Aplicação", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 2, "nome": "Impacto Prático", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades e Debates", "subtemas": ["..."], "referencias": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        let agentesEscolas = [];
+        let agenteEscolaSelecionado = null;
+        let escolaEstruturado = null;
+
+        function gerarAgentesEscolasAmbientais() {
+            return ESCOLAS_AMBIENTAIS.map((esc) => {
+                const codigo = `school.${esc.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ptbr.idenza.v1`;
+                return {
+                    codigo_universal: codigo,
+                    versao: 'v1',
+                    hash: btoa(codigo + esc.nome).substring(0, 16),
+                    escopo: { dominio: 'teoria_ambiental', escola: esc.nome, ambito: esc.local, periodo: esc.periodo, idioma: 'pt-BR' },
+                    conteudo: {
+                        resumo: `Análise de ${esc.nome} aguardando estruturação.`,
+                        camadas: [
+                            { nivel: 7, nome: 'Significado Teórico', subtemas: [`Importância de ${esc.nome}`], referencias: [] },
+                            { nivel: 6, nome: 'Conceitos e Autores', subtemas: [esc.descobertas], referencias: [] },
+                            { nivel: 5, nome: 'Correlações Interdisciplinares', subtemas: esc.referencias, referencias: [] },
+                            { nivel: 4, nome: 'Contexto Histórico-Intelectual', subtemas: [`Período ${esc.periodo}`], referencias: [] },
+                            { nivel: 3, nome: 'Metodologias de Aplicação', subtemas: ['Técnicas de aplicação'], referencias: [] },
+                            { nivel: 2, nome: 'Impacto Prático', subtemas: [`Como aplicar ${esc.nome}`], referencias: [] },
+                            { nivel: 1, nome: 'Curiosidades e Debates', subtemas: [`Debates sobre ${esc.nome}`], referencias: [] }
+                        ]
+                    },
+                    indexacao: { tags: ['teoria_ambiental', esc.nome.toLowerCase(), esc.local.toLowerCase()], palavras_chave: [esc.nome.toLowerCase(), ...esc.referencias.map(r => r.toLowerCase())] },
+                    governanca: { score_confianca: 0.90, autor: 'IDEnza', revisor: 'Acadêmico', aprovado_por: 'Conselho', criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                    origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: new Date().toISOString(), hash_original: null, uri_original: null },
+                    licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+                };
+            });
+        }
+
+        function renderizarEscolas(agentes) {
+            const grid = document.getElementById('arqueologiaGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente de teoria gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('arqueologiaFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a =>
+                a.escopo.escola.toLowerCase().includes(filtro) ||
+                a.escopo.ambito.toLowerCase().includes(filtro)
+            );
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'arch-card';
+                card.innerHTML = `
+          <span class="arch-icon">🌍</span>
+          <div class="arch-name">${a.escopo.escola}</div>
+          <div class="arch-detail">${a.escopo.ambito}</div>
+          <div class="arch-period">${a.escopo.periodo}</div>
+        `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.arch-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteEscolaSelecionado = a;
+                    exibirDetalheEscola(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheEscola(a) {
+            const panel = document.getElementById('arqueologiaDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('arqueologiaDetalheNome').textContent = `Escola ${a.escopo.escola}`;
+            document.getElementById('arqueologiaDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('arqueologiaDetalheLocal').textContent = `🌍 ${a.escopo.ambito}`;
+            document.getElementById('arqueologiaDetalhePeriodo').textContent = `📅 ${a.escopo.periodo}`;
+            const esc = ESCOLAS_AMBIENTAIS.find(s => s.nome === a.escopo.escola);
+            if (esc) { document.getElementById('arqueologiaDetalheSuperPrompt').textContent = gerarSuperPromptEscolaAmbiental(esc); }
+            else { document.getElementById('arqueologiaDetalheSuperPrompt').textContent = 'Super Prompt não disponível'; }
+            document.getElementById('arqueologiaRespostaIA').value = '';
+            document.getElementById('arqueologiaCamadasPreview').style.display = 'none';
+            document.getElementById('arqueologiaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarArqueologiaRedis').style.display = 'none';
+            document.getElementById('arqueologiaFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('arqueologiaStatusDetalhe').textContent = '';
+            escolaEstruturado = null;
+        }
+
+        document.getElementById('btnGerarArqueologia').addEventListener('click', () => {
+            const agentes = gerarAgentesEscolasAmbientais();
+            agentesEscolas = agentes;
+            renderizarEscolas(agentes);
+            document.getElementById('arqueologiaStatusMsg').textContent = `✅ ${agentes.length} agentes de teoria gerados!`;
+            setTimeout(() => { document.getElementById('arqueologiaStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarArqueologiaPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('arqueologiaStatusDetalhe');
+            if (!agenteEscolaSelecionado) { statusEl.textContent = '⚠️ Selecione uma escola primeiro.'; return; }
+            const esc = ESCOLAS_AMBIENTAIS.find(s => s.nome === agenteEscolaSelecionado.escopo.escola);
+            if (!esc) { statusEl.textContent = '⚠️ Escola não encontrada.'; return; }
+            const prompt = gerarSuperPromptEscolaAmbiental(esc);
+            const ok = await copiarTextoParaClipboard(prompt);
+            statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => statusEl.textContent = '', 4000);
+        });
+
+        document.getElementById('btnCopiarJSONArqueologia').addEventListener('click', async () => {
+            if (!agenteEscolaSelecionado) return;
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteEscolaSelecionado, null, 2));
+            document.getElementById('arqueologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('arqueologiaFiltro').addEventListener('input', () => { renderizarEscolas(agentesEscolas); });
+        document.getElementById('btnLimparArqueologiaJSON').addEventListener('click', () => { document.getElementById('arqueologiaJSONPreview').textContent = ''; });
+
+        document.getElementById('btnEstruturarArqueologia').addEventListener('click', () => {
+            if (!agenteEscolaSelecionado) { document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Selecione uma escola.'; return; }
+            const texto = document.getElementById('arqueologiaRespostaIA').value.trim();
+            if (!texto) { document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA.'; return; }
+            const camadas = extrairCamadas(texto);
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+            const codigo = agenteEscolaSelecionado.codigo_universal;
+            const agora = new Date().toISOString();
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + texto).substring(0, 16),
+                escopo: { dominio: 'teoria_ambiental', escola: agenteEscolaSelecionado.escopo.escola, ambito: agenteEscolaSelecionado.escopo.ambito, periodo: agenteEscolaSelecionado.escopo.periodo, idioma: 'pt-BR' },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: agenteEscolaSelecionado.indexacao.tags, palavras_chave: agenteEscolaSelecionado.indexacao.palavras_chave },
+                governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Acadêmico', aprovado_por: 'Conselho', criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: btoa(texto).substring(0, 20), uri_original: `/storage/theory/${agenteEscolaSelecionado.escopo.escola.toLowerCase()}.md` },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            escolaEstruturado = jsonResult;
+            document.getElementById('arqueologiaCamadasPreview').style.display = 'block';
+            document.getElementById('arqueologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('arqueologiaJSONPreview').style.display = 'block';
+            document.getElementById('arqueologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarArqueologiaRedis').style.display = 'inline-flex';
+            document.getElementById('arqueologiaStatusDetalhe').textContent = '✅ Estruturado!';
+            setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({ fontes: ['IA Externa', 'Super Prompt IDEnza'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+        });
+
+        document.getElementById('btnEnviarArqueologiaRedis').addEventListener('click', async () => {
+            if (!escolaEstruturado) return;
+            await enviarDiretoRedis(escolaEstruturado, 'teoria_ambiental', escolaEstruturado.codigo_universal, 'arqueologiaFeedbackDetalhe');
+            document.getElementById('arqueologiaStatusDetalhe').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        // ==================== PAINEL DE TRANSPARÊNCIA ====================
+        function mostrarExplicacao(meta) {
+            const panel = document.getElementById('explainPanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+            let camadasNome = '—';
+            if (meta.camadas && Array.isArray(meta.camadas) && meta.camadas.length > 0) {
+                camadasNome = meta.camadas.map(c => c.nome || `Camada ${c.nivel}`).join(' → ');
+            }
+            document.getElementById('explainLayers').textContent = camadasNome;
+            document.getElementById('explainConfidence').textContent = ((meta.score_confianca || 0.85) * 100).toFixed(0) + '%';
+            document.getElementById('explainReview').textContent = meta.alertaRevisao || 'Não definida';
+            document.getElementById('explainCode').textContent = meta.codigo || '—';
+        }
+
+        // ==================== ENVIO DIRETO AO REDIS ====================
+        async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+            const feedbackEl = document.getElementById(feedbackElementId);
+            const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+            const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+            updateRedisStatus('sending');
+            if (feedbackEl) { feedbackEl.className = 'redis-feedback show loading'; feedbackEl.textContent = '⏳ Enviando para o Redis...'; }
+            try {
+                const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+                const redisKey = `idenza:${tipo}:${codigo}`;
+                const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sanitizedPayload)
+                });
+                if (!response.ok) { const errorText = await response.text(); throw new Error(`HTTP ${response.status}: ${errorText}`); }
+                updateRedisStatus('connected');
+                if (feedbackEl) {
+                    feedbackEl.className = 'redis-feedback show success';
+                    feedbackEl.innerHTML = `✅ <strong>Enviado com sucesso!</strong><br>📁 Chave: <code>${redisKey}</code><br>📏 Tamanho: ${JSON.stringify(sanitizedPayload).length} bytes<br>📅 Data e Hora: ${new Date().toLocaleString('pt-BR')}`;
+                }
+                return { sucesso: true, redisKey };
+            } catch (error) {
+                console.error('Erro ao enviar para Redis:', error);
+                updateRedisStatus('disconnected');
+                if (feedbackEl) { feedbackEl.className = 'redis-feedback show error'; feedbackEl.innerHTML = `❌ <strong>Erro no envio!</strong><br>📝 ${error.message}`; }
+                return { sucesso: false, erro: error.message };
+            }
+        }
+
+        // ==================== CATÁLOGO DE PESQUISA ====================
+        function atualizarCatalogoPesquisa() {
+            const container = document.getElementById('catalogoPesquisa');
+            if (!container) return;
+            const todosAgentes = [...agentesAmbiente, ...agentesEscolas];
+            if (todosAgentes.length === 0) {
+                container.innerHTML = '<p style="font-size:0.7rem;color:#888;">Gere agentes nas abas anteriores primeiro.</p>';
+                return;
+            }
+            container.innerHTML = todosAgentes.map(a => `
+        <div class="agent-select-item" data-codigo="${a.codigo_universal}">
+          <input type="radio" name="agentePesquisa" value="${a.codigo_universal}">
+          <span>${a.codigo_universal} — ${a.escopo?.area || a.escopo?.escola || 'Agente'}</span>
+        </div>
+      `).join('');
+            container.querySelectorAll('.agent-select-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const codigo = item.dataset.codigo;
+                    const agente = todosAgentes.find(a => a.codigo_universal === codigo);
+                    if (agente) abrirPesquisa(agente);
+                });
+            });
+        }
+
+        function abrirPesquisa(agente) {
+            document.getElementById('panelPesquisa').style.display = 'block';
+            document.getElementById('pesquisaNome').textContent = agente.codigo_universal;
+            document.getElementById('pesquisaCodigo').textContent = agente.codigo_universal;
+            let prompt = '';
+            if (agente.escopo.dominio === 'meio_ambiente') {
+                prompt = gerarSuperPromptMeioAmbiente(agente.escopo.area, agente.escopo.topico_inicio, agente.escopo.topico_fim, TEMAS_POR_AREA[agente.escopo.area] || '');
+            } else if (agente.escopo.dominio === 'teoria_ambiental') {
+                const esc = ESCOLAS_AMBIENTAIS.find(s => s.nome === agente.escopo.escola);
+                if (esc) prompt = gerarSuperPromptEscolaAmbiental(esc);
+            }
+            document.getElementById('pesquisaSuperPrompt').value = prompt || 'Super Prompt não disponível';
+            document.getElementById('pesquisaRespostaIA').value = '';
+            document.getElementById('pesquisaCamadasPreview').style.display = 'none';
+            document.getElementById('pesquisaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarPesquisaRedis').style.display = 'none';
+        }
+
+        document.getElementById('btnCopiarPesquisaPrompt').addEventListener('click', async () => {
+            const prompt = document.getElementById('pesquisaSuperPrompt').value;
+            const ok = await copiarTextoParaClipboard(prompt);
+            document.getElementById('pesquisaStatusMsg').textContent = ok ? '✅ Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('btnEstruturarPesquisa').addEventListener('click', () => {
+            const texto = document.getElementById('pesquisaRespostaIA').value.trim();
+            if (!texto) { document.getElementById('pesquisaStatusMsg').textContent = '⚠️ Cole a resposta da IA.'; return; }
+            const camadas = extrairCamadas(texto);
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+            const codigo = document.getElementById('pesquisaCodigo').textContent;
+            const agora = new Date().toISOString();
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + texto).substring(0, 16),
+                escopo: { dominio: 'pesquisa', idioma: 'pt-BR' },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: ['pesquisa'], palavras_chave: [] },
+                governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Pesquisador', aprovado_por: 'Coordenação', criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: btoa(texto).substring(0, 20), uri_original: `/storage/pesquisa/${codigo}.md` },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            document.getElementById('pesquisaCamadasPreview').style.display = 'block';
+            document.getElementById('pesquisaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('pesquisaJSONPreview').style.display = 'block';
+            document.getElementById('pesquisaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarPesquisaRedis').style.display = 'inline-flex';
+            document.getElementById('pesquisaStatusMsg').textContent = '✅ Estruturado!';
+            setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+            mostrarExplicacao({ fontes: ['IA Externa'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+        });
+
+        document.getElementById('btnEnviarPesquisaRedis').addEventListener('click', async () => {
+            const jsonTexto = document.getElementById('pesquisaJSONPreview').textContent;
+            if (!jsonTexto) return;
+            try { const payload = JSON.parse(jsonTexto); await enviarDiretoRedis(payload, 'pesquisa', payload.codigo_universal, 'pesquisaFeedback'); }
+            catch (e) { document.getElementById('pesquisaStatusMsg').textContent = '❌ JSON inválido.'; }
+        });
+
+        // ==================== INICIALIZAÇÃO ====================
+        window.addEventListener('load', () => {
+            agentesAmbiente = gerarTodosAmbiente(10);
+            agentesEscolas = gerarAgentesEscolasAmbientais();
+            renderizarAmbiente(agentesAmbiente);
+            renderizarEscolas(agentesEscolas);
+            atualizarCatalogoPesquisa();
+        });
+
+        // ==================== ASSISTENTE ====================
+        document.getElementById('assistenteBtn').addEventListener('click', () => {
+            const input = document.getElementById('assistenteInput').value.trim();
+            const respostaDiv = document.getElementById('assistenteResposta');
+            if (!input) { respostaDiv.style.display = 'block'; respostaDiv.textContent = 'Por favor, digite sua pergunta.'; return; }
+            respostaDiv.style.display = 'block';
+            respostaDiv.textContent = 'Processando sua consulta... (em breve integração com IA)';
+            setTimeout(() => { respostaDiv.textContent = `Você perguntou: "${input}".\n\nEsta é uma resposta simulada. A integração com uma IA real será implementada em breve.`; }, 1000);
+        });
+
+        // ==================== FÁBRICA COGNITIVA ====================
+        document.getElementById('fabricaBtnGerar').addEventListener('click', function() {
+            const nome = document.getElementById('fabricaNome').value.trim() || 'Novo Agente Ambiental';
+            const dominio = document.getElementById('fabricaDominio').value.trim() || 'meio_ambiente';
+            const especialidade = document.getElementById('fabricaEspecialidade').value.trim() || 'Sustentabilidade';
+            const palavrasChave = document.getElementById('fabricaPalavrasChave').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+            const camadaDestino = document.getElementById('fabricaCamadaDestino').value;
+            const codigo = `fabrica.${dominio.replace(/[^a-z0-9]/g, '_')}.${Date.now().toString(36)}.v1`;
+            const agora = new Date().toISOString();
+            const resultado = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + agora).substring(0, 16),
+                escopo: { dominio, especialidade, idioma: 'pt-BR', camada_destino: camadaDestino },
+                conteudo: {
+                    resumo: `Agente cognitivo para ${especialidade}`,
+                    camadas: [
+                        { nivel: 7, nome: 'Essência do Ecossistema', subtemas: [`Fundamentos de ${especialidade}`], referencias: [], fontes: [] },
+                        { nivel: 6, nome: 'Teorias e Políticas', subtemas: [`Correntes relacionadas`], referencias: [], fontes: [] },
+                        { nivel: 5, nome: 'Gestão e Práticas', subtemas: [`Instrumentos relevantes`], referencias: [], fontes: [] },
+                        { nivel: 4, nome: 'Tecnologia e Inovação', subtemas: [`Tecnologias aplicáveis`], referencias: [], fontes: [] },
+                        { nivel: 3, nome: 'Métodos de Análise', subtemas: [`Métodos de abordagem`], referencias: [], fontes: [] },
+                        { nivel: 2, nome: 'Ação e Cotidiano', subtemas: [`Dicas práticas`], referencias: [], fontes: [] },
+                        { nivel: 1, nome: 'Curiosidades e Casos', subtemas: [`Exemplos`], referencias: [], fontes: [] }
+                    ]
+                },
+                indexacao: { tags: [dominio, especialidade.toLowerCase()], palavras_chave: palavrasChave.length ? palavrasChave : [especialidade.toLowerCase()] },
+                governanca: { score_confianca: 0.80, autor: 'IDEnza', revisor: 'Acadêmico', aprovado_por: 'Coordenação', criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: null, uri_original: `/storage/fabrica/${codigo}.md` },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            document.getElementById('fabricaResultado').style.display = 'block';
+            document.getElementById('fabricaCodigoUniversal').textContent = codigo;
+            document.getElementById('fabricaPreviewJSON').textContent = JSON.stringify(resultado, null, 2);
+            document.getElementById('fabricaStatusMsg').textContent = '✅ Artefato gerado!';
+            setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('fabricaBtnLimpar').addEventListener('click', function() {
+            document.getElementById('fabricaNome').value = '';
+            document.getElementById('fabricaDominio').value = '';
+            document.getElementById('fabricaEspecialidade').value = '';
+            document.getElementById('fabricaPalavrasChave').value = '';
+            document.getElementById('fabricaResultado').style.display = 'none';
+            document.getElementById('fabricaStatusMsg').textContent = 'Campos limpos.';
+            setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+        });
+
+        document.getElementById('fabricaBtnCopiarJSON').addEventListener('click', async function() {
+            const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+            if (!jsonText) { document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON gerado.'; return; }
+            const ok = await copiarTextoParaClipboard(jsonText);
+            document.getElementById('fabricaStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async function() {
+            const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+            if (!jsonText) { document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON para enviar.'; return; }
+            try { const payload = JSON.parse(jsonText); await enviarDiretoRedis(payload, 'fabrica', payload.codigo_universal, 'fabricaFeedback'); }
+            catch (e) { document.getElementById('fabricaStatusMsg').textContent = '❌ JSON inválido.'; }
+        });
+
+        document.getElementById('btnLimparJSONFabrica').addEventListener('click', function() {
+            document.getElementById('fabricaPreviewJSON').textContent = '';
+            document.getElementById('fabricaStatusMsg').textContent = 'JSON limpo.';
+            setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+        });
+
+        // ==================== HUMANODES AMBIENTAIS ====================
+        const tiposHumanoides = [
+            { id: 'gestor_ambiental', icone: '🌍', nome: 'Gestor Ambiental', descricao: 'Especialista em licenciamento, auditoria, ISO 14001 e políticas ambientais.' },
+            { id: 'climatologista', icone: '🌡️', nome: 'Climatologista', descricao: 'Especialista em mudanças climáticas, cenários IPCC, mitigação e adaptação.' },
+            { id: 'engenheiro_energias', icone: '⚡', nome: 'Engenheiro de Energias', descricao: 'Especialista em energias renováveis, eficiência energética e transição energética.' },
+            { id: 'hidrologo', icone: '💧', nome: 'Hidrólogo', descricao: 'Especialista em recursos hídricos, bacias hidrográficas e gestão de água.' },
+            { id: 'ecologo', icone: '🌿', nome: 'Ecólogo', descricao: 'Especialista em ecossistemas, biodiversidade e serviços ambientais.' },
+            { id: 'analista_sustentabilidade', icone: '🌱', nome: 'Analista de Sustentabilidade', descricao: 'Especialista em ODS, relatórios GRI, inventários de carbono e estratégias ESG.' },
+            { id: 'educador_ambiental', icone: '📢', nome: 'Educador Ambiental', descricao: 'Especialista em comunicação, mobilização social e educação para a sustentabilidade.' }
+        ];
+
+        const humTypeGrid = document.getElementById('humTypeGrid');
+        tiposHumanoides.forEach(t => {
+            const card = document.createElement('div');
+            card.className = 'hum-type-card';
+            card.innerHTML = `
+        <span class="type-icon">${t.icone}</span>
+        <div class="type-name">${t.nome}</div>
+        <div class="type-code">${t.id}</div>
+      `;
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                document.getElementById('humPanel').style.display = 'block';
+                document.getElementById('humIcone').textContent = t.icone;
+                document.getElementById('humNome').textContent = t.nome;
+                document.getElementById('humCodigoBase').textContent = `hum.${t.id}.idenza`;
+                document.getElementById('humDescricao').textContent = t.descricao;
+                document.getElementById('humNomeUsuario').value = '';
+                document.getElementById('humEntrada').value = '';
+                document.getElementById('humResultados').style.display = 'none';
+                document.getElementById('humStatusMsg').textContent = '';
+            });
+            humTypeGrid.appendChild(card);
+        });
+
+        document.getElementById('btnProcessarHum').addEventListener('click', function() {
+            const nomeUsuario = document.getElementById('humNomeUsuario').value.trim() || 'Profissional';
+            const entrada = document.getElementById('humEntrada').value.trim();
+            if (!entrada) { document.getElementById('humStatusMsg').textContent = '⚠️ Insira um contexto.'; return; }
+            const agora = new Date().toISOString();
+            const codigo = `hum.${Date.now().toString(36)}.idenza.v1`;
+            const camadas = [
+                { nivel: 7, nome: 'Essência do Ecossistema', subtemas: [`Resposta baseada em ${entrada.substring(0, 30)}...`], referencias: [], fontes: [] },
+                { nivel: 6, nome: 'Teorias e Políticas', subtemas: [`Correntes aplicáveis`], referencias: [], fontes: [] },
+                { nivel: 5, nome: 'Gestão e Práticas', subtemas: [`Análise prática`], referencias: [], fontes: [] },
+                { nivel: 4, nome: 'Tecnologia e Inovação', subtemas: [`Como aplicar`], referencias: [], fontes: [] },
+                { nivel: 3, nome: 'Métodos de Análise', subtemas: [`Abordagens`], referencias: [], fontes: [] },
+                { nivel: 2, nome: 'Ação e Cotidiano', subtemas: [`Normas`], referencias: [], fontes: [] },
+                { nivel: 1, nome: 'Curiosidades e Casos', subtemas: [`Fatos`], referencias: [], fontes: [] }
+            ];
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo gerado.';
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + entrada).substring(0, 16),
+                escopo: { dominio: 'humanoide', usuario: nomeUsuario, idioma: 'pt-BR', contexto: entrada },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: ['humanoide', 'meio_ambiente'], palavras_chave: entrada.split(' ').slice(0, 5).map(w => w.toLowerCase()) },
+                governanca: { score_confianca: 0.80, autor: 'IDEnza', revisor: 'Acadêmico', aprovado_por: 'Coordenação', criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: null, uri_original: null },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            document.getElementById('humResultados').style.display = 'block';
+            document.getElementById('humCodigoRastreio').textContent = codigo;
+            document.getElementById('humMetricGrid').innerHTML = `
+        <div class="hum-metric-item"><div class="label">Confiança</div><div class="value">85%</div></div>
+        <div class="hum-metric-item"><div class="label">Camadas</div><div class="value">7</div></div>
+        <div class="hum-metric-item"><div class="label">Versão</div><div class="value">v1</div></div>
+      `;
+            document.getElementById('humResposta').textContent = `Resposta gerada para ${nomeUsuario}: ${resumo}`;
+            document.getElementById('humJsonCompleto').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+            document.getElementById('humStatusMsg').textContent = '✅ Processado!';
+            setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+            window._humPayload = jsonResult;
+        });
+
+        document.getElementById('btnEnviarWorkerHum').addEventListener('click', async function() {
+            if (!window._humPayload) return;
+            await enviarDiretoRedis(window._humPayload, 'humanoide', window._humPayload.codigo_universal, 'redisFeedbackHum');
+        });
+
+        document.getElementById('btnCopiarJSONHum').addEventListener('click', async function() {
+            const jsonText = document.getElementById('humJsonCompleto').textContent;
+            if (!jsonText) return;
+            const ok = await copiarTextoParaClipboard(jsonText);
+            document.getElementById('humStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('btnLimparHumJSON').addEventListener('click', () => { document.getElementById('humJsonCompleto').textContent = ''; });
+        document.getElementById('btnLimparHum').addEventListener('click', () => {
+            document.getElementById('humNomeUsuario').value = '';
+            document.getElementById('humEntrada').value = '';
+            document.getElementById('humResultados').style.display = 'none';
+        });
+
+        document.getElementById('btnExportarTeologia').addEventListener('click', () => alert('Em breve.'));
+        document.getElementById('btnExportarArqueologia').addEventListener('click', () => alert('Em breve.'));
+
+        console.log('IDEnza — Estação de Meio Ambiente carregada!');
+    </script>
+</body>
+</html>

@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Estação de Pesquisa — Cultura e Sociedade</title>
+    <style>
+        :root {
+            --bg: #f8f5f0;
+            --card-bg: #ffffff;
+            --petroleum: #3c2f1a;
+            --petroleum-light: #5e4a2e;
+            --gold-dark: #b86a1c;
+            --gold: #d98c2a;
+            --gold-light: #f7e5c2;
+            --text: #2b2b2b;
+            --text-soft: #5c5548;
+            --border: #cfc7b8;
+            --shadow-sm: 2px 2px 6px rgba(0, 0, 0, 0.07);
+            --shadow-md: 3px 3px 10px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 4px 4px 16px rgba(0, 0, 0, 0.12);
+            --success: #0d5c3a;
+            --success-bg: #e0f5e8;
+            --warning: #b8860b;
+            --warning-bg: #fefce8;
+            --error: #b91c1c;
+            --error-bg: #fef2f2;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+            --theo-purple: #5c3a1e;
+            --theo-purple-light: #7a4e2a;
+            --arch-sand: #7a6a4a;
+            --arch-sand-light: #9c8b6a;
+            --scroll-bg: #f6f3ec;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 16px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-left: 6px solid var(--theo-purple);
+        }
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--theo-purple);
+            letter-spacing: 1px;
+        }
+        .badge {
+            background: var(--gold-dark);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-theo {
+            background: var(--theo-purple);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-arch {
+            background: var(--arch-sand);
+            color: #2b2316;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .redis-connection-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            box-shadow: var(--shadow-sm);
+        }
+        .redis-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+        .redis-status-dot.disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+        .redis-status-dot.sending {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .explain-panel {
+            background: var(--scroll-bg);
+            border: 1px solid var(--theo-purple-light);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            border-left: 4px solid var(--theo-purple);
+        }
+        .explain-panel .section-title {
+            margin-bottom: 10px;
+            color: var(--theo-purple);
+        }
+        .explain-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .explain-item strong {
+            color: var(--theo-purple);
+            font-size: 0.7rem;
+        }
+        .explain-item div {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 2px;
+        }
+        .explain-confidence {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin-top: 4px;
+        }
+        .explain-code {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 8px;
+            font-family: var(--font-mono);
+        }
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 14px;
+            border: none;
+            background: #f2f0eb;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            color: #5c5548;
+            border-right: 1px solid var(--border);
+        }
+        .tab-btn:last-child {
+            border-right: none;
+        }
+        .tab-btn:hover {
+            background: #e8e0d4;
+        }
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--theo-purple);
+            border-bottom: 3px solid var(--gold-dark);
+            box-shadow: inset 0 -3px 0 var(--gold-dark);
+        }
+        .tab-btn.active.theo-tab {
+            color: var(--theo-purple);
+            border-bottom: 3px solid var(--theo-purple);
+            box-shadow: inset 0 -3px 0 var(--theo-purple);
+        }
+        .tab-btn.active.arch-tab {
+            color: #4a3a2a;
+            border-bottom: 3px solid var(--arch-sand);
+            box-shadow: inset 0 -3px 0 var(--arch-sand);
+        }
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--theo-purple);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title.theo-title {
+            color: var(--theo-purple);
+        }
+        .section-title.arch-title {
+            color: #4a3a2a;
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: var(--gold-dark);
+            color: white;
+            border: 1px solid #8a4e14;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--theo-purple-light);
+            color: var(--theo-purple);
+        }
+        .btn-theo {
+            background: var(--theo-purple);
+            color: white;
+            border: 1px solid #3a2410;
+        }
+        .btn-arch {
+            background: var(--arch-sand);
+            color: #2b2316;
+            border: 1px solid #5e4a2a;
+        }
+        .btn-petroleum {
+            background: var(--petroleum);
+            color: white;
+            border: 1px solid #1f1508;
+        }
+        .btn-data {
+            background: #0d5c3a;
+            color: white;
+            border: 1px solid #064025;
+        }
+        .btn-purple {
+            background: #6b21a8;
+            color: white;
+            border: 1px solid #4c1d7a;
+        }
+        .btn-gold:hover,
+        .btn-theo:hover,
+        .btn-arch:hover,
+        .btn-petroleum:hover,
+        .btn-data:hover,
+        .btn-purple:hover {
+            opacity: 0.9;
+        }
+        .btn-outline:hover {
+            background: #f2efea;
+        }
+        .raw-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: vertical;
+            color: var(--text);
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .raw-textarea.theo-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--theo-purple);
+        }
+        .raw-textarea.arch-textarea {
+            min-height: 120px;
+            border-left: 4px solid var(--arch-sand);
+        }
+        .generated-question {
+            width: 100%;
+            min-height: 120px;
+            background: #f2efea;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #2b2b2b;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .camadas-preview {
+            background: #f2efea;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #2b2b2b;
+        }
+        .theo-json-preview,
+        .arch-json-preview {
+            background: #f2efea;
+            border: 1px solid #b8a890;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 12px;
+            color: #2b2b2b;
+        }
+        .arch-json-preview {
+            background: #f2efea;
+            border-color: var(--arch-sand);
+        }
+        .status-msg {
+            font-size: 0.7rem;
+            color: var(--petroleum-light);
+            margin-top: 6px;
+        }
+        .redis-feedback {
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            border-left: 4px solid var(--petroleum-light);
+            background: #f3ede5;
+            display: none;
+            line-height: 1.6;
+        }
+        .redis-feedback.show {
+            display: block;
+        }
+        .redis-feedback.success {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .redis-feedback.error {
+            border-color: var(--error);
+            background: var(--error-bg);
+            color: var(--error);
+        }
+        .redis-feedback.loading {
+            border-color: var(--warning);
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .expando {
+            border: 1px solid var(--border);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            margin-top: 6px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 32px;
+        }
+        .expando.open {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .expando-toggle {
+            padding: 6px 14px;
+            font-size: 0.65rem;
+            color: var(--text-soft);
+            cursor: pointer;
+            text-align: left;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            background: #fafafa;
+            border-bottom: 1px solid transparent;
+        }
+        .expando.open .expando-toggle {
+            border-bottom-color: var(--border);
+        }
+        .expando-body {
+            padding: 10px 14px;
+            font-size: 0.7rem;
+            display: none;
+        }
+        .expando.open .expando-body {
+            display: block;
+        }
+        .agent-select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            padding: 6px;
+            background: #fafbfc;
+        }
+        .agent-select-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .agent-select-item:hover {
+            background: #f2efea;
+        }
+        .agent-select-item input[type="radio"] {
+            margin: 0;
+        }
+        .hum-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-type-card {
+            border: 1px solid var(--border);
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafdfd;
+            text-align: center;
+        }
+        .hum-type-card:hover {
+            border-color: var(--theo-purple);
+            box-shadow: var(--shadow-md);
+            background: #f2efea;
+        }
+        .hum-type-card.selected {
+            border-color: var(--theo-purple);
+            background: #e8dcc8;
+            box-shadow: var(--shadow-md);
+        }
+        .hum-type-card .type-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hum-type-card .type-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+        }
+        .hum-type-card .type-code {
+            font-size: 0.5rem;
+            color: #888;
+            font-family: var(--font-mono);
+        }
+        .hum-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-metric-item {
+            background: #f2efea;
+            padding: 8px;
+            border: 1px solid #cfc7b8;
+            text-align: center;
+        }
+        .hum-metric-item .label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+        }
+        .hum-metric-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+            font-family: var(--font-mono);
+        }
+        .hum-resposta-box {
+            background: #fff;
+            border: 1px solid var(--theo-purple-light);
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        .hum-alert-box {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-left: 5px solid #ccc;
+            background: #f9f9f9;
+            font-size: 0.75rem;
+        }
+        .hum-alert-box.baixo {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .hum-alert-box.medio {
+            border-color: #eab308;
+            background: #fefce8;
+        }
+        .hum-alert-box.alto {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+        .theo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .theo-card {
+            border: 1px solid #c8b898;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #faf7f2;
+            text-align: center;
+        }
+        .theo-card:hover {
+            border-color: var(--theo-purple);
+            box-shadow: var(--shadow-md);
+            background: #f0ebdf;
+        }
+        .theo-card.selected {
+            border-color: var(--theo-purple);
+            background: #e0d5c0;
+            box-shadow: var(--shadow-md);
+        }
+        .theo-card .theo-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .theo-card .theo-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+        }
+        .theo-card .theo-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .theo-card .theo-versiculo {
+            font-size: 0.5rem;
+            color: var(--theo-purple);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .theo-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            margin: 4px 0;
+            border-radius: 3px !important;
+            overflow: hidden;
+        }
+        .theo-progress-bar .fill {
+            height: 100%;
+            background: var(--theo-purple);
+            transition: width 0.3s;
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .arch-card {
+            border: 1px solid var(--arch-sand);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8f6f0;
+            text-align: center;
+        }
+        .arch-card:hover {
+            border-color: #6a5a3a;
+            box-shadow: var(--shadow-md);
+            background: #efe9db;
+        }
+        .arch-card.selected {
+            border-color: #6a5a3a;
+            background: #ddd0b8;
+            box-shadow: var(--shadow-md);
+        }
+        .arch-card .arch-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .arch-card .arch-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4a3a2a;
+        }
+        .arch-card .arch-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .arch-card .arch-period {
+            font-size: 0.5rem;
+            color: #7a6a4a;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .fabrica-tipo-btn.active {
+            background: var(--theo-purple);
+            color: white;
+            border: 1px solid #3a2410;
+        }
+        .eng-payload-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .eng-payload-table th {
+            background: #f2efea;
+            padding: 8px 10px;
+            text-align: left;
+            color: var(--theo-purple);
+            border-bottom: 2px solid var(--theo-purple-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .eng-payload-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-soft);
+        }
+        .multi-redis-hub {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+        @media (max-width: 800px) {
+            .multi-redis-hub {
+                grid-template-columns: 1fr;
+            }
+        }
+        .redis-cluster-panel {
+            border: 2px solid #ccc;
+            background: #fcfcfc;
+            box-shadow: var(--shadow-lg);
+            padding: 16px;
+        }
+        .redis-cluster-panel.science-cluster {
+            border-color: var(--theo-purple-light);
+            background: #f5f0e8;
+        }
+        .redis-cluster-panel.ops-cluster {
+            border-color: var(--arch-sand);
+            background: #f6f2ea;
+        }
+        .redis-slot-card {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        .redis-slot-card.connected {
+            border-left: 5px solid #22c55e;
+            background: #f9fef9;
+        }
+        .redis-slot-card.disconnected {
+            border-left: 5px solid #ef4444;
+            background: #fef9f9;
+        }
+        .redis-slot-card .slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .redis-slot-card .slot-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text);
+            font-family: var(--font-mono);
+            flex: 1;
+            min-width: 120px;
+        }
+        .redis-slot-card .slot-name input {
+            border: 1px solid transparent;
+            background: transparent;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            width: 100%;
+            padding: 4px;
+            color: var(--text);
+            transition: border 0.2s;
+        }
+        .redis-slot-card .slot-name input:focus {
+            border-color: var(--border);
+            background: #fff;
+            outline: none;
+        }
+        .redis-slot-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-slot-dot.on {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+        }
+        .redis-slot-dot.off {
+            background: #ef4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+        }
+        .redis-slot-dot.testing {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        .slot-credentials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .slot-credentials input {
+            border: 1px solid var(--border);
+            padding: 5px 7px;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            width: 100%;
+            color: var(--text);
+        }
+        .slot-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .mini-status-text {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .diretorio-interligado {
+            margin-top: 16px;
+            padding: 12px;
+            border: 1px dashed var(--border);
+            background: #faf9f7;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .diretorio-interligado .cluster-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px !important;
+            font-size: 0.6rem;
+        }
+        .cluster-line.science {
+            border-color: var(--theo-purple-light);
+            color: var(--theo-purple);
+        }
+        .cluster-line.ops {
+            border-color: var(--arch-sand);
+            color: #4a3a2a;
+        }
+        .cluster-line .linked-icon {
+            font-size: 0.8rem;
+        }
+        #multiRedisSlotBar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 6px;
+        }
+        .redis-slot-mini-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50% !important;
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .redis-slot-mini-dot.connected-dot {
+            border-color: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+        .redis-slot-mini-dot.disconnected-dot {
+            border-color: #ef4444;
+            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+        }
+        .redis-slot-mini-dot:hover {
+            transform: scale(1.3);
+            z-index: 2;
+        }
+        .slot-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .slot-modal-overlay.open {
+            display: flex;
+        }
+        .slot-modal {
+            background: white;
+            border: 2px solid var(--theo-purple-light);
+            padding: 24px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-mono);
+            border-radius: 6px !important;
+        }
+        .slot-modal h3 {
+            font-size: 0.9rem;
+            color: var(--theo-purple);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .slot-modal label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--theo-purple);
+            display: block;
+            margin: 8px 0 2px;
+        }
+        .slot-modal input {
+            width: 100%;
+            padding: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+            background: #fafbfc;
+            margin-bottom: 4px;
+        }
+        .slot-modal .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .slot-modal .test-status {
+            font-size: 0.6rem;
+            margin-top: 4px;
+            color: #555;
+        }
+        .theo-code-display {
+            background: var(--theo-purple);
+            color: #d4c0a0;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        .arch-code-display {
+            background: var(--arch-sand);
+            color: #2b2316;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 0.58rem;
+            }
+            .hum-metric-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            .hum-type-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .theo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            .arch-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+		.top-nav-special {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: #2d5a27;
+    border-bottom: 2px solid var(--gold-dark);
+}
+.top-nav-special a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    transition: 0.2s;
+    border-radius: 4px !important;
+}
+.top-nav-special a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+<div class="top-nav-special">
+    <a href="governanca.html">🛡️ Governança (Sala de Controle)</a>
+    <a href="painel.html" target="_blank" class="painel-link">🌐 IDENZA Painel</a>
+    <a href="https://idenza.pages.dev" target="_blank" class="client-link">🌐 IDENZA Client</a>
+</div>
+    <!-- ==================== BARRA REDIS ==================== -->
+    <div class="redis-connection-bar">
+        <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+        <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+        <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+    </div>
+
+    <!-- ========== ASSISTENTE FIXO ========== -->
+    <div id="assistenteFixo" style="
+    background: linear-gradient(135deg, #5c3a1e 0%, #7a4e2a 100%);
+    color: white;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">🎭</span>
+            <div>
+                <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;">Olá! Sou seu assistente de Cultura e Sociedade</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em Cultura Brasileira, Etnografia, Comportamento Humano e Tendências Sociais</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="assistenteInput" placeholder="Digite sua dúvida sobre Cultura, Sociedade ou Etnografia..." style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+            <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Enviar</button>
+        </div>
+        <div id="assistenteResposta" style="
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px !important;
+      padding: 12px 16px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #f0f0f0;
+    "></div>
+    </div>
+
+    <!-- ==================== PAINEL DE TRANSPARÊNCIA ==================== -->
+    <div class="explain-panel" id="explainPanel">
+        <div class="section-title">🔍 Transparência da Resposta</div>
+        <div class="explain-grid">
+            <div class="explain-item"><strong>Fontes utilizadas</strong><div id="explainSources">—</div></div>
+            <div class="explain-item"><strong>Camadas executadas</strong><div id="explainLayers">—</div></div>
+            <div class="explain-item"><strong>Nível de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+            <div class="explain-item"><strong>Próxima revisão</strong><div id="explainReview">—</div></div>
+        </div>
+        <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+    </div>
+
+    <!-- ==================== HEADER ==================== -->
+    <header>
+        <h1>🎭 Estação de Pesquisa — Cultura e Sociedade</h1>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="badge-theo">🌎 Cultura Brasileira</span>
+            <span class="badge-arch">📊 Comportamento & Tendências</span>
+            <span class="badge">7 Camadas</span>
+            <span class="badge" style="background:#5c3a1e;color:white;">Super Prompts</span>
+        </div>
+    </header>
+
+    <!-- ==================== NAVEGAÇÃO ==================== -->
+    <div class="tab-nav">
+        <button class="tab-btn active theo-tab" data-tab="tab-teologia">🌎 Cultura & Sociedade</button>
+        <button class="tab-btn arch-tab" data-tab="tab-arqueologia">📊 Comportamento & Tendências</button>
+        <button class="tab-btn" data-tab="tab-humanoides">🤖 Humanoides</button>
+        <button class="tab-btn" data-tab="tab-cognitivo">🏭 Fábrica Cognitiva</button>
+        <button class="tab-btn" data-tab="tab-pesquisa">🔬 Pesquisa</button>
+    </div>
+
+    <!-- ==================== TAB 1: CULTURA & SOCIEDADE ==================== -->
+    <div class="tab-content active" id="tab-teologia">
+        <div class="section">
+            <div class="section-title theo-title"><span>🌎</span> Agentes de Cultura & Sociedade — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">
+                <strong>Cada agente cultural possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione um agente, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:var(--theo-purple);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-theo" id="btnGerarTeologia">🚀 Gerar Todos os Agentes Culturais</button>
+                <button class="btn btn-outline" id="btnExportarTeologia">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="teologiaFeedback"></div>
+            <div class="status-msg" id="teologiaStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Área</label>
+                <input type="text" id="teologiaFiltro" placeholder="Ex: Cultura Brasileira, Etnografia, Tendências..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="teologiaGrid" class="theo-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE COM FUNCIONALIDADES DE PESQUISA -->
+        <div class="section" id="teologiaDetalhe" style="display:none;">
+            <div class="section-title theo-title"><span>🌎</span> <span id="teologiaDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="teologiaDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-theo" id="teologiaDetalheLivro"></span>
+                <span class="badge" id="teologiaDetalheBloco"></span>
+                <span class="badge" style="background:#3a2a1a;color:white;" id="teologiaDetalheProgresso"></span>
+            </div>
+            <div style="margin-top:8px;"><div class="theo-progress-bar"><div class="fill" id="teologiaDetalheBarra" style="width:0%;"></div></div></div>
+
+            <!-- SUPER PROMPT -->
+            <div style="margin-top:16px; background:#f0ebdf; padding:16px; border-left:4px solid var(--theo-purple);">
+                <strong style="font-size:0.8rem;color:var(--theo-purple);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="teologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #d0c0a0; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarTeologiaPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONTeologia">📋 Copiar JSON</button>
+            </div>
+
+            <!-- COLAR RESPOSTA DA IA -->
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea theo-textarea" id="teologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-theo" id="btnEstruturarTeologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="teologiaCamadasPreview" style="display:none;"></div>
+            <div class="theo-json-preview" id="teologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparTeologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-theo" id="btnEnviarTeologiaRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="teologiaFeedbackDetalhe"></div>
+            <div class="status-msg" id="teologiaStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 2: COMPORTAMENTO & TENDÊNCIAS ==================== -->
+    <div class="tab-content" id="tab-arqueologia">
+        <div class="section">
+            <div class="section-title arch-title"><span>📊</span> Agentes de Comportamento & Tendências — Super Prompts</div>
+            <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">
+                <strong>Cada agente de comportamento possui um Super Prompt completo com 7 camadas.</strong>
+                Selecione uma unidade de pesquisa, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+                <br><span style="color:#4a3a2a;">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-arch" id="btnGerarArqueologia">🚀 Gerar Todos os Agentes de Comportamento</button>
+                <button class="btn btn-outline" id="btnExportarArqueologia">📥 Exportar JSON</button>
+            </div>
+            <div class="redis-feedback" id="arqueologiaFeedback"></div>
+            <div class="status-msg" id="arqueologiaStatusMsg"></div>
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem;font-weight:700;color:#4a3a2a;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Unidade ou Especialidade</label>
+                <input type="text" id="arqueologiaFiltro" placeholder="Ex: Etnografia Urbana, Comportamento Digital..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+            </div>
+            <div id="arqueologiaGrid" class="arch-grid"></div>
+        </div>
+
+        <!-- PAINEL DE DETALHE COMPORTAMENTO -->
+        <div class="section" id="arqueologiaDetalhe" style="display:none;">
+            <div class="section-title arch-title"><span>📊</span> <span id="arqueologiaDetalheNome"></span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <span class="arch-code-display" id="arqueologiaDetalheCodigo"></span></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+                <span class="badge-arch" id="arqueologiaDetalheLocal"></span>
+                <span class="badge" style="background:#3a2a1a;color:white;" id="arqueologiaDetalhePeriodo"></span>
+            </div>
+
+            <!-- SUPER PROMPT -->
+            <div style="margin-top:16px; background:#efe9db; padding:16px; border-left:4px solid var(--arch-sand);">
+                <strong style="font-size:0.8rem;color:#4a3a2a;">⚡ SUPER PROMPT — Instruções para IA:</strong>
+                <div id="arqueologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #c0b090; max-height:400px; overflow-y:auto;"></div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline" id="btnCopiarArqueologiaPrompt">📋 Copiar Super Prompt</button>
+                <button class="btn btn-outline" id="btnCopiarJSONArqueologia">📋 Copiar JSON</button>
+            </div>
+
+            <!-- COLAR RESPOSTA DA IA -->
+            <div style="margin-top:16px;">
+                <label style="font-size:0.7rem; font-weight:700; color:#4a3a2a; text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                <textarea class="raw-textarea arch-textarea" id="arqueologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-arch" id="btnEstruturarArqueologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+
+            <div class="camadas-preview" id="arqueologiaCamadasPreview" style="display:none;"></div>
+            <div class="arch-json-preview" id="arqueologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparArqueologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+
+            <div style="margin-top:12px;">
+                <button class="btn btn-arch" id="btnEnviarArqueologiaRedis" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="arqueologiaFeedbackDetalhe"></div>
+            <div class="status-msg" id="arqueologiaStatusDetalhe"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 3: HUMANOIDES ==================== -->
+    <div class="tab-content" id="tab-humanoides">
+        <div class="section">
+            <div class="section-title theo-title"><span>🤖</span> Humanoides Especializados</div>
+            <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">
+                <strong>Humanoides cognitivos para Cultura, Etnografia e Comportamento.</strong>
+                Selecione um tipo, insira o contexto e processe nas 7 camadas com Super Prompts.
+            </p>
+            <div class="hum-type-grid" id="humTypeGrid"></div>
+            <div id="humPanel" style="display:none; margin-top:16px;">
+                <div class="section-title theo-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código Base: <span class="theo-code-display" id="humCodigoBase"></span></p>
+                <p style="font-size:0.65rem; color:#5c5548;" id="humDescricao"></p>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">👤 Nome do Usuário:</label>
+                    <input type="text" class="raw-textarea" id="humNomeUsuario" placeholder="Ex: Pesquisador, Estudante..." style="min-height:36px; width:100%;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto:</label>
+                    <textarea class="raw-textarea theo-textarea" id="humEntrada" placeholder="Descreva a situação, dúvida etnográfica ou fenômeno social..."></textarea>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                    <button class="btn btn-gold" id="btnProcessarHum">Processar (7 Camadas)</button>
+                    <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
+                    <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
+                    <button class="btn btn-theo" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="redisFeedbackHum"></div>
+                <div class="status-msg" id="humStatusMsg"></div>
+                <div id="humResultados" style="display:none;">
+                    <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>📊</span> Métricas</div>
+                    <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="humCodigoRastreio"></span></p>
+                    <div class="hum-metric-grid" id="humMetricGrid"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>💬</span> Resposta (Camada 7)</div>
+                    <div class="hum-resposta-box" id="humResposta"></div>
+                    <div class="section-title theo-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo</div>
+                    <div class="theo-json-preview" id="humJsonCompleto" contenteditable="true" style="white-space:pre-wrap;"></div>
+                    <button class="btn btn-outline" id="btnLimparHumJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: FÁBRICA COGNITIVA ==================== -->
+    <div class="tab-content" id="tab-cognitivo">
+        <div class="section">
+            <div class="section-title theo-title"><span>🏭</span> Fábrica Cognitiva — Cultura e Sociedade</div>
+            <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">
+                <strong>Gere novos Especialistas, Humanoides e Objetos Redis</strong> com Super Prompts completos.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;" id="fabricaTipoGrid">
+                <button class="btn btn-outline fabrica-tipo-btn active" data-tipo="especialista">Especialista Digital</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="humanoide">Humanoide Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="perfil">Perfil Cognitivo</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
+                <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
+            </div>
+            <div id="fabricaPainelConfig">
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Nome</label>
+                    <input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Agente de Antropologia Urbana" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Domínio</label>
+                    <input type="text" class="raw-textarea" id="fabricaDominio" placeholder="Ex: Etnografia Digital" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Especialidade</label>
+                    <input type="text" class="raw-textarea" id="fabricaEspecialidade" placeholder="Ex: Análise de Redes Sociais e Tribos Digitais" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave</label>
+                    <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="etnografia, comportamento, cultura, tendências" style="min-height:36px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
+                    <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
+                        <option value="L7">L7 - Essência Cultural</option>
+                        <option value="L6">L6 - Teoria e Estrutura Social</option>
+                        <option value="L5">L5 - Etnografia e Métodos</option>
+                        <option value="L4" selected>L4 - Comportamento e Tendências</option>
+                        <option value="L3">L3 - Contexto Histórico-Cultural</option>
+                        <option value="L2">L2 - Vivências e Expressões</option>
+                        <option value="L1">L1 - Curiosidades e Fatos</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+                    <button class="btn btn-theo" id="fabricaBtnGerar">Gerar</button>
+                    <button class="btn btn-outline" id="fabricaBtnLimpar">Limpar</button>
+                    <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+                    <button class="btn btn-theo" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+                    <button class="btn btn-purple" id="fabricaBtnExportarCatalogo" style="display:none;">📋 Exportar p/ Catálogo</button>
+                </div>
+            </div>
+            <div id="fabricaResultado" style="display:none;margin-top:20px;">
+                <div class="section-title theo-title"><span>📊</span> Resultado</div>
+                <p style="font-size:0.6rem;color:#888;">Código: <span class="theo-code-display" id="fabricaCodigoUniversal"></span></p>
+                <div class="theo-json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+                <button class="btn btn-outline" id="btnLimparJSONFabrica" style="margin-top:6px;">🗑️ Limpar JSON</button>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+                    <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+                    <button class="btn btn-theo" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+                    <button class="btn btn-outline" id="fabricaBtnLimparResultado" style="color:#b91c1c;border-color:#b91c1c;">🗑️ Limpar Resultado</button>
+                </div>
+            </div>
+            <div class="redis-feedback" id="fabricaFeedback"></div>
+            <div class="status-msg" id="fabricaStatusMsg"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 5: PESQUISA ==================== -->
+    <div class="tab-content" id="tab-pesquisa">
+        <div class="section">
+            <div class="section-title theo-title"><span>🔬</span> Pesquisa com Super Prompts</div>
+            <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">
+                Selecione um agente do catálogo (gerado nas abas anteriores) e realize a pesquisa completa.
+            </p>
+            <div id="catalogoPesquisa"></div>
+            <div id="panelPesquisa" style="display:none; margin-top:16px;">
+                <div class="section-title theo-title"><span>🌎</span> <span id="pesquisaNome"></span></div>
+                <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="pesquisaCodigo"></span></p>
+                <div style="margin-top:12px;">
+                    <strong style="font-size:0.7rem;color:var(--theo-purple);">⚡ SUPER PROMPT GERADO:</strong>
+                    <textarea class="generated-question" id="pesquisaSuperPrompt" style="min-height:200px;"></textarea>
+                </div>
+                <button class="btn btn-outline" id="btnCopiarPesquisaPrompt">📋 Copiar Prompt</button>
+                <div style="margin-top:12px;">
+                    <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+                    <textarea class="raw-textarea" id="pesquisaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+                </div>
+                <button class="btn btn-theo" id="btnEstruturarPesquisa" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+                <div class="camadas-preview" id="pesquisaCamadasPreview" style="display:none;"></div>
+                <div class="theo-json-preview" id="pesquisaJSONPreview" contenteditable="true" style="display:none;"></div>
+                <div style="margin-top:12px;">
+                    <button class="btn btn-theo" id="btnEnviarPesquisaRedis" style="display:none;">Enviar para Redis</button>
+                </div>
+                <div class="redis-feedback" id="pesquisaFeedback"></div>
+                <div class="status-msg" id="pesquisaStatusMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CENTRAL REDIS ==================== -->
+    <div class="section" id="multiRedisSection">
+        <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+        <p style="font-size:0.7rem; color:#5c5548; margin-bottom:12px;">Configure até 6 conexões Redis independentes.</p>
+        <div class="multi-redis-hub">
+            <div class="redis-cluster-panel science-cluster">
+                <div class="section-title sci-title"><span>🧪</span> Cluster Cultural</div>
+                <div id="scienceSlotsContainer"></div>
+            </div>
+            <div class="redis-cluster-panel ops-cluster">
+                <div class="section-title ops-title"><span>⚡</span> Cluster Comportamental</div>
+                <div id="opsSlotsContainer"></div>
+            </div>
+        </div>
+        <div class="diretorio-interligado" id="diretorioInterligado">
+            <strong style="font-size:0.65rem;color:#5c5548;">📡 Diretório Interligado:</strong>
+            <span id="diretorioStatus" style="color:#888;">Aguardando conexões...</span>
+        </div>
+    </div>
+
+    <!-- ==================== MODAIS ==================== -->
+    <div class="slot-modal-overlay" id="slotModalOverlay">
+        <div class="slot-modal">
+            <h3>Configurar Slot</h3>
+            <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome">
+            <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+            <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+            <div class="test-status" id="slotModalStatus"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+                <button class="btn btn-theo" id="slotModalSalvar">Salvar</button>
+                <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ==================== CONFIGURAÇÃO REDIS ====================
+        const REDIS_CONFIG = {
+            url: 'https://welcomed-satyr-116661.upstash.io',
+            token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+        };
+
+        // ==================== AUXILIARES ====================
+        function gerarCodigoUnico(prefixo) {
+            return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
+        }
+
+        async function copiarTextoParaClipboard(texto) {
+            if (!texto) { console.warn('Nada para copiar.'); return false; }
+            try { await navigator.clipboard.writeText(texto); return true; } catch (e) {
+                console.warn('Clipboard API falhou, usando fallback:', e);
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = texto;
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    return ok;
+                } catch (e2) { console.error('Falha no fallback de cópia:', e2); return false; }
+            }
+        }
+
+        function updateRedisStatus(status) {
+            const dot = document.getElementById('redisStatusDot');
+            const label = document.getElementById('redisStatusLabel');
+            dot.className = 'redis-status-dot';
+            switch (status) {
+                case 'connected': dot.classList.add('connected'); label.textContent = 'Redis: Conectado'; break;
+                case 'disconnected': dot.classList.add('disconnected'); label.textContent = 'Redis: Desconectado'; break;
+                case 'sending': dot.classList.add('sending'); label.textContent = 'Redis: Enviando...'; break;
+            }
+        }
+
+        async function testarConexaoRedis() {
+            updateRedisStatus('sending');
+            try {
+                const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, {
+                    headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` }
+                });
+                if (response.ok) updateRedisStatus('connected'); else updateRedisStatus('disconnected');
+            } catch { updateRedisStatus('disconnected'); }
+        }
+        testarConexaoRedis();
+
+        // ==================== TABS ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ==================== SISTEMA COGNITIVO ====================
+        const COGNITIVE_SYSTEM = {
+            regulatory: {
+                addMetadata(data) {
+                    return { ...data, metadata: {
+                        data_validacao: new Date().toISOString(),
+                        data_revisao: data.alertaRevisao || new Date(Date.now() + 90*86400000).toISOString(),
+                        criticidade: 'baixa',
+                        status_regulatorio: 'validado',
+                        nivel_confianca: data.score_confianca || 0.85
+                    }};
+                }
+            },
+            protection: {
+                sanitizeOutput(data) {
+                    const sanitized = { ...data };
+                    delete sanitized._internal;
+                    return sanitized;
+                }
+            }
+        };
+
+        // ==================== DADOS DE CULTURA ====================
+        const AREAS_CULTURA = {
+            'Cultura Brasileira': { modulos: 25, grupo: 'Nacional' },
+            'Cultura Global': { modulos: 30, grupo: 'Global' },
+            'Etnografia': { modulos: 22, grupo: 'Antropologia' },
+            'Comportamento Humano': { modulos: 20, grupo: 'Psicologia Social' },
+            'Tendências Sociais': { modulos: 24, grupo: 'Sociologia' },
+            'Patrimônio Imaterial': { modulos: 18, grupo: 'Patrimônio' },
+            'Mídia e Sociedade': { modulos: 26, grupo: 'Comunicação' },
+            'Cultura Digital': { modulos: 28, grupo: 'Digital' },
+            'Movimentos Sociais': { modulos: 16, grupo: 'Ativismo' },
+            'Diversidade e Inclusão': { modulos: 22, grupo: 'Diversidade' },
+            'Religião e Sociedade': { modulos: 20, grupo: 'Religião' },
+            'Arte e Sociedade': { modulos: 24, grupo: 'Arte' },
+            'Cultura Popular': { modulos: 25, grupo: 'Popular' },
+            'Globalização Cultural': { modulos: 19, grupo: 'Globalização' },
+            'Identidade e Memória': { modulos: 21, grupo: 'Identidade' }
+        };
+
+        const TEMAS_POR_AREA = {
+            'Cultura Brasileira': 'Identidade nacional, sincretismo, diversidade regional, tradições populares',
+            'Cultura Global': 'Intercâmbio cultural, globalização, indústria cultural, consumo simbólico',
+            'Etnografia': 'Observação participante, diário de campo, descrição densa, alteridade',
+            'Comportamento Humano': 'Cognição social, normas, influência, comportamento coletivo',
+            'Tendências Sociais': 'Movimentos, inovação social, futurologia, análise de redes',
+            'Patrimônio Imaterial': 'Salvaguarda, transmissão oral, festas, saberes tradicionais',
+            'Mídia e Sociedade': 'Representação, discurso, opinião pública, redes sociais',
+            'Cultura Digital': 'Cibercultura, tribalismo digital, memes, influenciadores',
+            'Movimentos Sociais': 'Ativismo, protestos, engajamento político, mudança social',
+            'Diversidade e Inclusão': 'Gênero, raça, etnia, acessibilidade, equidade',
+            'Religião e Sociedade': 'Secularização, pluralismo, fundamentalismo, diálogo inter-religioso',
+            'Arte e Sociedade': 'Expressão artística, engajamento político, museus, arte urbana',
+            'Cultura Popular': 'Folclore, carnaval, literatura de cordel, festas juninas',
+            'Globalização Cultural': 'Homogeneização, hibridismo, resistência local, cosmopolitismo',
+            'Identidade e Memória': 'Narrativas pessoais, trauma, patrimônio, construção de identidade'
+        };
+
+        // ==================== GERADOR DE SUPER PROMPT DE CULTURA ====================
+        function gerarSuperPromptCultural(area, inicio, fim, tema) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE CULTURA E SOCIEDADE ⚡
+
+        Você é um nó especializado em Cultura e Sociedade do Ecossistema IDENZA.
+        Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre o bloco de ${area} Módulos ${inicio}-${fim}.
+
+        ## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS CULTURAIS
+
+        ### 7. ESSÊNCIA CULTURAL
+        - Qual é o significado cultural fundamental deste bloco?
+        - Quais valores, símbolos e axiomas estão presentes?
+        - Como este tema se conecta à identidade coletiva?
+
+        ### 6. TEORIA E ESTRUTURA SOCIAL
+        - Como este bloco se articula com teorias sociológicas ou antropológicas?
+        - Quais instituições e estruturas sociais estão envolvidas?
+        - Que conceitos (habitus, campo, representação social) se aplicam?
+
+        ### 5. ETNOGRAFIA E MÉTODOS DE CAMPO
+        - Quais métodos etnográficos podem ser utilizados para investigar este tema?
+        - Como a observação participante ou entrevistas aprofundam a compreensão?
+        - Que cuidados éticos são necessários na pesquisa?
+
+        ### 4. COMPORTAMENTO E TENDÊNCIAS SOCIAIS
+        - Quais padrões de comportamento e tendências atuais se relacionam?
+        - Que movimentos sociais ou culturais emergem deste bloco?
+        - Quais implicações para a sociedade contemporânea?
+
+        ### 3. CONTEXTO HISTÓRICO-CULTURAL
+        - Qual é o pano de fundo histórico que molda este tema?
+        - Como a cultura se transformou ao longo do tempo?
+        - Quais influências externas ou intercâmbios culturais existem?
+
+        ### 2. VIVÊNCIAS E EXPRESSÕES COTIDIANAS
+        - Como este tema se manifesta no dia a dia das pessoas?
+        - Que expressões artísticas, religiosas ou populares estão ligadas?
+        - De que forma as comunidades vivenciam essa realidade cultural?
+
+        ### 1. CURIOSIDADES E FATOS CULTURAIS
+        - Quais fatos interessantes e pouco conhecidos?
+        - Que conexões inesperadas com outras áreas do conhecimento existem?
+        - Quais curiosidades históricas ou antropológicas enriquecem o tema?
+
+        ## 📜 REGRAS IMUTÁVEIS
+        1. Cada camada deve conter pelo menos 3 referências culturais ou acadêmicas citadas
+        2. Cite fontes (autores, etnografias, relatórios, artigos)
+        3. Linguagem natural e instigante, como um antropólogo experiente
+        4. **NUNCA utilize o símbolo cerquilha (#) para títulos ou listas**
+        5. Inclua metadados ao final
+
+        ## 🎯 BLOCO A SER ANALISADO
+        **Área**: ${area} (${AREAS_CULTURA[area]?.grupo || 'Cultura'})
+        **Módulos**: ${inicio} a ${fim}
+        **Tema Central**: ${tema}
+
+        ## 🔍 METADADOS OBRIGATÓRIOS AO FINAL
+        Data de validação sugerida: ${new Date(Date.now() + 90*86400000).toISOString().split('T')[0]}
+        Nível de confiança: 0.90
+        Domínio(s): cultura, sociedade, etnografia, comportamento
+        Código de rastreio: [gerado automaticamente]
+        Conflitos detectados: Nenhum até o momento
+        Humanoides recomendados: Etnógrafo, Sociólogo, Analista de Tendências
+        Palavras-chave: ${area.toLowerCase()}, cultura, sociedade, etnografia, tendências
+
+        **⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise textual, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas, usando EXATAMENTE esta estrutura (substitua os arrays vazios pelo conteúdo real):
+
+        \`\`\`json
+        {
+          "camadas": [
+            { "nivel": 7, "nome": "Essência Cultural", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 6, "nome": "Teoria e Estrutura Social", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 5, "nome": "Etnografia e Métodos de Campo", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 4, "nome": "Comportamento e Tendências Sociais", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 3, "nome": "Contexto Histórico-Cultural", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 2, "nome": "Vivências e Expressões Cotidianas", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] },
+            { "nivel": 1, "nome": "Curiosidades e Fatos Culturais", "subtemas": ["..."], "versiculos_chave": ["..."], "fontes": ["..."] }
+          ]
+        }
+        \`\`\`
+
+        Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        // ==================== GERADOR DE AGENTES CULTURAIS ====================
+        let agentesCulturais = [];
+        let agenteCulturalSelecionado = null;
+        let culturaEstruturado = null;
+
+        function gerarAgentesCulturais(area, totalModulos, bloco = 8) {
+            const agentes = [];
+            const totalBlocos = Math.ceil(totalModulos / bloco);
+            const temaBase = TEMAS_POR_AREA[area] || 'Estudo Cultural';
+            const abreviacao = area.substring(0, 3).toUpperCase();
+            const icones = {
+                'Cultura Brasileira': '🇧🇷', 'Cultura Global': '🌐', 'Etnografia': '📝',
+                'Comportamento Humano': '🧠', 'Tendências Sociais': '📈', 'Patrimônio Imaterial': '🏛️',
+                'Mídia e Sociedade': '📺', 'Cultura Digital': '💻', 'Movimentos Sociais': '✊',
+                'Diversidade e Inclusão': '🌈', 'Religião e Sociedade': '🕊️', 'Arte e Sociedade': '🎨',
+                'Cultura Popular': '🎉', 'Globalização Cultural': '🌍', 'Identidade e Memória': '🪪'
+            };
+            const icone = icones[area] || '🎭';
+
+            for (let i = 0; i < totalBlocos; i++) {
+                const inicio = i * bloco + 1;
+                const fim = Math.min(inicio + bloco - 1, totalModulos);
+                const numBloco = i + 1;
+                const codigo = `cult.${area.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${String(inicio).padStart(3,'0')}-${String(fim).padStart(3,'0')}.ptbr.idenza.v1`;
+
+                let nome;
+                if (totalBlocos <= 3) {
+                    nome = `Agente de ${area} — Módulos ${inicio}-${fim}`;
+                } else {
+                    const partes = {
+                        'Cultura Brasileira': ['Formação', 'Identidades', 'Regiões', 'Expressões', 'Desafios'],
+                        'Cultura Global': ['Fundamentos', 'Fluxos', 'Indústria', 'Consumo', 'Resistências'],
+                        'Etnografia': ['Fundamentos', 'Técnicas', 'Campo', 'Análise', 'Ética'],
+                        'Comportamento Humano': ['Cognição', 'Influência', 'Grupos', 'Desvios', 'Aplicações'],
+                        'Tendências Sociais': ['Mapeamento', 'Inovação', 'Futurismo', 'Redes', 'Impactos']
+                    };
+                    const partesArea = partes[area] || [`Parte ${numBloco}`];
+                    const parteBloco = partesArea[i] || `Parte ${numBloco}`;
+                    nome = `${area} — ${parteBloco} (Módulos ${inicio}-${fim})`;
+                }
+
+                const especialistas = [];
+                if (area.includes('Etnografia')) especialistas.push('Antropólogo, Pesquisador de Campo');
+                else if (area.includes('Comportamento')) especialistas.push('Psicólogo Social, Analista de Comportamento');
+                else if (area.includes('Tendências')) especialistas.push('Sociólogo, Futurista');
+                else especialistas.push('Cientista Social, Pesquisador Cultural');
+
+                const chavesDoBloco = [
+                    `${abreviacao} M${inicio}: Fundamentos`,
+                    `${abreviacao} M${Math.floor((inicio+fim)/2)}: Conceitos Centrais`,
+                    `${abreviacao} M${fim}: Aplicações Contemporâneas`
+                ];
+
+                const superPrompt = gerarSuperPromptCultural(area, inicio, fim, temaBase);
+
+                const agente = {
+                    codigo_universal: codigo,
+                    versao: 'v1',
+                    hash: btoa(`${codigo}-${new Date().toISOString()}`).substring(0, 16),
+                    escopo: {
+                        dominio: 'cultura_sociedade',
+                        area: area,
+                        modulo_inicio: inicio,
+                        modulo_fim: fim,
+                        idioma: 'pt-BR',
+                        abrangencia: 'nacional'
+                    },
+                    conteudo: {
+                        resumo: `Análise cultural de ${area} Módulos ${inicio}-${fim} aguardando estruturação.`,
+                        camadas: [
+                            { nivel: 7, nome: 'Essência Cultural', subtemas: [`Significado profundo de ${area}`], versiculos_chave: [], fontes: [] },
+                            { nivel: 6, nome: 'Teoria e Estrutura Social', subtemas: [`Teorias aplicáveis`], versiculos_chave: [], fontes: [] },
+                            { nivel: 5, nome: 'Etnografia e Métodos de Campo', subtemas: [`Métodos de pesquisa`], versiculos_chave: [], fontes: [] },
+                            { nivel: 4, nome: 'Comportamento e Tendências Sociais', subtemas: [`Padrões e tendências`], versiculos_chave: [], fontes: [] },
+                            { nivel: 3, nome: 'Contexto Histórico-Cultural', subtemas: [`Contexto histórico`], versiculos_chave: [], fontes: [] },
+                            { nivel: 2, nome: 'Vivências e Expressões Cotidianas', subtemas: [`Manifestações cotidianas`], versiculos_chave: [], fontes: [] },
+                            { nivel: 1, nome: 'Curiosidades e Fatos Culturais', subtemas: [`Curiosidades`], versiculos_chave: [], fontes: [] }
+                        ]
+                    },
+                    indexacao: {
+                        tags: ['cultura', area.toLowerCase(), AREAS_CULTURA[area]?.grupo.toLowerCase() || 'cultural'],
+                        palavras_chave: [temaBase, ...especialistas.map(p => p.split(',').map(s => s.trim().toLowerCase())).flat()]
+                    },
+                    governanca: {
+                        score_confianca: 0.90,
+                        autor: 'IDEnza',
+                        revisor: 'Humanoide Cultural',
+                        aprovado_por: 'Especialista',
+                        criado_em: new Date().toISOString(),
+                        revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+                    },
+                    origem: {
+                        tipo: 'ia_externa',
+                        modelo: 'DeepSeek',
+                        data_geracao: new Date().toISOString(),
+                        hash_original: null,
+                        uri_original: null
+                    },
+                    licenca: {
+                        tipo: 'CC BY-NC',
+                        responsavel: 'IDEnza'
+                    }
+                };
+                agentes.push(agente);
+            }
+            return agentes;
+        }
+
+        function gerarTodosCulturais(bloco = 8) {
+            const todos = [];
+            for (const area of Object.keys(AREAS_CULTURA)) {
+                const { modulos } = AREAS_CULTURA[area];
+                todos.push(...gerarAgentesCulturais(area, modulos, bloco));
+            }
+            return todos;
+        }
+
+        function renderizarCultura(agentes) {
+            const grid = document.getElementById('teologiaGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente cultural gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('teologiaFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a => 
+                a.escopo.area.toLowerCase().includes(filtro) ||
+                a.codigo_universal.toLowerCase().includes(filtro)
+            );
+            const icones = {
+                'Cultura Brasileira': '🇧🇷', 'Cultura Global': '🌐', 'Etnografia': '📝',
+                'Comportamento Humano': '🧠', 'Tendências Sociais': '📈', 'Patrimônio Imaterial': '🏛️',
+                'Mídia e Sociedade': '📺', 'Cultura Digital': '💻', 'Movimentos Sociais': '✊',
+                'Diversidade e Inclusão': '🌈', 'Religião e Sociedade': '🕊️', 'Arte e Sociedade': '🎨',
+                'Cultura Popular': '🎉', 'Globalização Cultural': '🌍', 'Identidade e Memória': '🪪'
+            };
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'theo-card';
+                const icone = icones[a.escopo.area] || '🎭';
+                card.innerHTML = `
+          <span class="theo-icon">${icone}</span>
+          <div class="theo-name">${a.escopo.area}</div>
+          <div class="theo-detail">Módulos ${a.escopo.modulo_inicio}-${a.escopo.modulo_fim}</div>
+          <div class="theo-versiculo">${a.escopo.abrangencia} • ${a.escopo.idioma}</div>
+          <div class="theo-progress-bar"><div class="fill" style="width:${((a.escopo.modulo_fim - a.escopo.modulo_inicio + 1) / AREAS_CULTURA[a.escopo.area]?.modulos * 100) || 30}%;"></div></div>
+        `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.theo-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteCulturalSelecionado = a;
+                    exibirDetalheCultura(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheCultura(a) {
+            const panel = document.getElementById('teologiaDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('teologiaDetalheNome').textContent = `${a.escopo.area} (Módulos ${a.escopo.modulo_inicio}-${a.escopo.modulo_fim})`;
+            document.getElementById('teologiaDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('teologiaDetalheLivro').textContent = `🎭 ${a.escopo.area} (${AREAS_CULTURA[a.escopo.area]?.grupo || 'Cultura'})`;
+            document.getElementById('teologiaDetalheBloco').textContent = `📋 ${a.escopo.area} M${a.escopo.modulo_inicio}-M${a.escopo.modulo_fim}`;
+            document.getElementById('teologiaDetalheProgresso').textContent = `${a.escopo.abrangencia} • ${a.escopo.idioma}`;
+            const totalModulos = AREAS_CULTURA[a.escopo.area]?.modulos || 1;
+            const progresso = ((a.escopo.modulo_fim - a.escopo.modulo_inicio + 1) / totalModulos) * 100;
+            document.getElementById('teologiaDetalheBarra').style.width = Math.min(progresso, 100) + '%';
+            
+            const prompt = gerarSuperPromptCultural(a.escopo.area, a.escopo.modulo_inicio, a.escopo.modulo_fim, TEMAS_POR_AREA[a.escopo.area] || '');
+            document.getElementById('teologiaDetalheSuperPrompt').textContent = prompt;
+            
+            document.getElementById('teologiaRespostaIA').value = '';
+            document.getElementById('teologiaCamadasPreview').style.display = 'none';
+            document.getElementById('teologiaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarTeologiaRedis').style.display = 'none';
+            document.getElementById('teologiaFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('teologiaStatusDetalhe').textContent = '';
+            culturaEstruturado = null;
+        }
+
+        // ==================== FUNÇÃO extrairCamadas ADAPTADA PARA CULTURA ====================
+        function extrairCamadas(texto) {
+            if (!texto || typeof texto !== 'string') return [];
+            
+            try {
+                const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/);
+                if (jsonMatch) {
+                    const obj = JSON.parse(jsonMatch[0]);
+                    if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+                        return obj.camadas.map(c => ({
+                            nivel: c.nivel,
+                            nome: c.nome,
+                            subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [],
+                            versiculos_chave: c.versiculos_chave || [],
+                            fontes: c.fontes || []
+                        }));
+                    }
+                }
+            } catch (e) {}
+
+            const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
+            const camadas = [];
+            let camadaAtual = null;
+
+            const titulos = [
+                { nivel: 7, regex: /\b(7|sete)[\.\)\-\s:]*\s*(ESS[EÊ]NCIA|CULTURAL|SIGNIFICADO|FUNDAMENTO)/i, nome: 'Essência Cultural' },
+                { nivel: 6, regex: /\b(6|seis)[\.\)\-\s:]*\s*(TEORIA|ESTRUTURA|SOCIAL)/i, nome: 'Teoria e Estrutura Social' },
+                { nivel: 5, regex: /\b(5|cinco)[\.\)\-\s:]*\s*(ETNOGRAFIA|M[ÉE]TODOS|CAMPO)/i, nome: 'Etnografia e Métodos de Campo' },
+                { nivel: 4, regex: /\b(4|quatro)[\.\)\-\s:]*\s*(COMPORTAMENTO|TEND[ÊE]NCIAS|SOCIAIS)/i, nome: 'Comportamento e Tendências Sociais' },
+                { nivel: 3, regex: /\b(3|tr[ÊE]s)[\.\)\-\s:]*\s*(CONTEXTO|HIST[ÓO]RICO|CULTURAL)/i, nome: 'Contexto Histórico-Cultural' },
+                { nivel: 2, regex: /\b(2|dois)[\.\)\-\s:]*\s*(VIV[ÊE]NCIAS|EXPRESS[ÕO]ES|COTIDIANAS|QUOTIDIANO)/i, nome: 'Vivências e Expressões Cotidianas' },
+                { nivel: 1, regex: /\b(1|um)[\.\)\-\s:]*\s*(CURIOSIDADES|FATOS|CULTURAIS|DICAS)/i, nome: 'Curiosidades e Fatos Culturais' }
+            ];
+
+            for (const linha of linhas) {
+                let match = null;
+                for (const t of titulos) {
+                    const m = linha.match(t.regex);
+                    if (m) { match = { nivel: t.nivel, nome: t.nome }; break; }
+                }
+                if (match) {
+                    const existente = camadas.findIndex(c => c.nivel === match.nivel);
+                    if (existente !== -1) camadas.splice(existente, 1);
+                    camadaAtual = { nivel: match.nivel, nome: match.nome, subtemas: [], versiculos_chave: [], fontes: [] };
+                    camadas.push(camadaAtual);
+                } else if (camadaAtual) {
+                    const limpo = linha.replace(/^[-*#\s]+/, '').trim();
+                    if (limpo.length > 0 && !/^---+$/.test(limpo) && !/^\*\*?[\s\*]*$/.test(limpo)) {
+                        camadaAtual.subtemas.push(limpo);
+                    }
+                }
+            }
+
+            for (const t of titulos) {
+                if (!camadas.find(c => c.nivel === t.nivel)) {
+                    camadas.push({ nivel: t.nivel, nome: t.nome, subtemas: ['Conteúdo não encontrado na resposta.'], versiculos_chave: [], fontes: [] });
+                }
+            }
+
+            camadas.sort((a, b) => b.nivel - a.nivel);
+            return camadas;
+        }
+
+        // ==================== EVENTOS CULTURA ====================
+        document.getElementById('btnGerarTeologia').addEventListener('click', () => {
+            const agentes = gerarTodosCulturais(8);
+            agentesCulturais = agentes;
+            renderizarCultura(agentes);
+            document.getElementById('teologiaStatusMsg').textContent = `✅ ${agentes.length} agentes culturais gerados com Super Prompts!`;
+            setTimeout(() => { document.getElementById('teologiaStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarTeologiaPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('teologiaStatusDetalhe');
+            if (!agenteCulturalSelecionado) {
+                statusEl.textContent = '⚠️ Selecione um agente cultural primeiro.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const prompt = gerarSuperPromptCultural(
+                agenteCulturalSelecionado.escopo.area,
+                agenteCulturalSelecionado.escopo.modulo_inicio,
+                agenteCulturalSelecionado.escopo.modulo_fim,
+                TEMAS_POR_AREA[agenteCulturalSelecionado.escopo.area] || ''
+            );
+            if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+                statusEl.textContent = '⚠️ Super Prompt não disponível para este agente.';
+                setTimeout(() => statusEl.textContent = '', 3000);
+                return;
+            }
+            const ok = await copiarTextoParaClipboard(prompt);
+            if (ok) statusEl.textContent = '✅ Super Prompt copiado para a área de transferência!';
+            else statusEl.textContent = '❌ Falha ao copiar. Tente novamente.';
+            setTimeout(() => statusEl.textContent = '', 4000);
+        });
+
+        document.getElementById('btnCopiarJSONTeologia').addEventListener('click', async () => {
+            if (!agenteCulturalSelecionado) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.'; return; }
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteCulturalSelecionado, null, 2));
+            document.getElementById('teologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('teologiaFiltro').addEventListener('input', () => { renderizarCultura(agentesCulturais); });
+        document.getElementById('btnLimparTeologiaJSON').addEventListener('click', () => { document.getElementById('teologiaJSONPreview').textContent = ''; });
+
+        // Estruturar Cultura
+        document.getElementById('btnEstruturarTeologia').addEventListener('click', () => {
+            if (!agenteCulturalSelecionado) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.'; return; }
+            const texto = document.getElementById('teologiaRespostaIA').value.trim();
+            if (!texto) { document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA primeiro.'; return; }
+            
+            const camadas = extrairCamadas(texto);
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+            const codigo = agenteCulturalSelecionado.codigo_universal;
+            const agora = new Date().toISOString();
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + texto).substring(0, 16),
+                escopo: { dominio: agenteCulturalSelecionado.escopo.dominio, area: agenteCulturalSelecionado.escopo.area, modulo_inicio: agenteCulturalSelecionado.escopo.modulo_inicio, modulo_fim: agenteCulturalSelecionado.escopo.modulo_fim, idioma: agenteCulturalSelecionado.escopo.idioma, abrangencia: agenteCulturalSelecionado.escopo.abrangencia },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: agenteCulturalSelecionado.indexacao.tags, palavras_chave: agenteCulturalSelecionado.indexacao.palavras_chave },
+                governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Humanoide Cultural', aprovado_por: 'Especialista', criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: btoa(texto).substring(0,20), uri_original: `/storage/culture/${agenteCulturalSelecionado.escopo.area.toLowerCase()}/${agenteCulturalSelecionado.escopo.modulo_inicio}-${agenteCulturalSelecionado.escopo.modulo_fim}.md` },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            
+            culturaEstruturado = jsonResult;
+            document.getElementById('teologiaCamadasPreview').style.display = 'block';
+            document.getElementById('teologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('teologiaJSONPreview').style.display = 'block';
+            document.getElementById('teologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarTeologiaRedis').style.display = 'inline-flex';
+            document.getElementById('teologiaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({ fontes: ['IA Externa', 'Super Prompt IDEnza'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+        });
+
+        document.getElementById('btnEnviarTeologiaRedis').addEventListener('click', async () => {
+            if (!culturaEstruturado) return;
+            document.getElementById('teologiaStatusDetalhe').textContent = 'Enviando...';
+            await enviarDiretoRedis(culturaEstruturado, 'cultura', culturaEstruturado.codigo_universal, 'teologiaFeedbackDetalhe');
+            document.getElementById('teologiaStatusDetalhe').textContent = 'Concluído.';
+            setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        // ==================== COMPORTAMENTO & TENDÊNCIAS (segundo eixo) ====================
+        const UNIDADES_COMPORTAMENTO = [
+            { nome: 'Centro de Estudos da Cultura Brasileira', local: 'São Paulo', especialidade: 'Cultura Nacional', recursos: 'Acervos, entrevistas, mapeamento cultural', relevancia: 'Preservação e análise da identidade brasileira', referencias: ['Mário de Andrade', 'Gilberto Freyre', 'Darcy Ribeiro'] },
+            { nome: 'Observatório de Tendências Globais', local: 'Brasília', especialidade: 'Futurismo Social', recursos: 'Big Data, pesquisas transnacionais, análise de redes', relevancia: 'Antecipação de movimentos globais', referencias: ['Relatórios de tendências', 'World Values Survey'] },
+            { nome: 'Núcleo de Etnografia Urbana', local: 'Rio de Janeiro', especialidade: 'Antropologia da Cidade', recursos: 'Diários de campo, registros audiovisuais, entrevistas', relevancia: 'Compreensão das dinâmicas urbanas contemporâneas', referencias: ['Michel de Certeau', 'Janice Perlman'] },
+            { nome: 'Laboratório de Comportamento Social', local: 'Belo Horizonte', especialidade: 'Psicologia Social', recursos: 'Experimentos, grupos focais, análise de discurso', relevancia: 'Estudo de normas, preconceitos e influência', referencias: ['Solomon Asch', 'Stanley Milgram'] },
+            { nome: 'Grupo de Pesquisa em Mídia e Sociedade', local: 'Salvador', especialidade: 'Comunicação', recursos: 'Monitoramento de redes, análise de conteúdo, surveys', relevancia: 'Impacto da mídia na opinião pública', referencias: ['Manuel Castells', 'Pierre Bourdieu'] },
+            { nome: 'Centro de Documentação da Cultura Popular', local: 'Recife', especialidade: 'Folclore e Tradições', recursos: 'Acervo de cordéis, registros de festas, partituras', relevancia: 'Salvaguarda do patrimônio imaterial', referencias: ['Câmara Cascudo', 'Mario de Andrade'] },
+            { nome: 'Observatório de Diversidade e Inclusão', local: 'Manaus', especialidade: 'Direitos Humanos', recursos: 'Indicadores sociais, relatórios de ONGs, audiências', relevancia: 'Promoção da equidade e políticas afirmativas', referencias: ['Kimberlé Crenshaw', 'Boaventura de Sousa Santos'] },
+            { nome: 'Instituto de Cultura Digital', local: 'São Paulo', especialidade: 'Cibercultura', recursos: 'Análise de plataformas, etnografia digital, algoritmos', relevancia: 'Compreensão das tribos digitais e influenciadores', referencias: ['Henry Jenkins', 'Danah Boyd'] },
+            { nome: 'Centro de Memória e Identidade', local: 'Porto Alegre', especialidade: 'História Oral', recursos: 'Entrevistas de história de vida, acervos fotográficos, genealogias', relevancia: 'Construção de narrativas identitárias', referencias: ['Paul Ricoeur', 'Maurice Halbwachs'] },
+            { nome: 'Rede de Pesquisa em Movimentos Sociais', local: 'Fortaleza', especialidade: 'Ativismo', recursos: 'Cartografias de protestos, análise de redes, entrevistas', relevancia: 'Mapeamento de mobilizações coletivas', referencias: ['Charles Tilly', 'Alain Touraine'] }
+        ];
+
+        function gerarSuperPromptComportamento(unidade) {
+            return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE COMPORTAMENTO E TENDÊNCIAS ⚡
+
+        Você é um nó especializado em Comportamento e Sociedade do Ecossistema IDENZA.
+        Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre a unidade de pesquisa ${unidade.nome}.
+
+        ## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS DE COMPORTAMENTO E TENDÊNCIAS
+        As mesmas 7 camadas do modelo cultural (Essência, Teoria, Etnografia, Comportamento, Contexto, Vivências, Curiosidades) devem ser aplicadas.
+
+        ## 📜 REGRAS IMUTÁVEIS
+        1. Cada camada deve conter referências específicas
+        2. Cite fontes acadêmicas e relatórios
+        3. Linguagem acessível e instigante
+        4. **NUNCA utilize o símbolo cerquilha (#)**
+        5. Inclua metadados ao final
+
+        ## 🎯 UNIDADE A SER ANALISADA
+        **Nome**: ${unidade.nome}
+        **Localização**: ${unidade.local}
+        **Especialidade**: ${unidade.especialidade}
+        **Recursos**: ${unidade.recursos}
+        **Relevância**: ${unidade.relevancia}
+        **Referências**: ${unidade.referencias.join(', ')}
+
+        **⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Forneça OBRIGATORIAMENTE um bloco JSON com as 7 camadas, como no modelo cultural.
+
+        Inicie agora a geração do artefato cognitivo imutável.`;
+        }
+
+        let agentesComportamento = [];
+        let agenteComportamentoSelecionado = null;
+        let comportamentoEstruturado = null;
+
+        function gerarAgentesComportamento() {
+            return UNIDADES_COMPORTAMENTO.map(unidade => {
+                const codigo = `comp.${unidade.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ptbr.idenza.v1`;
+                return {
+                    codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + unidade.nome).substring(0, 16),
+                    escopo: { dominio: 'comportamento_tendencias', unidade: unidade.nome, localizacao: unidade.local, especialidade: unidade.especialidade, idioma: 'pt-BR' },
+                    conteudo: {
+                        resumo: `Análise de comportamento de ${unidade.nome} aguardando estruturação.`,
+                        camadas: [
+                            { nivel: 7, nome: 'Essência Cultural', subtemas: [`Importância de ${unidade.nome}`], referencias: [] },
+                            { nivel: 6, nome: 'Teoria e Estrutura Social', subtemas: [unidade.recursos], referencias: [] },
+                            { nivel: 5, nome: 'Etnografia e Métodos de Campo', subtemas: unidade.referencias, referencias: [] },
+                            { nivel: 4, nome: 'Comportamento e Tendências Sociais', subtemas: [`Especialidade ${unidade.especialidade}`], referencias: [] },
+                            { nivel: 3, nome: 'Contexto Histórico-Cultural', subtemas: ['Contexto histórico'], referencias: [] },
+                            { nivel: 2, nome: 'Vivências e Expressões Cotidianas', subtemas: [`Como vivenciar ${unidade.nome}`], referencias: [] },
+                            { nivel: 1, nome: 'Curiosidades e Fatos Culturais', subtemas: [`Curiosidades sobre ${unidade.nome}`], referencias: [] }
+                        ]
+                    },
+                    indexacao: { tags: ['comportamento', unidade.nome.toLowerCase(), unidade.especialidade.toLowerCase()], palavras_chave: [unidade.nome.toLowerCase(), unidade.local.toLowerCase()] },
+                    governanca: { score_confianca: 0.90, autor: 'IDEnza', revisor: 'Humanoide Social', aprovado_por: 'Especialista', criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] },
+                    origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: new Date().toISOString(), hash_original: null, uri_original: null },
+                    licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+                };
+            });
+        }
+
+        function renderizarComportamento(agentes) {
+            const grid = document.getElementById('arqueologiaGrid');
+            grid.innerHTML = '';
+            if (!agentes || agentes.length === 0) {
+                grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente de comportamento gerado. Clique em "Gerar Todos".</p>';
+                return;
+            }
+            const filtro = document.getElementById('arqueologiaFiltro')?.value?.toLowerCase() || '';
+            const filtrados = agentes.filter(a => a.escopo.unidade.toLowerCase().includes(filtro) || a.escopo.especialidade.toLowerCase().includes(filtro));
+            for (const a of filtrados) {
+                const card = document.createElement('div');
+                card.className = 'arch-card';
+                card.innerHTML = `<span class="arch-icon">📊</span><div class="arch-name">${a.escopo.unidade}</div><div class="arch-detail">${a.escopo.localizacao}</div><div class="arch-period">${a.escopo.especialidade}</div>`;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.arch-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    agenteComportamentoSelecionado = a;
+                    exibirDetalheComportamento(a);
+                });
+                grid.appendChild(card);
+            }
+        }
+
+        function exibirDetalheComportamento(a) {
+            const panel = document.getElementById('arqueologiaDetalhe');
+            panel.style.display = 'block';
+            document.getElementById('arqueologiaDetalheNome').textContent = `Unidade de ${a.escopo.unidade}`;
+            document.getElementById('arqueologiaDetalheCodigo').textContent = a.codigo_universal;
+            document.getElementById('arqueologiaDetalheLocal').textContent = `📍 ${a.escopo.localizacao}`;
+            document.getElementById('arqueologiaDetalhePeriodo').textContent = `📅 ${a.escopo.especialidade}`;
+            const unidade = UNIDADES_COMPORTAMENTO.find(s => s.nome === a.escopo.unidade);
+            if (unidade) document.getElementById('arqueologiaDetalheSuperPrompt').textContent = gerarSuperPromptComportamento(unidade);
+            else document.getElementById('arqueologiaDetalheSuperPrompt').textContent = 'Super Prompt não disponível';
+            document.getElementById('arqueologiaRespostaIA').value = '';
+            document.getElementById('arqueologiaCamadasPreview').style.display = 'none';
+            document.getElementById('arqueologiaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarArqueologiaRedis').style.display = 'none';
+            document.getElementById('arqueologiaFeedbackDetalhe').className = 'redis-feedback';
+            document.getElementById('arqueologiaStatusDetalhe').textContent = '';
+            comportamentoEstruturado = null;
+        }
+
+        document.getElementById('btnGerarArqueologia').addEventListener('click', () => {
+            const agentes = gerarAgentesComportamento();
+            agentesComportamento = agentes;
+            renderizarComportamento(agentes);
+            document.getElementById('arqueologiaStatusMsg').textContent = `✅ ${agentes.length} agentes de comportamento gerados!`;
+            setTimeout(() => { document.getElementById('arqueologiaStatusMsg').textContent = ''; }, 4000);
+            atualizarCatalogoPesquisa();
+        });
+
+        document.getElementById('btnCopiarArqueologiaPrompt').addEventListener('click', async function() {
+            const statusEl = document.getElementById('arqueologiaStatusDetalhe');
+            if (!agenteComportamentoSelecionado) { statusEl.textContent = '⚠️ Selecione um agente primeiro.'; return; }
+            const unidade = UNIDADES_COMPORTAMENTO.find(s => s.nome === agenteComportamentoSelecionado.escopo.unidade);
+            if (!unidade) { statusEl.textContent = '⚠️ Unidade não encontrada.'; return; }
+            const prompt = gerarSuperPromptComportamento(unidade);
+            const ok = await copiarTextoParaClipboard(prompt);
+            statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+            setTimeout(() => statusEl.textContent = '', 3000);
+        });
+
+        document.getElementById('btnCopiarJSONArqueologia').addEventListener('click', async () => {
+            if (!agenteComportamentoSelecionado) return;
+            const ok = await copiarTextoParaClipboard(JSON.stringify(agenteComportamentoSelecionado, null, 2));
+            document.getElementById('arqueologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha.';
+            setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+        });
+
+        document.getElementById('arqueologiaFiltro').addEventListener('input', () => { renderizarComportamento(agentesComportamento); });
+        document.getElementById('btnLimparArqueologiaJSON').addEventListener('click', () => { document.getElementById('arqueologiaJSONPreview').textContent = ''; });
+
+        document.getElementById('btnEstruturarArqueologia').addEventListener('click', () => {
+            if (!agenteComportamentoSelecionado) { document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Selecione um agente.'; return; }
+            const texto = document.getElementById('arqueologiaRespostaIA').value.trim();
+            if (!texto) { document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Cole a resposta.'; return; }
+            const camadas = extrairCamadas(texto);
+            const l7 = camadas.find(c => c.nivel === 7);
+            const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+            const codigo = agenteComportamentoSelecionado.codigo_universal;
+            const agora = new Date().toISOString();
+            const jsonResult = {
+                codigo_universal: codigo, versao: 'v1', hash: btoa(codigo + texto).substring(0, 16),
+                escopo: { dominio: 'comportamento_tendencias', unidade: agenteComportamentoSelecionado.escopo.unidade, localizacao: agenteComportamentoSelecionado.escopo.localizacao, especialidade: agenteComportamentoSelecionado.escopo.especialidade, idioma: 'pt-BR' },
+                conteudo: { resumo, camadas },
+                indexacao: { tags: agenteComportamentoSelecionado.indexacao.tags, palavras_chave: agenteComportamentoSelecionado.indexacao.palavras_chave },
+                governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Humanoide', aprovado_por: 'Especialista', criado_em: agora, revisado_em: new Date(Date.now()+90*86400000).toISOString().split('T')[0] },
+                origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: btoa(texto).substring(0,20), uri_original: `/storage/behavior/${agenteComportamentoSelecionado.escopo.unidade.toLowerCase()}.md` },
+                licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+            };
+            comportamentoEstruturado = jsonResult;
+            document.getElementById('arqueologiaCamadasPreview').style.display = 'block';
+            document.getElementById('arqueologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+            document.getElementById('arqueologiaJSONPreview').style.display = 'block';
+            document.getElementById('arqueologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+            document.getElementById('btnEnviarArqueologiaRedis').style.display = 'inline-flex';
+            document.getElementById('arqueologiaStatusDetalhe').textContent = '✅ Estruturado!';
+            setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+            mostrarExplicacao({ fontes: ['IA Externa'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+        });
+
+        document.getElementById('btnEnviarArqueologiaRedis').addEventListener('click', async () => {
+            if (!comportamentoEstruturado) return;
+            await enviarDiretoRedis(comportamentoEstruturado, 'comportamento', comportamentoEstruturado.codigo_universal, 'arqueologiaFeedbackDetalhe');
+        });
+
+        // ==================== PAINEL DE TRANSPARÊNCIA ====================
+        function mostrarExplicacao(meta) {
+            const panel = document.getElementById('explainPanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+            document.getElementById('explainLayers').textContent = meta.camadas && meta.camadas.length ? meta.camadas.map(c => c.nome).join(' → ') : '—';
+            document.getElementById('explainConfidence').textContent = ((meta.score_confianca||0.85)*100).toFixed(0)+'%';
+            document.getElementById('explainReview').textContent = meta.alertaRevisao || '—';
+            document.getElementById('explainCode').textContent = meta.codigo || '—';
+        }
+
+        // ==================== ENVIO DIRETO AO REDIS ====================
+        async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+            const feedbackEl = document.getElementById(feedbackElementId);
+            const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+            const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+            updateRedisStatus('sending');
+            if (feedbackEl) { feedbackEl.className = 'redis-feedback show loading'; feedbackEl.textContent = '⏳ Enviando...'; }
+            try {
+                const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+                const redisKey = `idenza:${tipo}:${codigo}`;
+                const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+                    method: 'POST', headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sanitizedPayload)
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                updateRedisStatus('connected');
+                if (feedbackEl) { feedbackEl.className = 'redis-feedback show success'; feedbackEl.innerHTML = `✅ <strong>Enviado!</strong><br>📁 Chave: <code>${redisKey}</code>`; }
+            } catch (error) {
+                updateRedisStatus('disconnected');
+                if (feedbackEl) { feedbackEl.className = 'redis-feedback show error'; feedbackEl.innerHTML = `❌ Erro: ${error.message}`; }
+            }
+        }
+
+        // ==================== CATÁLOGO DE PESQUISA ====================
+        function atualizarCatalogoPesquisa() {
+            const container = document.getElementById('catalogoPesquisa');
+            if (!container) return;
+            const todosAgentes = [...agentesCulturais, ...agentesComportamento];
+            if (todosAgentes.length === 0) { container.innerHTML = '<p style="font-size:0.7rem;">Gere agentes primeiro.</p>'; return; }
+            container.innerHTML = todosAgentes.map(a => `<div class="agent-select-item" data-codigo="${a.codigo_universal}"><input type="radio" name="agentePesquisa"> ${a.codigo_universal} — ${a.escopo?.area || a.escopo?.unidade}</div>`).join('');
+            container.querySelectorAll('.agent-select-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const agente = todosAgentes.find(a => a.codigo_universal === item.dataset.codigo);
+                    if (agente) abrirPesquisa(agente);
+                });
+            });
+        }
+
+        function abrirPesquisa(agente) {
+            document.getElementById('panelPesquisa').style.display = 'block';
+            document.getElementById('pesquisaNome').textContent = agente.codigo_universal;
+            document.getElementById('pesquisaCodigo').textContent = agente.codigo_universal;
+            let prompt = '';
+            if (agente.escopo.dominio === 'cultura_sociedade') prompt = gerarSuperPromptCultural(agente.escopo.area, agente.escopo.modulo_inicio, agente.escopo.modulo_fim, TEMAS_POR_AREA[agente.escopo.area]||'');
+            else if (agente.escopo.dominio === 'comportamento_tendencias') { const un = UNIDADES_COMPORTAMENTO.find(u=>u.nome===agente.escopo.unidade); if(un) prompt = gerarSuperPromptComportamento(un); }
+            document.getElementById('pesquisaSuperPrompt').value = prompt || 'Prompt indisponível';
+            document.getElementById('pesquisaRespostaIA').value = '';
+            document.getElementById('pesquisaCamadasPreview').style.display = 'none';
+            document.getElementById('pesquisaJSONPreview').style.display = 'none';
+            document.getElementById('btnEnviarPesquisaRedis').style.display = 'none';
+        }
+
+        document.getElementById('btnCopiarPesquisaPrompt').addEventListener('click', async () => { /* ... */ });
+        document.getElementById('btnEstruturarPesquisa').addEventListener('click', () => { /* ... */ });
+        document.getElementById('btnEnviarPesquisaRedis').addEventListener('click', async () => { /* ... */ });
+
+        // ==================== INICIALIZAÇÃO ====================
+        window.addEventListener('load', () => {
+            agentesCulturais = gerarTodosCulturais(8);
+            agentesComportamento = gerarAgentesComportamento();
+            renderizarCultura(agentesCulturais);
+            renderizarComportamento(agentesComportamento);
+            atualizarCatalogoPesquisa();
+        });
+
+        // ==================== ASSISTENTE ====================
+        document.getElementById('assistenteBtn').addEventListener('click', () => {
+            const input = document.getElementById('assistenteInput').value.trim();
+            const resp = document.getElementById('assistenteResposta');
+            if (!input) { resp.style.display='block'; resp.textContent='Digite sua pergunta.'; return; }
+            resp.style.display='block'; resp.textContent='Processando...';
+            setTimeout(() => { resp.textContent = `Você perguntou: "${input}".\n\nResposta simulada. Em breve integração real.`; }, 1000);
+        });
+
+        // ==================== HUMANÓIDES ====================
+        const tiposHumanoides = [
+            { id: 'etnografo', icone: '📝', nome: 'Etnógrafo', descricao: 'Especialista em observação participante e descrição densa.' },
+            { id: 'sociologo', icone: '📊', nome: 'Sociólogo', descricao: 'Analista de estruturas sociais e tendências.' },
+            { id: 'antropologo', icone: '🌍', nome: 'Antropólogo', descricao: 'Estudioso da diversidade cultural e simbolismo.' },
+            { id: 'analista_tendencias', icone: '📈', nome: 'Analista de Tendências', descricao: 'Focado em futurologia e inovação social.' }
+        ];
+        const humGrid = document.getElementById('humTypeGrid');
+        tiposHumanoides.forEach(t => {
+            const card = document.createElement('div'); card.className = 'hum-type-card';
+            card.innerHTML = `<span class="type-icon">${t.icone}</span><div class="type-name">${t.nome}</div><div class="type-code">${t.id}</div>`;
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.hum-type-card').forEach(c=>c.classList.remove('selected'));
+                card.classList.add('selected');
+                document.getElementById('humPanel').style.display='block';
+                document.getElementById('humIcone').textContent=t.icone;
+                document.getElementById('humNome').textContent=t.nome;
+                document.getElementById('humCodigoBase').textContent=`hum.${t.id}.idenza`;
+                document.getElementById('humDescricao').textContent=t.descricao;
+                document.getElementById('humResultados').style.display='none';
+            });
+            humGrid.appendChild(card);
+        });
+
+        document.getElementById('btnProcessarHum').addEventListener('click', () => { /* ... lógica de processamento simplificada ... */ });
+        document.getElementById('btnEnviarWorkerHum').addEventListener('click', async () => { if(window._humPayload) await enviarDiretoRedis(window._humPayload, 'humanoide', window._humPayload.codigo_universal, 'redisFeedbackHum'); });
+
+        // ==================== FÁBRICA COGNITIVA ====================
+        document.getElementById('fabricaBtnGerar').addEventListener('click', () => {
+            const nome = document.getElementById('fabricaNome').value.trim()||'Novo Agente';
+            const dominio = document.getElementById('fabricaDominio').value.trim()||'cultura';
+            const especialidade = document.getElementById('fabricaEspecialidade').value.trim()||'Análise';
+            const palavrasChave = document.getElementById('fabricaPalavrasChave').value.trim().split(',').map(s=>s.trim()).filter(Boolean);
+            const camadaDestino = document.getElementById('fabricaCamadaDestino').value;
+            const codigo = `fabrica.${dominio.replace(/[^a-z0-9]/g,'_')}.${Date.now().toString(36)}.v1`;
+            const agora = new Date().toISOString();
+            const resultado = { codigo_universal: codigo, versao:'v1', hash: btoa(codigo+agora).substring(0,16), escopo:{dominio,especialidade,idioma:'pt-BR',camada_destino:camadaDestino}, conteudo:{ resumo:`Agente para ${especialidade}`, camadas: [ {nivel:7,nome:'Essência Cultural',subtemas:[`Fundamentos de ${especialidade}`],versiculos_chave:[],fontes:[]}, {nivel:6,nome:'Teoria e Estrutura Social',subtemas:['Teorias aplicáveis'],versiculos_chave:[],fontes:[]}, {nivel:5,nome:'Etnografia e Métodos de Campo',subtemas:['Métodos'],versiculos_chave:[],fontes:[]}, {nivel:4,nome:'Comportamento e Tendências Sociais',subtemas:['Aplicações'],versiculos_chave:[],fontes:[]}, {nivel:3,nome:'Contexto Histórico-Cultural',subtemas:['Contexto'],versiculos_chave:[],fontes:[]}, {nivel:2,nome:'Vivências e Expressões Cotidianas',subtemas:['Vivências'],versiculos_chave:[],fontes:[]}, {nivel:1,nome:'Curiosidades e Fatos Culturais',subtemas:['Curiosidades'],versiculos_chave:[],fontes:[]} ] }, indexacao:{tags:[dominio,especialidade.toLowerCase()],palavras_chave:palavrasChave.length?palavrasChave:[especialidade.toLowerCase()]}, governanca:{score_confianca:0.80,autor:'IDEnza',revisor:'Humanoide',aprovado_por:'Especialista',criado_em:agora,revisado_em:new Date(Date.now()+90*86400000).toISOString().split('T')[0]}, origem:{tipo:'ia_externa',modelo:'DeepSeek',data_geracao:agora,hash_original:null,uri_original:`/storage/fabrica/${codigo}.md`}, licenca:{tipo:'CC BY-NC',responsavel:'IDEnza'} };
+            document.getElementById('fabricaResultado').style.display='block';
+            document.getElementById('fabricaCodigoUniversal').textContent=codigo;
+            document.getElementById('fabricaPreviewJSON').textContent=JSON.stringify(resultado,null,2);
+            document.getElementById('fabricaStatusMsg').textContent='✅ Artefato gerado!';
+            setTimeout(()=>{document.getElementById('fabricaStatusMsg').textContent='';},3000);
+        });
+        document.getElementById('fabricaBtnLimpar').addEventListener('click', ()=>{ /* limpar campos */ });
+        document.getElementById('fabricaBtnCopiarJSON').addEventListener('click', async ()=>{ /* copiar json */ });
+        document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async ()=>{ /* enviar */ });
+        document.getElementById('btnLimparJSONFabrica').addEventListener('click', ()=>{ document.getElementById('fabricaPreviewJSON').textContent=''; });
+        document.getElementById('fabricaBtnLimparResultado').addEventListener('click', ()=>{ document.getElementById('fabricaResultado').style.display='none'; });
+
+        // ==================== EXPORTAÇÃO ====================
+        document.getElementById('btnExportarTeologia').addEventListener('click',()=>alert('Exportação em breve.'));
+        document.getElementById('btnExportarArqueologia').addEventListener('click',()=>alert('Exportação em breve.'));
+
+        console.log('IDEnza — Estação de Cultura e Sociedade carregada.');
+    </script>
+</body>
+</html>

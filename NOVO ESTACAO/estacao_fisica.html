@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Estação de Pesquisa — Física e Astrofísica</title>
+  <style>
+    /* ==================== CSS COMPLETO (mantido exatamente igual ao original) ==================== */
+    :root {
+      --bg: #f8f5f0;
+      --card-bg: #ffffff;
+      --petroleum: #0d4f5c;
+      --petroleum-light: #1a6e7a;
+      --gold-dark: #8B6914;
+      --gold: #b8860b;
+      --gold-light: #e6c66a;
+      --text: #1e1e1e;
+      --text-soft: #555;
+      --border: #d0c8b8;
+      --shadow-sm: 2px 2px 6px rgba(0,0,0,0.08);
+      --shadow-md: 3px 3px 10px rgba(0,0,0,0.10);
+      --shadow-lg: 4px 4px 16px rgba(0,0,0,0.12);
+      --success: #0d5c3a;
+      --success-bg: #e0f5e8;
+      --warning: #b8860b;
+      --warning-bg: #fefce8;
+      --error: #b91c1c;
+      --error-bg: #fef2f2;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
+      --theo-purple: #1a3a6b;        /* azul profundo para física */
+      --theo-purple-light: #3a6a9b;
+      --arch-sand: #4a6a7a;          /* tom cinza-azulado para astrofísica */
+      --arch-sand-light: #7a9aaa;
+      --scroll-bg: #f5efe6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 16px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-left: 6px solid var(--theo-purple);
+    }
+    header h1 { font-size: 1.3rem; font-weight: 600; color: var(--theo-purple); letter-spacing: 1px; }
+    .badge { background: var(--gold-dark); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-theo { background: var(--theo-purple); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-arch { background: var(--arch-sand); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .redis-connection-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      box-shadow: var(--shadow-sm);
+    }
+    .redis-status-dot { width: 12px; height: 12px; border-radius: 50% !important; display: inline-block; }
+    .redis-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+    .redis-status-dot.disconnected { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+    .redis-status-dot.sending { background: #eab308; animation: pulse 0.8s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .explain-panel {
+      background: var(--scroll-bg);
+      border: 1px solid var(--theo-purple-light);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      display: none;
+      border-left: 4px solid var(--theo-purple);
+    }
+    .explain-panel .section-title { margin-bottom: 10px; color: var(--theo-purple); }
+    .explain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .explain-item strong { color: var(--theo-purple); font-size: 0.7rem; }
+    .explain-item div { font-size: 0.75rem; color: #333; margin-top: 2px; }
+    .explain-confidence { font-size: 1.4rem; font-weight: 700; color: var(--gold-dark); margin-top: 4px; }
+    .explain-code { font-size: 0.65rem; color: #555; margin-top: 8px; font-family: var(--font-mono); }
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 12px 14px;
+      border: none;
+      background: #f0ece6;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      color: #666;
+      border-right: 1px solid var(--border);
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn:hover { background: #e8e0d8; }
+    .tab-btn.active { background: var(--card-bg); color: var(--theo-purple); border-bottom: 3px solid var(--gold-dark); box-shadow: inset 0 -3px 0 var(--gold-dark); }
+    .tab-btn.active.theo-tab { color: var(--theo-purple); border-bottom: 3px solid var(--theo-purple); box-shadow: inset 0 -3px 0 var(--theo-purple); }
+    .tab-btn.active.arch-tab { color: #1a3a4a; border-bottom: 3px solid var(--arch-sand); box-shadow: inset 0 -3px 0 var(--arch-sand); }
+    .tab-content { display: none; background: var(--card-bg); box-shadow: var(--shadow-md); border: 1px solid var(--border); border-top: none; padding: 20px; }
+    .tab-content.active { display: block; }
+    .section { background: var(--card-bg); box-shadow: var(--shadow-md); border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
+    .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--theo-purple); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .section-title.theo-title { color: var(--theo-purple); }
+    .section-title.arch-title { color: #1a3a4a; }
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:active { transform: translateY(1px); box-shadow: none; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-gold { background: var(--gold-dark); color: white; border: 1px solid #6a4f0a; }
+    .btn-outline { background: transparent; border: 1px solid var(--theo-purple-light); color: var(--theo-purple); }
+    .btn-theo { background: var(--theo-purple); color: white; border: 1px solid #0a2a4a; }
+    .btn-arch { background: var(--arch-sand); color: white; border: 1px solid #2a4a5a; }
+    .btn-petroleum { background: var(--petroleum); color: white; border: 1px solid #0a3a44; }
+    .btn-data { background: #0d5c3a; color: white; border: 1px solid #064025; }
+    .btn-purple { background: #6b21a8; color: white; border: 1px solid #4c1d7a; }
+    .btn-gold:hover, .btn-theo:hover, .btn-arch:hover, .btn-petroleum:hover, .btn-data:hover, .btn-purple:hover { opacity: 0.9; }
+    .btn-outline:hover { background: #f5efe6; }
+    .raw-textarea {
+      width: 100%;
+      min-height: 100px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      resize: vertical;
+      color: var(--text);
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
+    }
+    .raw-textarea.theo-textarea { min-height: 120px; border-left: 4px solid var(--theo-purple); }
+    .raw-textarea.arch-textarea { min-height: 120px; border-left: 4px solid var(--arch-sand); }
+    .generated-question {
+      width: 100%;
+      min-height: 120px;
+      background: #f5efe6;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      margin-top: 8px;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
+      color: #1e1e1e;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .camadas-preview {
+      background: #f5efe6;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 8px;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
+      color: #1e1e1e;
+    }
+    .theo-json-preview, .arch-json-preview {
+      background: #f5efe6;
+      border: 1px solid #c4b0a0;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 12px;
+      color: #1e1e1e;
+    }
+    .arch-json-preview { background: #f5efe6; border-color: var(--arch-sand); }
+    .status-msg { font-size: 0.7rem; color: var(--petroleum-light); margin-top: 6px; }
+    .redis-feedback {
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      border-left: 4px solid var(--petroleum-light);
+      background: #f0f8f9;
+      display: none;
+      line-height: 1.6;
+    }
+    .redis-feedback.show { display: block; }
+    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); color: var(--error); }
+    .redis-feedback.loading { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+    .expando {
+      border: 1px solid var(--border);
+      background: white;
+      box-shadow: var(--shadow-sm);
+      margin-top: 6px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      max-height: 32px;
+    }
+    .expando.open { max-height: 600px; overflow-y: auto; }
+    .expando-toggle { padding: 6px 14px; font-size: 0.65rem; color: var(--text-soft); cursor: pointer; text-align: left; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; background: #fafafa; border-bottom: 1px solid transparent; }
+    .expando.open .expando-toggle { border-bottom-color: var(--border); }
+    .expando-body { padding: 10px 14px; font-size: 0.7rem; display: none; }
+    .expando.open .expando-body { display: block; }
+    .agent-select-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      padding: 6px;
+      background: #fafbfc;
+    }
+    .agent-select-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .agent-select-item:hover { background: #f5efe6; }
+    .agent-select-item input[type="radio"] { margin: 0; }
+    .hum-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hum-type-card {
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafdfd;
+      text-align: center;
+    }
+    .hum-type-card:hover { border-color: var(--theo-purple); box-shadow: var(--shadow-md); background: #f5efe6; }
+    .hum-type-card.selected { border-color: var(--theo-purple); background: #e8dce8; box-shadow: var(--shadow-md); }
+    .hum-type-card .type-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .hum-type-card .type-name { font-size: 0.7rem; font-weight: 700; color: var(--theo-purple); }
+    .hum-type-card .type-code { font-size: 0.5rem; color: #888; font-family: var(--font-mono); }
+    .hum-metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
+    .hum-metric-item { background: #f5efe6; padding: 8px; border: 1px solid #d0c8b8; text-align: center; }
+    .hum-metric-item .label { font-size: 0.55rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+    .hum-metric-item .value { font-size: 1.1rem; font-weight: 700; color: var(--theo-purple); font-family: var(--font-mono); }
+    .hum-resposta-box { background: #fff; border: 1px solid var(--theo-purple-light); padding: 16px; margin-top: 12px; font-size: 0.85rem; line-height: 1.6; color: #333; }
+    .hum-alert-box { padding: 12px 16px; margin: 8px 0; border-left: 5px solid #ccc; background: #f9f9f9; font-size: 0.75rem; }
+    .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
+    .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
+    .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
+    .theo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .theo-card {
+      border: 1px solid #b0c4d4;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f7faff;
+      text-align: center;
+    }
+    .theo-card:hover { border-color: var(--theo-purple); box-shadow: var(--shadow-md); background: #ebf5ff; }
+    .theo-card.selected { border-color: var(--theo-purple); background: #d5e5f0; box-shadow: var(--shadow-md); }
+    .theo-card .theo-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+    .theo-card .theo-name { font-size: 0.7rem; font-weight: 700; color: var(--theo-purple); }
+    .theo-card .theo-detail { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .theo-card .theo-versiculo { font-size: 0.5rem; color: var(--theo-purple); font-style: italic; margin-top: 2px; }
+    .theo-progress-bar { width: 100%; height: 6px; background: #e0e0e0; margin: 4px 0; border-radius: 3px !important; overflow: hidden; }
+    .theo-progress-bar .fill { height: 100%; background: var(--theo-purple); transition: width 0.3s; }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .arch-card {
+      border: 1px solid var(--arch-sand);
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f0f5f8;
+      text-align: center;
+    }
+    .arch-card:hover { border-color: #2a5a6a; box-shadow: var(--shadow-md); background: #e0edf5; }
+    .arch-card.selected { border-color: #2a5a6a; background: #d0dde8; box-shadow: var(--shadow-md); }
+    .arch-card .arch-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+    .arch-card .arch-name { font-size: 0.7rem; font-weight: 700; color: #1a3a4a; }
+    .arch-card .arch-detail { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .arch-card .arch-period { font-size: 0.5rem; color: #2a5a6a; font-style: italic; margin-top: 2px; }
+    .fabrica-tipo-btn.active { background: var(--theo-purple); color: white; border: 1px solid #0a2a4a; }
+    .eng-payload-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; margin-top: 8px; }
+    .eng-payload-table th { background: #f5efe6; padding: 8px 10px; text-align: left; color: var(--theo-purple); border-bottom: 2px solid var(--theo-purple-light); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .eng-payload-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-soft); }
+    .multi-redis-hub { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+    @media (max-width: 800px) { .multi-redis-hub { grid-template-columns: 1fr; } }
+    .redis-cluster-panel { border: 2px solid #ccc; background: #fcfcfc; box-shadow: var(--shadow-lg); padding: 16px; }
+    .redis-cluster-panel.science-cluster { border-color: var(--theo-purple-light); background: #f5f0f8; }
+    .redis-cluster-panel.ops-cluster { border-color: var(--arch-sand); background: #f8f2ea; }
+    .redis-slot-card {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s;
+    }
+    .redis-slot-card.connected { border-left: 5px solid #22c55e; background: #f9fef9; }
+    .redis-slot-card.disconnected { border-left: 5px solid #ef4444; background: #fef9f9; }
+    .redis-slot-card .slot-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .redis-slot-card .slot-name { font-weight: 700; font-size: 0.75rem; color: var(--text); font-family: var(--font-mono); flex: 1; min-width: 120px; }
+    .redis-slot-card .slot-name input { border: 1px solid transparent; background: transparent; font-weight: 700; font-size: 0.75rem; font-family: var(--font-mono); width: 100%; padding: 4px; color: var(--text); transition: border 0.2s; }
+    .redis-slot-card .slot-name input:focus { border-color: var(--border); background: #fff; outline: none; }
+    .redis-slot-dot { width: 10px; height: 10px; border-radius: 50% !important; display: inline-block; }
+    .redis-slot-dot.on { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+    .redis-slot-dot.off { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+    .redis-slot-dot.testing { background: #eab308; animation: pulse 0.8s infinite; }
+    .slot-credentials { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .slot-credentials input { border: 1px solid var(--border); padding: 5px 7px; font-family: var(--font-mono); font-size: 0.6rem; width: 100%; color: var(--text); }
+    .slot-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mini-status-text { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .diretorio-interligado {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px dashed var(--border);
+      background: #f9f9f9;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .diretorio-interligado .cluster-line { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: white; border: 1px solid var(--border); border-radius: 4px !important; font-size: 0.6rem; }
+    .cluster-line.science { border-color: var(--theo-purple-light); color: var(--theo-purple); }
+    .cluster-line.ops { border-color: var(--arch-sand); color: #1a3a4a; }
+    .cluster-line .linked-icon { font-size: 0.8rem; }
+    #multiRedisSlotBar { display: flex; align-items: center; gap: 6px; margin-left: 6px; }
+    .redis-slot-mini-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50% !important;
+      display: inline-block;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .redis-slot-mini-dot.connected-dot { border-color: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.7); }
+    .redis-slot-mini-dot.disconnected-dot { border-color: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,0.5); }
+    .redis-slot-mini-dot:hover { transform: scale(1.3); z-index: 2; }
+    .slot-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .slot-modal-overlay.open { display: flex; }
+    .slot-modal {
+      background: white;
+      border: 2px solid var(--theo-purple-light);
+      padding: 24px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-family: var(--font-mono);
+      border-radius: 6px !important;
+    }
+    .slot-modal h3 { font-size: 0.9rem; color: var(--theo-purple); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .slot-modal label { font-size: 0.65rem; font-weight: 700; color: var(--theo-purple); display: block; margin: 8px 0 2px; }
+    .slot-modal input { width: 100%; padding: 8px; font-family: var(--font-mono); font-size: 0.7rem; border: 1px solid var(--border); background: #fafbfc; margin-bottom: 4px; }
+    .slot-modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+    .slot-modal .test-status { font-size: 0.6rem; margin-top: 4px; color: #555; }
+    .theo-code-display { background: var(--theo-purple); color: #d4c0f0; padding: 6px 12px; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 1px; display: inline-block; margin: 4px 0; }
+    .arch-code-display { background: var(--arch-sand); color: white; padding: 6px 12px; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 1px; display: inline-block; margin: 4px 0; }
+    @media (max-width: 600px) {
+      body { padding: 8px; }
+      .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
+      .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .hum-type-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .theo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .arch-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    }
+	.top-nav-special {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: #2d5a27;
+    border-bottom: 2px solid var(--gold-dark);
+}
+.top-nav-special a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    transition: 0.2s;
+    border-radius: 4px !important;
+}
+.top-nav-special a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+  </style>
+</head>
+<body>
+<div class="top-nav-special">
+    <a href="governanca.html">🛡️ Governança (Sala de Controle)</a>
+    <a href="painel.html" target="_blank" class="painel-link">🌐 IDENZA Painel</a>
+    <a href="https://idenza.pages.dev" target="_blank" class="client-link">🌐 IDENZA Client</a>
+</div>
+  <!-- ==================== BARRA REDIS ==================== -->
+  <div class="redis-connection-bar">
+    <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+    <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+    <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+  </div>
+
+  <!-- ========== ASSISTENTE FIXO ========== -->
+  <div id="assistenteFixo" style="
+    background: linear-gradient(135deg, #1a3a6b 0%, #3a6a9b 100%);
+    color: white;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  ">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 2rem;">⚛️</span>
+      <div>
+        <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;">Olá! Sou seu assistente de Física e Astrofísica</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em Mecânica, Termodinâmica, Óptica, Eletromagnetismo, Quântica, Relatividade e Astrofísica</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <input type="text" id="assistenteInput" placeholder="Digite sua dúvida sobre Física..." 
+             style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+      <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Enviar</button>
+    </div>
+    <div id="assistenteResposta" style="
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px !important;
+      padding: 12px 16px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #f0f0f0;
+    "></div>
+  </div>
+
+  <!-- ==================== PAINEL DE TRANSPARÊNCIA ==================== -->
+  <div class="explain-panel" id="explainPanel">
+    <div class="section-title">🔍 Transparência da Resposta</div>
+    <div class="explain-grid">
+      <div class="explain-item"><strong>Fontes utilizadas</strong><div id="explainSources">—</div></div>
+      <div class="explain-item"><strong>Camadas executadas</strong><div id="explainLayers">—</div></div>
+      <div class="explain-item"><strong>Nível de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+      <div class="explain-item"><strong>Próxima revisão</strong><div id="explainReview">—</div></div>
+    </div>
+    <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+  </div>
+
+  <!-- ==================== HEADER ==================== -->
+  <header>
+    <h1>⚛️ Estação de Pesquisa — Física e Astrofísica</h1>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span class="badge-theo">📐 Física Teórica</span>
+      <span class="badge-arch">🌌 Astrofísica</span>
+      <span class="badge">7 Camadas</span>
+      <span class="badge" style="background:#1a3a6b;color:white;">Super Prompts</span>
+    </div>
+  </header>
+
+  <!-- ==================== NAVEGAÇÃO ==================== -->
+  <div class="tab-nav">
+    <button class="tab-btn active theo-tab" data-tab="tab-teologia">📐 Física Teórica</button>
+    <button class="tab-btn arch-tab" data-tab="tab-arqueologia">🌌 Astrofísica</button>
+    <button class="tab-btn" data-tab="tab-humanoides">🤖 Humanoides</button>
+    <button class="tab-btn" data-tab="tab-cognitivo">🏭 Fábrica Cognitiva</button>
+    <button class="tab-btn" data-tab="tab-pesquisa">🔬 Pesquisa</button>
+  </div>
+
+  <!-- ==================== TAB 1: FÍSICA TEÓRICA ==================== -->
+  <div class="tab-content active" id="tab-teologia">
+    <div class="section">
+      <div class="section-title theo-title"><span>📐</span> Agentes de Física Teórica — Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Cada agente teórico possui um Super Prompt completo com 7 camadas.</strong>
+        Selecione um agente, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+        <br><span style="color:var(--theo-purple);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+      </p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-theo" id="btnGerarTeologia">🚀 Gerar Todos os Agentes Teóricos</button>
+        <button class="btn btn-outline" id="btnExportarTeologia">📥 Exportar JSON</button>
+      </div>
+      <div class="redis-feedback" id="teologiaFeedback"></div>
+      <div class="status-msg" id="teologiaStatusMsg"></div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Eixo</label>
+        <input type="text" id="teologiaFiltro" placeholder="Ex: Mecânica, Quântica, Relatividade..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+      </div>
+      <div id="teologiaGrid" class="theo-grid"></div>
+    </div>
+
+    <!-- PAINEL DE DETALHE -->
+    <div class="section" id="teologiaDetalhe" style="display:none;">
+      <div class="section-title theo-title"><span>📐</span> <span id="teologiaDetalheNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="teologiaDetalheCodigo"></span></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+        <span class="badge-theo" id="teologiaDetalheLivro"></span>
+        <span class="badge" id="teologiaDetalheBloco"></span>
+        <span class="badge" style="background:#1a3a4a;color:white;" id="teologiaDetalheProgresso"></span>
+      </div>
+      <div style="margin-top:8px;"><div class="theo-progress-bar"><div class="fill" id="teologiaDetalheBarra" style="width:0%;"></div></div></div>
+      
+      <!-- SUPER PROMPT -->
+      <div style="margin-top:16px; background:#ebf5ff; padding:16px; border-left:4px solid var(--theo-purple);">
+        <strong style="font-size:0.8rem;color:var(--theo-purple);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+        <div id="teologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #b0c4d4; max-height:400px; overflow-y:auto;"></div>
+      </div>
+      
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-outline" id="btnCopiarTeologiaPrompt">📋 Copiar Super Prompt</button>
+        <button class="btn btn-outline" id="btnCopiarJSONTeologia">📋 Copiar JSON</button>
+      </div>
+
+      <!-- COLAR RESPOSTA DA IA -->
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+        <textarea class="raw-textarea theo-textarea" id="teologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+      </div>
+      <button class="btn btn-theo" id="btnEstruturarTeologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+      
+      <div class="camadas-preview" id="teologiaCamadasPreview" style="display:none;"></div>
+      <div class="theo-json-preview" id="teologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+      <button class="btn btn-outline" id="btnLimparTeologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+      
+      <div style="margin-top:12px;">
+        <button class="btn btn-theo" id="btnEnviarTeologiaRedis" style="display:none;">Enviar para Redis</button>
+      </div>
+      <div class="redis-feedback" id="teologiaFeedbackDetalhe"></div>
+      <div class="status-msg" id="teologiaStatusDetalhe"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: ASTROFÍSICA ==================== -->
+  <div class="tab-content" id="tab-arqueologia">
+    <div class="section">
+      <div class="section-title arch-title"><span>🌌</span> Agentes de Astrofísica — Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Cada agente astrofísico possui um Super Prompt completo com 7 camadas.</strong>
+        Selecione um tópico, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+        <br><span style="color:#1a3a4a;">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+      </p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-arch" id="btnGerarArqueologia">🚀 Gerar Todos os Agentes Astrofísicos</button>
+        <button class="btn btn-outline" id="btnExportarArqueologia">📥 Exportar JSON</button>
+      </div>
+      <div class="redis-feedback" id="arqueologiaFeedback"></div>
+      <div class="status-msg" id="arqueologiaStatusMsg"></div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem;font-weight:700;color:#1a3a4a;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Tópico</label>
+        <input type="text" id="arqueologiaFiltro" placeholder="Ex: Estrelas, Galáxias, Buracos Negros..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+      </div>
+      <div id="arqueologiaGrid" class="arch-grid"></div>
+    </div>
+
+    <!-- PAINEL DE DETALHE ASTROFÍSICA -->
+    <div class="section" id="arqueologiaDetalhe" style="display:none;">
+      <div class="section-title arch-title"><span>🌌</span> <span id="arqueologiaDetalheNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código: <span class="arch-code-display" id="arqueologiaDetalheCodigo"></span></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+        <span class="badge-arch" id="arqueologiaDetalheLocal"></span>
+        <span class="badge" style="background:#1a3a4a;color:white;" id="arqueologiaDetalhePeriodo"></span>
+      </div>
+      
+      <!-- SUPER PROMPT -->
+      <div style="margin-top:16px; background:#e0edf5; padding:16px; border-left:4px solid var(--arch-sand);">
+        <strong style="font-size:0.8rem;color:#1a3a4a;">⚡ SUPER PROMPT — Instruções para IA:</strong>
+        <div id="arqueologiaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #8aaabc; max-height:400px; overflow-y:auto;"></div>
+      </div>
+      
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-outline" id="btnCopiarArqueologiaPrompt">📋 Copiar Super Prompt</button>
+        <button class="btn btn-outline" id="btnCopiarJSONArqueologia">📋 Copiar JSON</button>
+      </div>
+
+      <!-- COLAR RESPOSTA DA IA -->
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:#1a3a4a; text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+        <textarea class="raw-textarea arch-textarea" id="arqueologiaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+      </div>
+      <button class="btn btn-arch" id="btnEstruturarArqueologia" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+      
+      <div class="camadas-preview" id="arqueologiaCamadasPreview" style="display:none;"></div>
+      <div class="arch-json-preview" id="arqueologiaJSONPreview" contenteditable="true" style="display:none;"></div>
+      <button class="btn btn-outline" id="btnLimparArqueologiaJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+      
+      <div style="margin-top:12px;">
+        <button class="btn btn-arch" id="btnEnviarArqueologiaRedis" style="display:none;">Enviar para Redis</button>
+      </div>
+      <div class="redis-feedback" id="arqueologiaFeedbackDetalhe"></div>
+      <div class="status-msg" id="arqueologiaStatusDetalhe"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: HUMANOIDES ==================== -->
+  <div class="tab-content" id="tab-humanoides">
+    <div class="section">
+      <div class="section-title theo-title"><span>🤖</span> Humanoides Especializados</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Humanoides cognitivos para Física, Astrofísica e áreas correlatas.</strong>
+        Selecione um tipo, insira o contexto e processe nas 7 camadas com Super Prompts.
+      </p>
+      <div class="hum-type-grid" id="humTypeGrid"></div>
+      <div id="humPanel" style="display:none; margin-top:16px;">
+        <div class="section-title theo-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+        <p style="font-size:0.6rem; color:#888;">Código Base: <span class="theo-code-display" id="humCodigoBase"></span></p>
+        <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">👤 Nome do Usuário:</label>
+          <input type="text" class="raw-textarea" id="humNomeUsuario" placeholder="Ex: João, Maria..." style="min-height:36px; width:100%;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto:</label>
+          <textarea class="raw-textarea theo-textarea" id="humEntrada" placeholder="Descreva a situação, dúvida física ou astrofísica..."></textarea>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+          <button class="btn btn-gold" id="btnProcessarHum">Processar (7 Camadas)</button>
+          <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
+          <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
+          <button class="btn btn-theo" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+        </div>
+        <div class="redis-feedback" id="redisFeedbackHum"></div>
+        <div class="status-msg" id="humStatusMsg"></div>
+        <div id="humResultados" style="display:none;">
+          <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+          <div class="section-title theo-title" style="margin-top:16px;"><span>📊</span> Métricas</div>
+          <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="humCodigoRastreio"></span></p>
+          <div class="hum-metric-grid" id="humMetricGrid"></div>
+          <div class="section-title theo-title" style="margin-top:16px;"><span>💬</span> Resposta (Camada 7)</div>
+          <div class="hum-resposta-box" id="humResposta"></div>
+          <div class="section-title theo-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo</div>
+          <div class="theo-json-preview" id="humJsonCompleto" contenteditable="true" style="white-space:pre-wrap;"></div>
+          <button class="btn btn-outline" id="btnLimparHumJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: FÁBRICA COGNITIVA ==================== -->
+  <div class="tab-content" id="tab-cognitivo">
+    <div class="section">
+      <div class="section-title theo-title"><span>🏭</span> Fábrica Cognitiva — Física e Astrofísica</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Gere novos Especialistas, Humanoides e Objetos Redis</strong> com Super Prompts completos.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;" id="fabricaTipoGrid">
+        <button class="btn btn-outline fabrica-tipo-btn active" data-tipo="especialista">Especialista Digital</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="humanoide">Humanoide Cognitivo</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="perfil">Perfil Cognitivo</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
+      </div>
+      <div id="fabricaPainelConfig">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Nome</label>
+          <input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Agente de Mecânica Quântica" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Domínio</label>
+          <input type="text" class="raw-textarea" id="fabricaDominio" placeholder="Ex: Física Quântica" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Especialidade</label>
+          <input type="text" class="raw-textarea" id="fabricaEspecialidade" placeholder="Ex: Emaranhamento quântico" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave</label>
+          <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="quântica, emaranhamento, medição" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--theo-purple);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
+          <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
+            <option value="L7">L7 - Essência Física</option>
+            <option value="L6">L6 - Teoria e Modelos</option>
+            <option value="L5">L5 - Estruturas Matemáticas</option>
+            <option value="L4" selected>L4 - Aplicação Prática</option>
+            <option value="L3">L3 - Contextualização</option>
+            <option value="L2">L2 - Inferência Guiada</option>
+            <option value="L1">L1 - Resposta Imediata</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+          <button class="btn btn-theo" id="fabricaBtnGerar">Gerar</button>
+          <button class="btn btn-outline" id="fabricaBtnLimpar">Limpar</button>
+          <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+          <button class="btn btn-theo" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+          <button class="btn btn-purple" id="fabricaBtnExportarCatalogo" style="display:none;">📋 Exportar p/ Catálogo</button>
+        </div>
+      </div>
+      <div id="fabricaResultado" style="display:none;margin-top:20px;">
+        <div class="section-title theo-title"><span>📊</span> Resultado</div>
+        <p style="font-size:0.6rem;color:#888;">Código: <span class="theo-code-display" id="fabricaCodigoUniversal"></span></p>
+        <div class="theo-json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+        <button class="btn btn-outline" id="btnLimparJSONFabrica" style="margin-top:6px;">🗑️ Limpar JSON</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+          <button class="btn btn-theo" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+          <button class="btn btn-outline" id="fabricaBtnLimparResultado" style="color:#b91c1c;border-color:#b91c1c;">🗑️ Limpar Resultado</button>
+        </div>
+      </div>
+      <div class="redis-feedback" id="fabricaFeedback"></div>
+      <div class="status-msg" id="fabricaStatusMsg"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: PESQUISA ==================== -->
+  <div class="tab-content" id="tab-pesquisa">
+    <div class="section">
+      <div class="section-title theo-title"><span>🔬</span> Pesquisa com Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        Selecione um agente do catálogo (gerado nas abas anteriores) e realize a pesquisa completa.
+      </p>
+      <div id="catalogoPesquisa"></div>
+      <div id="panelPesquisa" style="display:none; margin-top:16px;">
+        <div class="section-title theo-title"><span>📖</span> <span id="pesquisaNome"></span></div>
+        <p style="font-size:0.6rem; color:#888;">Código: <span class="theo-code-display" id="pesquisaCodigo"></span></p>
+        <div style="margin-top:12px;">
+          <strong style="font-size:0.7rem;color:var(--theo-purple);">⚡ SUPER PROMPT GERADO:</strong>
+          <textarea class="generated-question" id="pesquisaSuperPrompt" style="min-height:200px;"></textarea>
+        </div>
+        <button class="btn btn-outline" id="btnCopiarPesquisaPrompt">📋 Copiar Prompt</button>
+        <div style="margin-top:12px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--theo-purple); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+          <textarea class="raw-textarea" id="pesquisaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+        </div>
+        <button class="btn btn-theo" id="btnEstruturarPesquisa" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+        <div class="camadas-preview" id="pesquisaCamadasPreview" style="display:none;"></div>
+        <div class="theo-json-preview" id="pesquisaJSONPreview" contenteditable="true" style="display:none;"></div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-theo" id="btnEnviarPesquisaRedis" style="display:none;">Enviar para Redis</button>
+        </div>
+        <div class="redis-feedback" id="pesquisaFeedback"></div>
+        <div class="status-msg" id="pesquisaStatusMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CENTRAL REDIS ==================== -->
+  <div class="section" id="multiRedisSection">
+    <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Configure até 6 conexões Redis independentes.</p>
+    <div class="multi-redis-hub">
+      <div class="redis-cluster-panel science-cluster">
+        <div class="section-title sci-title"><span>🧪</span> Cluster Teórico</div>
+        <div id="scienceSlotsContainer"></div>
+      </div>
+      <div class="redis-cluster-panel ops-cluster">
+        <div class="section-title ops-title"><span>⚡</span> Cluster Astrofísico</div>
+        <div id="opsSlotsContainer"></div>
+      </div>
+    </div>
+    <div class="diretorio-interligado" id="diretorioInterligado">
+      <strong style="font-size:0.65rem;color:#555;">📡 Diretório Interligado:</strong>
+      <span id="diretorioStatus" style="color:#888;">Aguardando conexões...</span>
+    </div>
+  </div>
+
+  <!-- ==================== MODAIS ==================== -->
+  <div class="slot-modal-overlay" id="slotModalOverlay">
+    <div class="slot-modal">
+      <h3>Configurar Slot</h3>
+      <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome">
+      <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+      <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+      <div class="test-status" id="slotModalStatus"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+        <button class="btn btn-theo" id="slotModalSalvar">Salvar</button>
+        <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    // ==================== CONFIGURAÇÃO REDIS ====================
+    const REDIS_CONFIG = {
+      url: 'https://welcomed-satyr-116661.upstash.io',
+      token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+    };
+
+    // ==================== AUXILIARES ====================
+    function gerarCodigoUnico(prefixo) {
+      return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
+    }
+
+    async function copiarTextoParaClipboard(texto) {
+      if (!texto) {
+        console.warn('Nada para copiar.');
+        return false;
+      }
+      try {
+        await navigator.clipboard.writeText(texto);
+        return true;
+      } catch (e) {
+        console.warn('Clipboard API falhou, usando fallback:', e);
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = texto;
+          ta.style.position = 'fixed';
+          ta.style.top = '-9999px';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e2) {
+          console.error('Falha no fallback de cópia:', e2);
+          return false;
+        }
+      }
+    }
+
+    function updateRedisStatus(status) {
+      const dot = document.getElementById('redisStatusDot');
+      const label = document.getElementById('redisStatusLabel');
+      dot.className = 'redis-status-dot';
+      switch(status) {
+        case 'connected': dot.classList.add('connected'); label.textContent = 'Redis: Conectado'; break;
+        case 'disconnected': dot.classList.add('disconnected'); label.textContent = 'Redis: Desconectado'; break;
+        case 'sending': dot.classList.add('sending'); label.textContent = 'Redis: Enviando...'; break;
+      }
+    }
+
+    async function testarConexaoRedis() {
+      updateRedisStatus('sending');
+      try {
+        const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, { 
+          headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` } 
+        });
+        if (response.ok) updateRedisStatus('connected'); else updateRedisStatus('disconnected');
+      } catch { updateRedisStatus('disconnected'); }
+    }
+    testarConexaoRedis();
+
+    // ==================== TABS ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ==================== SISTEMA COGNITIVO ====================
+    const COGNITIVE_SYSTEM = {
+      regulatory: {
+        addMetadata(data) {
+          return { ...data, metadata: { 
+            data_validacao: new Date().toISOString(),
+            data_revisao: data.alertaRevisao || new Date(Date.now() + 90*86400000).toISOString(),
+            criticidade: 'baixa',
+            status_regulatorio: 'validado',
+            nivel_confianca: data.score_confianca || 0.85
+          }};
+        }
+      },
+      protection: {
+        sanitizeOutput(data) {
+          const sanitized = { ...data };
+          delete sanitized._internal;
+          return sanitized;
+        }
+      }
+    };
+
+    // ==================== FÍSICA TEÓRICA ====================
+    const EIXOS_FISICA = {
+      'Mecânica': { subtopics: 6, grupo: 'Clássica' },
+      'Termodinâmica': { subtopics: 5, grupo: 'Clássica' },
+      'Óptica': { subtopics: 5, grupo: 'Clássica' },
+      'Eletromagnetismo': { subtopics: 6, grupo: 'Clássica' },
+      'Física Quântica': { subtopics: 7, grupo: 'Moderna' },
+      'Relatividade': { subtopics: 5, grupo: 'Moderna' },
+      'Astrofísica': { subtopics: 6, grupo: 'Moderna' }
+    };
+
+    const TEMAS_POR_EIXO = {
+      'Mecânica': 'Leis de Newton, Conservação, Movimento, Forças',
+      'Termodinâmica': 'Calor, Trabalho, Entropia, Leis da Termodinâmica',
+      'Óptica': 'Luz, Ondas, Reflexão, Refração, Interferência',
+      'Eletromagnetismo': 'Campos, Corrente, Indução, Equações de Maxwell',
+      'Física Quântica': 'Onda-partícula, Incerteza, Emaranhamento, Superposição',
+      'Relatividade': 'Espaço-tempo, Dilatação, Contração, Equivalência massa-energia',
+      'Astrofísica': 'Estrelas, Galáxias, Cosmologia, Buracos Negros'
+    };
+
+    // ==================== GERADOR DE SUPER PROMPT FÍSICA ====================
+    function gerarSuperPromptFisica(eixo, inicio, fim, tema) {
+      return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO FÍSICA ⚡
+
+Você é um nó especializado em Física Teórica e Experimental do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre o bloco de ${eixo} (subtópicos ${inicio}-${fim}).
+
+## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS FÍSICAS
+
+### 7. ESSÊNCIA FÍSICA
+- Qual princípio fundamental rege este tópico?
+- Qual é a lei ou equação central?
+- Quais são os postulados básicos?
+
+### 6. TEORIA E MODELOS
+- Quais modelos teóricos descrevem o fenômeno?
+- Como este tópico se conecta a outras áreas?
+- Quais são as principais formulações matemáticas?
+
+### 5. ESTRUTURAS MATEMÁTICAS
+- Quais equações diferenciais ou algébricas são usadas?
+- Quais são as variáveis e parâmetros chave?
+- Como as simetrias são exploradas?
+
+### 4. APLICAÇÃO PRÁTICA E EXPERIMENTAL
+- Como este conceito é aplicado em tecnologia?
+- Quais experimentos verificam a teoria?
+- Quais são as implicações práticas?
+
+### 3. MÉTODOS E ABORDAGENS
+- Quais métodos experimentais ou computacionais são usados?
+- Quais são as principais técnicas de medida?
+- Como a teoria é testada?
+
+### 2. USO DIDÁTICO E CONCEITUAL
+- Como este tópico pode ser ensinado?
+- Quais analogias ajudam na compreensão?
+- Qual é a intuição física por trás?
+
+### 1. CURIOSIDADES E DESCOBERTAS
+- Quais descobertas históricas marcaram este tópico?
+- Quais cientistas foram fundamentais?
+- Quais são os desafios atuais?
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter equações ou referências específicas
+2. Cite fontes (artigos, livros, experimentos)
+3. Linguagem clara e objetiva
+4. **NUNCA utilize o símbolo cerquilha (#)**
+5. Inclua metadados ao final
+
+## 🎯 BLOCO A SER ANALISADO
+**Eixo**: ${eixo} (${EIXOS_FISICA[eixo]?.grupo || 'Física'})
+**Subtópicos**: ${inicio} a ${fim}
+**Tema Central**: ${tema}
+
+## 🔍 METADADOS OBRIGATÓRIOS AO FINAL
+Data de validação sugerida: ${new Date(Date.now() + 90*86400000).toISOString().split('T')[0]}
+Nível de confiança: 0.90
+Domínio(s): ${eixo.toLowerCase()}, fisica, teorica
+Código de rastreio: [gerado automaticamente]
+Conflitos detectados: Nenhum até o momento
+Humanoides recomendados: Físico Teórico, Experimentalista, Matemático
+Palavras-chave: ${eixo.toLowerCase()}, fisica, teoria, modelo, equação
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Essência Física", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 6, "nome": "Teoria e Modelos", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 5, "nome": "Estruturas Matemáticas", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 4, "nome": "Aplicação Prática", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 3, "nome": "Métodos e Abordagens", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 2, "nome": "Uso Didático", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades", "subtemas": ["..."], "equacoes_chave": ["..."], "fontes": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+    }
+
+    // ==================== GERADOR DE AGENTES FÍSICA ====================
+    let agentesTeologicos = [];
+    let agenteTeologicoSelecionado = null;
+    let teologiaEstruturado = null;
+
+    function gerarAgentesFisica(eixo, totalSub, bloco = 3) {
+      const agentes = [];
+      const totalBlocos = Math.ceil(totalSub / bloco);
+      const temaBase = TEMAS_POR_EIXO[eixo] || 'Estudo Físico';
+      const icones = {
+        'Mecânica': '⚙️', 'Termodinâmica': '🔥', 'Óptica': '🔦', 'Eletromagnetismo': '⚡',
+        'Física Quântica': '🌀', 'Relatividade': '⏳', 'Astrofísica': '🌌'
+      };
+      const icone = icones[eixo] || '📐';
+
+      for (let i = 0; i < totalBlocos; i++) {
+        const inicio = i * bloco + 1;
+        const fim = Math.min(inicio + bloco - 1, totalSub);
+        const numBloco = i + 1;
+        const codigo = `fisica.${eixo.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${String(inicio).padStart(3,'0')}-${String(fim).padStart(3,'0')}.ptbr.idenza.v1`;
+
+        const nome = `${eixo} — Tópicos ${inicio}-${fim}`;
+
+        // Lista de subtópicos fictícios para enriquecer
+        const subtopics = [];
+        for (let j = inicio; j <= fim; j++) {
+          subtopics.push(`Subtópico ${j}`);
+        }
+
+        const superPrompt = gerarSuperPromptFisica(eixo, inicio, fim, temaBase);
+
+        const agente = {
+          codigo_universal: codigo,
+          versao: 'v1',
+          hash: btoa(`${codigo}-${new Date().toISOString()}`).substring(0, 16),
+          escopo: {
+            dominio: 'fisica_teorica',
+            eixo: eixo,
+            subtopico_inicio: inicio,
+            subtopico_fim: fim,
+            idioma: 'pt-BR',
+            tradicao: 'cientifica'
+          },
+          conteudo: {
+            resumo: `Análise de ${eixo} (subtópicos ${inicio}-${fim}) aguardando estruturação.`,
+            camadas: [
+              { nivel: 7, nome: 'Essência Física', subtemas: [`Princípios fundamentais de ${eixo}`], equacoes_chave: [], fontes: [] },
+              { nivel: 6, nome: 'Teoria e Modelos', subtemas: [`Modelos para ${eixo}`], equacoes_chave: [], fontes: [] },
+              { nivel: 5, nome: 'Estruturas Matemáticas', subtemas: [`Equações diferenciais e álgebra`], equacoes_chave: [], fontes: [] },
+              { nivel: 4, nome: 'Aplicação Prática', subtemas: [`Aplicações tecnológicas`], equacoes_chave: [], fontes: [] },
+              { nivel: 3, nome: 'Métodos e Abordagens', subtemas: [`Técnicas experimentais e computacionais`], equacoes_chave: [], fontes: [] },
+              { nivel: 2, nome: 'Uso Didático', subtemas: [`Analogias e ensino`], equacoes_chave: [], fontes: [] },
+              { nivel: 1, nome: 'Curiosidades', subtemas: [`Descobertas históricas`], equacoes_chave: [], fontes: [] }
+            ]
+          },
+          indexacao: {
+            tags: ['fisica', eixo.toLowerCase(), EIXOS_FISICA[eixo]?.grupo.toLowerCase() || 'geral'],
+            palavras_chave: [temaBase, ...subtopics.map(s => s.toLowerCase())]
+          },
+          governanca: {
+            score_confianca: 0.90,
+            autor: 'IDEnza',
+            revisor: 'Humanoide Físico',
+            aprovado_por: 'Especialista',
+            criado_em: new Date().toISOString(),
+            revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+          },
+          origem: {
+            tipo: 'ia_externa',
+            modelo: 'DeepSeek',
+            data_geracao: new Date().toISOString(),
+            hash_original: null,
+            uri_original: null
+          },
+          licenca: {
+            tipo: 'CC BY-NC',
+            responsavel: 'IDEnza'
+          }
+        };
+        agentes.push(agente);
+      }
+      return agentes;
+    }
+
+    function gerarTodosFisica(bloco = 3) {
+      const todos = [];
+      for (const eixo of Object.keys(EIXOS_FISICA)) {
+        const { subtopics } = EIXOS_FISICA[eixo];
+        todos.push(...gerarAgentesFisica(eixo, subtopics, bloco));
+      }
+      return todos;
+    }
+
+    function renderizarTeologia(agentes) {
+      const grid = document.getElementById('teologiaGrid');
+      grid.innerHTML = '';
+      if (!agentes || agentes.length === 0) {
+        grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente teórico gerado. Clique em "Gerar Todos".</p>';
+        return;
+      }
+      const filtro = document.getElementById('teologiaFiltro')?.value?.toLowerCase() || '';
+      const filtrados = agentes.filter(a => 
+        a.escopo.eixo.toLowerCase().includes(filtro) ||
+        a.codigo_universal.toLowerCase().includes(filtro)
+      );
+      for (const a of filtrados) {
+        const card = document.createElement('div');
+        card.className = 'theo-card';
+        const icone = { 'Mecânica':'⚙️', 'Termodinâmica':'🔥', 'Óptica':'🔦', 'Eletromagnetismo':'⚡', 'Física Quântica':'🌀', 'Relatividade':'⏳', 'Astrofísica':'🌌' }[a.escopo.eixo] || '📐';
+        card.innerHTML = `
+          <span class="theo-icon">${icone}</span>
+          <div class="theo-name">${a.escopo.eixo}</div>
+          <div class="theo-detail">Tópicos ${a.escopo.subtopico_inicio}-${a.escopo.subtopico_fim}</div>
+          <div class="theo-versiculo">${a.escopo.tradicao} • ${a.escopo.idioma}</div>
+          <div class="theo-progress-bar"><div class="fill" style="width:${((a.escopo.subtopico_fim - a.escopo.subtopico_inicio + 1) / EIXOS_FISICA[a.escopo.eixo]?.subtopics * 100) || 30}%;"></div></div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.theo-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          agenteTeologicoSelecionado = a;
+          exibirDetalheTeologia(a);
+        });
+        grid.appendChild(card);
+      }
+    }
+
+    function exibirDetalheTeologia(a) {
+      const panel = document.getElementById('teologiaDetalhe');
+      panel.style.display = 'block';
+      document.getElementById('teologiaDetalheNome').textContent = `${a.escopo.eixo} (Tópicos ${a.escopo.subtopico_inicio}-${a.escopo.subtopico_fim})`;
+      document.getElementById('teologiaDetalheCodigo').textContent = a.codigo_universal;
+      document.getElementById('teologiaDetalheLivro').textContent = `📐 ${a.escopo.eixo} (${EIXOS_FISICA[a.escopo.eixo]?.grupo || 'Física'})`;
+      document.getElementById('teologiaDetalheBloco').textContent = `📐 Tópicos ${a.escopo.subtopico_inicio}-${a.escopo.subtopico_fim}`;
+      document.getElementById('teologiaDetalheProgresso').textContent = `${a.escopo.tradicao} • ${a.escopo.idioma}`;
+      const total = EIXOS_FISICA[a.escopo.eixo]?.subtopics || 1;
+      const progresso = ((a.escopo.subtopico_fim - a.escopo.subtopico_inicio + 1) / total) * 100;
+      document.getElementById('teologiaDetalheBarra').style.width = Math.min(progresso, 100) + '%';
+      
+      const prompt = gerarSuperPromptFisica(a.escopo.eixo, a.escopo.subtopico_inicio, a.escopo.subtopico_fim, TEMAS_POR_EIXO[a.escopo.eixo] || '');
+      document.getElementById('teologiaDetalheSuperPrompt').textContent = prompt;
+      
+      document.getElementById('teologiaRespostaIA').value = '';
+      document.getElementById('teologiaCamadasPreview').style.display = 'none';
+      document.getElementById('teologiaJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarTeologiaRedis').style.display = 'none';
+      document.getElementById('teologiaFeedbackDetalhe').className = 'redis-feedback';
+      document.getElementById('teologiaStatusDetalhe').textContent = '';
+      teologiaEstruturado = null;
+    }
+
+    // ==================== FUNÇÃO extrairCamadas (reutilizada) ====================
+    function extrairCamadas(texto) {
+      if (!texto || typeof texto !== 'string') return [];
+      
+      try {
+        const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/);
+        if (jsonMatch) {
+          const obj = JSON.parse(jsonMatch[0]);
+          if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+            return obj.camadas.map(c => ({
+              nivel: c.nivel,
+              nome: c.nome,
+              subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [],
+              equacoes_chave: c.equacoes_chave || [],
+              fontes: c.fontes || []
+            }));
+          }
+        }
+      } catch (e) {}
+
+      const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
+      const camadas = [];
+      let camadaAtual = null;
+
+      const titulos = [
+        { nivel: 7, regex: /\b(7|sete)[\.\)\-\s:]*\s*(ESS[EÊ]NCIA|ESSENCE|FUNDAMENTO|PRINC[IÍ]PIO|CENTRAL)/i, nome: 'Essência Física' },
+        { nivel: 6, regex: /\b(6|seis)[\.\)\-\s:]*\s*(TEORIA|MODELOS|DOUTRINA|GERAL)/i, nome: 'Teoria e Modelos' },
+        { nivel: 5, regex: /\b(5|cinco)[\.\)\-\s:]*\s*(ESTRUTURA|MATEM[AÁ]TICA|ABSTRAT[OA]S?|EQUA[CÇ][OÕ]ES)/i, nome: 'Estruturas Matemáticas' },
+        { nivel: 4, regex: /\b(4|quatro)[\.\)\-\s:]*\s*(APLICA[CÇ][AÃ]O|PR[AÁ]TICA|EXPERIMENTAL|TECNOLOGIA)/i, nome: 'Aplicação Prática' },
+        { nivel: 3, regex: /\b(3|tr[EÊ]s)[\.\)\-\s:]*\s*(M[EÉ]TODOS|ABORDAGENS|T[EÉ]CNICAS)/i, nome: 'Métodos e Abordagens' },
+        { nivel: 2, regex: /\b(2|dois)[\.\)\-\s:]*\s*(USO|DID[AÁ]TICO|CONCEITUAL|ENSINO)/i, nome: 'Uso Didático' },
+        { nivel: 1, regex: /\b(1|um)[\.\)\-\s:]*\s*(CURIOSIDADES|DESCOBERTAS|HIST[OÓ]RIA)/i, nome: 'Curiosidades' }
+      ];
+
+      for (const linha of linhas) {
+        let match = null;
+        for (const t of titulos) {
+          const m = linha.match(t.regex);
+          if (m) {
+            match = { nivel: t.nivel, nome: t.nome };
+            break;
+          }
+        }
+        if (match) {
+          const existente = camadas.findIndex(c => c.nivel === match.nivel);
+          if (existente !== -1) {
+            camadas.splice(existente, 1);
+          }
+          camadaAtual = { nivel: match.nivel, nome: match.nome, subtemas: [], equacoes_chave: [], fontes: [] };
+          camadas.push(camadaAtual);
+        } else if (camadaAtual) {
+          const limpo = linha.replace(/^[-*#\s]+/, '').trim();
+          if (limpo.length > 0 && !/^---+$/.test(limpo) && !/^\*\*?[\s\*]*$/.test(limpo)) {
+            camadaAtual.subtemas.push(limpo);
+          }
+        }
+      }
+
+      for (const t of titulos) {
+        if (!camadas.find(c => c.nivel === t.nivel)) {
+          camadas.push({ nivel: t.nivel, nome: t.nome, subtemas: ['Conteúdo não encontrado na resposta.'], equacoes_chave: [], fontes: [] });
+        }
+      }
+
+      camadas.sort((a, b) => b.nivel - a.nivel);
+      return camadas;
+    }
+
+    // ==================== EVENTOS FÍSICA TEÓRICA ====================
+    document.getElementById('btnGerarTeologia').addEventListener('click', () => {
+      const agentes = gerarTodosFisica(3);
+      agentesTeologicos = agentes;
+      renderizarTeologia(agentes);
+      document.getElementById('teologiaStatusMsg').textContent = `✅ ${agentes.length} agentes teóricos gerados com Super Prompts!`;
+      setTimeout(() => { document.getElementById('teologiaStatusMsg').textContent = ''; }, 4000);
+      atualizarCatalogoPesquisa();
+    });
+
+    document.getElementById('btnCopiarTeologiaPrompt').addEventListener('click', async function() {
+      const statusEl = document.getElementById('teologiaStatusDetalhe');
+      if (!agenteTeologicoSelecionado) {
+        statusEl.textContent = '⚠️ Selecione um agente teórico primeiro.';
+        setTimeout(() => statusEl.textContent = '', 3000);
+        return;
+      }
+      const prompt = gerarSuperPromptFisica(
+        agenteTeologicoSelecionado.escopo.eixo,
+        agenteTeologicoSelecionado.escopo.subtopico_inicio,
+        agenteTeologicoSelecionado.escopo.subtopico_fim,
+        TEMAS_POR_EIXO[agenteTeologicoSelecionado.escopo.eixo] || ''
+      );
+      if (!prompt) {
+        statusEl.textContent = '⚠️ Super Prompt não disponível.';
+        setTimeout(() => statusEl.textContent = '', 3000);
+        return;
+      }
+      const ok = await copiarTextoParaClipboard(prompt);
+      statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => statusEl.textContent = '', 4000);
+    });
+
+    document.getElementById('btnCopiarJSONTeologia').addEventListener('click', async () => {
+      if (!agenteTeologicoSelecionado) {
+        document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.';
+        return;
+      }
+      const ok = await copiarTextoParaClipboard(JSON.stringify(agenteTeologicoSelecionado, null, 2));
+      document.getElementById('teologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('teologiaFiltro').addEventListener('input', () => {
+      renderizarTeologia(agentesTeologicos);
+    });
+
+    document.getElementById('btnLimparTeologiaJSON').addEventListener('click', () => {
+      document.getElementById('teologiaJSONPreview').textContent = '';
+    });
+
+    document.getElementById('btnEstruturarTeologia').addEventListener('click', () => {
+      if (!agenteTeologicoSelecionado) {
+        document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.';
+        return;
+      }
+      const texto = document.getElementById('teologiaRespostaIA').value.trim();
+      if (!texto) {
+        document.getElementById('teologiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA primeiro.';
+        return;
+      }
+      
+      const camadas = extrairCamadas(texto);
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+      
+      const codigo = agenteTeologicoSelecionado.codigo_universal;
+      const agora = new Date().toISOString();
+      const jsonResult = {
+        codigo_universal: codigo,
+        versao: 'v1',
+        hash: btoa(codigo + texto).substring(0, 16),
+        escopo: {
+          dominio: agenteTeologicoSelecionado.escopo.dominio,
+          eixo: agenteTeologicoSelecionado.escopo.eixo,
+          subtopico_inicio: agenteTeologicoSelecionado.escopo.subtopico_inicio,
+          subtopico_fim: agenteTeologicoSelecionado.escopo.subtopico_fim,
+          idioma: agenteTeologicoSelecionado.escopo.idioma,
+          tradicao: agenteTeologicoSelecionado.escopo.tradicao
+        },
+        conteudo: {
+          resumo: resumo,
+          camadas: camadas
+        },
+        indexacao: {
+          tags: agenteTeologicoSelecionado.indexacao.tags,
+          palavras_chave: agenteTeologicoSelecionado.indexacao.palavras_chave
+        },
+        governanca: {
+          score_confianca: 0.85,
+          autor: 'IDEnza',
+          revisor: 'Humanoide Físico',
+          aprovado_por: 'Especialista',
+          criado_em: agora,
+          revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+        },
+        origem: {
+          tipo: 'ia_externa',
+          modelo: 'DeepSeek',
+          data_geracao: agora,
+          hash_original: btoa(texto).substring(0, 20),
+          uri_original: `/storage/fisica/${agenteTeologicoSelecionado.escopo.eixo.toLowerCase()}/${agenteTeologicoSelecionado.escopo.subtopico_inicio}-${agenteTeologicoSelecionado.escopo.subtopico_fim}.md`
+        },
+        licenca: {
+          tipo: 'CC BY-NC',
+          responsavel: 'IDEnza'
+        }
+      };
+      
+      teologiaEstruturado = jsonResult;
+      document.getElementById('teologiaCamadasPreview').style.display = 'block';
+      document.getElementById('teologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('teologiaJSONPreview').style.display = 'block';
+      document.getElementById('teologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarTeologiaRedis').style.display = 'inline-flex';
+      document.getElementById('teologiaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+      setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+      
+      mostrarExplicacao({
+        fontes: ['IA Externa', 'Super Prompt IDEnza'],
+        camadas: camadas,
+        score_confianca: 0.85,
+        alertaRevisao: jsonResult.governanca.revisado_em,
+        codigo: jsonResult.codigo_universal
+      });
+    });
+
+    document.getElementById('btnEnviarTeologiaRedis').addEventListener('click', async () => {
+      if (!teologiaEstruturado) return;
+      document.getElementById('teologiaStatusDetalhe').textContent = 'Enviando...';
+      await enviarDiretoRedis(teologiaEstruturado, 'fisica', teologiaEstruturado.codigo_universal, 'teologiaFeedbackDetalhe');
+      document.getElementById('teologiaStatusDetalhe').textContent = 'Concluído.';
+      setTimeout(() => { document.getElementById('teologiaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    // ==================== ASTROFÍSICA (similar a arqueologia) ====================
+    const CONCEITOS_ASTROFISICA = [
+      { nome: 'Estrelas', local: 'Universo', periodo: 'Evolução Estelar', descobertas: 'Fusão nuclear, diagrama HR', relevancia: 'Ciclo de vida estelar', referencias: ['Física estelar', 'Astrofísica nuclear'] },
+      { nome: 'Galáxias', local: 'Universo', periodo: 'Cosmologia', descobertas: 'Rotação, matéria escura', relevancia: 'Estrutura do universo', referencias: ['Hubble', 'Dinâmica galáctica'] },
+      { nome: 'Buracos Negros', local: 'Universo', periodo: 'Relatividade', descobertas: 'Horizonte de eventos, singularidade', relevancia: 'Teste da relatividade', referencias: ['Einstein', 'Hawking'] },
+      { nome: 'Cosmologia', local: 'Universo', periodo: 'Big Bang', descobertas: 'Radiação cósmica de fundo, expansão', relevancia: 'Origem do universo', referencias: ['Lambda-CDM'] },
+      { nome: 'Exoplanetas', local: 'Galáxia', periodo: 'Atual', descobertas: 'Método de trânsito, velocidade radial', relevancia: 'Busca por vida', referencias: ['Kepler', 'TESS'] },
+      { nome: 'Matéria Escura', local: 'Universo', periodo: 'Cosmologia', descobertas: 'Curvas de rotação, lentes gravitacionais', relevancia: 'Componente dominante', referencias: ['Zwicky', 'Rubin'] },
+      { nome: 'Energia Escura', local: 'Universo', periodo: 'Cosmologia', descobertas: 'Expansão acelerada', relevancia: 'Destino do universo', referencias: ['Supernovas tipo Ia'] },
+    ];
+
+    function gerarSuperPromptAstrofisica(conceito) {
+      return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO ASTROFÍSICA ⚡
+
+Você é um nó especializado em Astrofísica do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre o tópico astrofísico de ${conceito.nome}.
+
+## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS ASTROFÍSICAS
+
+### 7. SIGNIFICADO ASTROFÍSICO
+- Importância para a compreensão do universo
+### 6. DESCOBERTAS PRINCIPAIS
+- Observações e experimentos chave
+### 5. CORRELAÇÕES COM A FÍSICA FUNDAMENTAL
+- Conexões com relatividade, quântica, etc.
+### 4. CONTEXTO OBSERVACIONAL
+- Como é observado e medido
+### 3. METODOLOGIAS
+- Técnicas e instrumentos
+### 2. APLICAÇÃO PRÁTICA
+- Como afeta a tecnologia ou a ciência
+### 1. CURIOSIDADES E FATOS
+- Dados surpreendentes e mistérios
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter referências específicas
+2. Cite fontes astronômicas e acadêmicas
+3. Linguagem acessível mas precisa
+4. **NUNCA utilize o símbolo cerquilha (#)**
+5. Inclua metadados ao final
+
+## 🎯 TÓPICO A SER ANALISADO
+**Nome**: ${conceito.nome}
+**Local**: ${conceito.local}
+**Período**: ${conceito.periodo}
+**Descobertas**: ${conceito.descobertas}
+**Relevância**: ${conceito.relevancia}
+**Referências**: ${conceito.referencias.join(', ')}
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Significado Astrofísico", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 6, "nome": "Descobertas Principais", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 5, "nome": "Correlações com a Física", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 4, "nome": "Contexto Observacional", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 3, "nome": "Metodologias", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 2, "nome": "Aplicação Prática", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades", "subtemas": ["..."], "referencias": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+    }
+
+    let agentesArqueologicos = [];
+    let agenteArqueologicoSelecionado = null;
+    let arqueologiaEstruturado = null;
+
+    function gerarAgentesAstrofisica() {
+      return CONCEITOS_ASTROFISICA.map((conceito, idx) => {
+        const codigo = `astro.${conceito.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ptbr.idenza.v1`;
+        const superPrompt = gerarSuperPromptAstrofisica(conceito);
+        return {
+          codigo_universal: codigo,
+          versao: 'v1',
+          hash: btoa(codigo + conceito.nome).substring(0, 16),
+          escopo: {
+            dominio: 'astrofisica',
+            conceito: conceito.nome,
+            localizacao: conceito.local,
+            periodo: conceito.periodo,
+            idioma: 'pt-BR'
+          },
+          conteudo: {
+            resumo: `Análise astrofísica de ${conceito.nome} aguardando estruturação.`,
+            camadas: [
+              { nivel: 7, nome: 'Significado Astrofísico', subtemas: [`Importância de ${conceito.nome}`], referencias: [] },
+              { nivel: 6, nome: 'Descobertas Principais', subtemas: [conceito.descobertas], referencias: [] },
+              { nivel: 5, nome: 'Correlações com a Física', subtemas: conceito.referencias, referencias: [] },
+              { nivel: 4, nome: 'Contexto Observacional', subtemas: [`Observações de ${conceito.nome}`], referencias: [] },
+              { nivel: 3, nome: 'Metodologias', subtemas: ['Técnicas instrumentais'], referencias: [] },
+              { nivel: 2, nome: 'Aplicação Prática', subtemas: [`Impacto de ${conceito.nome}`], referencias: [] },
+              { nivel: 1, nome: 'Curiosidades', subtemas: [`Fatos surpreendentes sobre ${conceito.nome}`], referencias: [] }
+            ]
+          },
+          indexacao: {
+            tags: ['astrofisica', conceito.nome.toLowerCase(), conceito.local.toLowerCase()],
+            palavras_chave: [conceito.nome.toLowerCase(), ...conceito.referencias.map(r => r.toLowerCase())]
+          },
+          governanca: {
+            score_confianca: 0.90,
+            autor: 'IDEnza',
+            revisor: 'Humanoide Astrofísico',
+            aprovado_por: 'Especialista',
+            criado_em: new Date().toISOString(),
+            revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+          },
+          origem: {
+            tipo: 'ia_externa',
+            modelo: 'DeepSeek',
+            data_geracao: new Date().toISOString(),
+            hash_original: null,
+            uri_original: null
+          },
+          licenca: {
+            tipo: 'CC BY-NC',
+            responsavel: 'IDEnza'
+          }
+        };
+      });
+    }
+
+    function renderizarArqueologia(agentes) {
+      const grid = document.getElementById('arqueologiaGrid');
+      grid.innerHTML = '';
+      if (!agentes || agentes.length === 0) {
+        grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente astrofísico gerado. Clique em "Gerar Todos".</p>';
+        return;
+      }
+      const filtro = document.getElementById('arqueologiaFiltro')?.value?.toLowerCase() || '';
+      const filtrados = agentes.filter(a => 
+        a.escopo.conceito.toLowerCase().includes(filtro) ||
+        a.escopo.localizacao.toLowerCase().includes(filtro) ||
+        a.escopo.periodo.toLowerCase().includes(filtro)
+      );
+      for (const a of filtrados) {
+        const card = document.createElement('div');
+        card.className = 'arch-card';
+        card.innerHTML = `
+          <span class="arch-icon">🌌</span>
+          <div class="arch-name">${a.escopo.conceito}</div>
+          <div class="arch-detail">${a.escopo.localizacao}</div>
+          <div class="arch-period">${a.escopo.periodo}</div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.arch-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          agenteArqueologicoSelecionado = a;
+          exibirDetalheArqueologia(a);
+        });
+        grid.appendChild(card);
+      }
+    }
+
+    function exibirDetalheArqueologia(a) {
+      const panel = document.getElementById('arqueologiaDetalhe');
+      panel.style.display = 'block';
+      document.getElementById('arqueologiaDetalheNome').textContent = `Tópico: ${a.escopo.conceito}`;
+      document.getElementById('arqueologiaDetalheCodigo').textContent = a.codigo_universal;
+      document.getElementById('arqueologiaDetalheLocal').textContent = `📍 ${a.escopo.localizacao}`;
+      document.getElementById('arqueologiaDetalhePeriodo').textContent = `📅 ${a.escopo.periodo}`;
+      const conceito = CONCEITOS_ASTROFISICA.find(c => c.nome === a.escopo.conceito);
+      if (conceito) {
+        document.getElementById('arqueologiaDetalheSuperPrompt').textContent = gerarSuperPromptAstrofisica(conceito);
+      } else {
+        document.getElementById('arqueologiaDetalheSuperPrompt').textContent = 'Super Prompt não disponível';
+      }
+      document.getElementById('arqueologiaRespostaIA').value = '';
+      document.getElementById('arqueologiaCamadasPreview').style.display = 'none';
+      document.getElementById('arqueologiaJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarArqueologiaRedis').style.display = 'none';
+      document.getElementById('arqueologiaFeedbackDetalhe').className = 'redis-feedback';
+      document.getElementById('arqueologiaStatusDetalhe').textContent = '';
+      arqueologiaEstruturado = null;
+    }
+
+    document.getElementById('btnGerarArqueologia').addEventListener('click', () => {
+      const agentes = gerarAgentesAstrofisica();
+      agentesArqueologicos = agentes;
+      renderizarArqueologia(agentes);
+      document.getElementById('arqueologiaStatusMsg').textContent = `✅ ${agentes.length} agentes astrofísicos gerados com Super Prompts!`;
+      setTimeout(() => { document.getElementById('arqueologiaStatusMsg').textContent = ''; }, 4000);
+      atualizarCatalogoPesquisa();
+    });
+
+    document.getElementById('btnCopiarArqueologiaPrompt').addEventListener('click', async function() {
+      const statusEl = document.getElementById('arqueologiaStatusDetalhe');
+      if (!agenteArqueologicoSelecionado) {
+        statusEl.textContent = '⚠️ Selecione um agente astrofísico primeiro.';
+        setTimeout(() => statusEl.textContent = '', 3000);
+        return;
+      }
+      const conceito = CONCEITOS_ASTROFISICA.find(c => c.nome === agenteArqueologicoSelecionado.escopo.conceito);
+      if (!conceito) {
+        statusEl.textContent = '⚠️ Conceito não encontrado.';
+        return;
+      }
+      const prompt = gerarSuperPromptAstrofisica(conceito);
+      const ok = await copiarTextoParaClipboard(prompt);
+      statusEl.textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => statusEl.textContent = '', 4000);
+    });
+
+    document.getElementById('btnCopiarJSONArqueologia').addEventListener('click', async () => {
+      if (!agenteArqueologicoSelecionado) return;
+      const ok = await copiarTextoParaClipboard(JSON.stringify(agenteArqueologicoSelecionado, null, 2));
+      document.getElementById('arqueologiaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('arqueologiaFiltro').addEventListener('input', () => {
+      renderizarArqueologia(agentesArqueologicos);
+    });
+
+    document.getElementById('btnLimparArqueologiaJSON').addEventListener('click', () => {
+      document.getElementById('arqueologiaJSONPreview').textContent = '';
+    });
+
+    document.getElementById('btnEstruturarArqueologia').addEventListener('click', () => {
+      if (!agenteArqueologicoSelecionado) {
+        document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.';
+        return;
+      }
+      const texto = document.getElementById('arqueologiaRespostaIA').value.trim();
+      if (!texto) {
+        document.getElementById('arqueologiaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA primeiro.';
+        return;
+      }
+      const camadas = extrairCamadas(texto);
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+      const codigo = agenteArqueologicoSelecionado.codigo_universal;
+      const agora = new Date().toISOString();
+      const jsonResult = {
+        codigo_universal: codigo,
+        versao: 'v1',
+        hash: btoa(codigo + texto).substring(0, 16),
+        escopo: {
+          dominio: 'astrofisica',
+          conceito: agenteArqueologicoSelecionado.escopo.conceito,
+          localizacao: agenteArqueologicoSelecionado.escopo.localizacao,
+          periodo: agenteArqueologicoSelecionado.escopo.periodo,
+          idioma: 'pt-BR'
+        },
+        conteudo: {
+          resumo: resumo,
+          camadas: camadas
+        },
+        indexacao: {
+          tags: agenteArqueologicoSelecionado.indexacao.tags,
+          palavras_chave: agenteArqueologicoSelecionado.indexacao.palavras_chave
+        },
+        governanca: {
+          score_confianca: 0.85,
+          autor: 'IDEnza',
+          revisor: 'Humanoide Astrofísico',
+          aprovado_por: 'Especialista',
+          criado_em: agora,
+          revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+        },
+        origem: {
+          tipo: 'ia_externa',
+          modelo: 'DeepSeek',
+          data_geracao: agora,
+          hash_original: btoa(texto).substring(0, 20),
+          uri_original: `/storage/astrofisica/${agenteArqueologicoSelecionado.escopo.conceito.toLowerCase()}.md`
+        },
+        licenca: {
+          tipo: 'CC BY-NC',
+          responsavel: 'IDEnza'
+        }
+      };
+      arqueologiaEstruturado = jsonResult;
+      document.getElementById('arqueologiaCamadasPreview').style.display = 'block';
+      document.getElementById('arqueologiaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('arqueologiaJSONPreview').style.display = 'block';
+      document.getElementById('arqueologiaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarArqueologiaRedis').style.display = 'inline-flex';
+      document.getElementById('arqueologiaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+      setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+      mostrarExplicacao({
+        fontes: ['IA Externa', 'Super Prompt IDEnza'],
+        camadas: camadas,
+        score_confianca: 0.85,
+        alertaRevisao: jsonResult.governanca.revisado_em,
+        codigo: jsonResult.codigo_universal
+      });
+    });
+
+    document.getElementById('btnEnviarArqueologiaRedis').addEventListener('click', async () => {
+      if (!arqueologiaEstruturado) return;
+      document.getElementById('arqueologiaStatusDetalhe').textContent = 'Enviando...';
+      await enviarDiretoRedis(arqueologiaEstruturado, 'astrofisica', arqueologiaEstruturado.codigo_universal, 'arqueologiaFeedbackDetalhe');
+      document.getElementById('arqueologiaStatusDetalhe').textContent = 'Concluído.';
+      setTimeout(() => { document.getElementById('arqueologiaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    // ==================== PAINEL DE TRANSPARÊNCIA ====================
+    function mostrarExplicacao(meta) {
+      const panel = document.getElementById('explainPanel');
+      if (!panel) return;
+      panel.style.display = 'block';
+      document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+      let camadasNome = '—';
+      if (meta.camadas && Array.isArray(meta.camadas) && meta.camadas.length > 0) {
+        camadasNome = meta.camadas.map(c => c.nome || `Camada ${c.nivel}`).join(' → ');
+      }
+      document.getElementById('explainLayers').textContent = camadasNome;
+      const confianca = meta.score_confianca || 0.85;
+      document.getElementById('explainConfidence').textContent = (confianca * 100).toFixed(0) + '%';
+      document.getElementById('explainReview').textContent = meta.alertaRevisao || 'Não definida';
+      document.getElementById('explainCode').textContent = meta.codigo || '—';
+    }
+
+    // ==================== ENVIO DIRETO AO REDIS ====================
+    async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+      const feedbackEl = document.getElementById(feedbackElementId);
+      const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+      const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+      updateRedisStatus('sending');
+      if (feedbackEl) {
+        feedbackEl.className = 'redis-feedback show loading';
+        feedbackEl.textContent = '⏳ Enviando para o Redis...';
+      }
+      try {
+        const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+        const redisKey = `idenza:${tipo}:${codigo}`;
+        const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(sanitizedPayload)
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        updateRedisStatus('connected');
+        if (feedbackEl) {
+          feedbackEl.className = 'redis-feedback show success';
+          const agora = new Date().toLocaleString('pt-BR');
+          feedbackEl.innerHTML = `✅ <strong>Enviado com sucesso!</strong><br>📁 Chave: <code>${redisKey}</code><br>📏 Tamanho: ${JSON.stringify(sanitizedPayload).length} bytes<br>📅 Data e Hora: ${agora}`;
+        }
+        return { sucesso: true, redisKey };
+      } catch (error) {
+        console.error('Erro ao enviar para Redis:', error);
+        updateRedisStatus('disconnected');
+        if (feedbackEl) {
+          feedbackEl.className = 'redis-feedback show error';
+          feedbackEl.innerHTML = `❌ <strong>Erro no envio!</strong><br>📝 ${error.message}`;
+        }
+        return { sucesso: false, erro: error.message };
+      }
+    }
+
+    // ==================== CATÁLOGO DE PESQUISA ====================
+    function atualizarCatalogoPesquisa() {
+      const container = document.getElementById('catalogoPesquisa');
+      if (!container) return;
+      const todosAgentes = [...agentesTeologicos, ...agentesArqueologicos];
+      if (todosAgentes.length === 0) {
+        container.innerHTML = '<p style="font-size:0.7rem;color:#888;">Gere agentes nas abas Física Teórica ou Astrofísica primeiro.</p>';
+        return;
+      }
+      container.innerHTML = todosAgentes.map(a => `
+        <div class="agent-select-item" data-codigo="${a.codigo_universal}">
+          <input type="radio" name="agentePesquisa" value="${a.codigo_universal}">
+          <span>${a.codigo_universal} — ${a.escopo?.eixo || a.escopo?.conceito || 'Agente'}</span>
+        </div>
+      `).join('');
+      container.querySelectorAll('.agent-select-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const codigo = item.dataset.codigo;
+          const agente = todosAgentes.find(a => a.codigo_universal === codigo);
+          if (agente) abrirPesquisa(agente);
+        });
+      });
+    }
+
+    function abrirPesquisa(agente) {
+      document.getElementById('panelPesquisa').style.display = 'block';
+      document.getElementById('pesquisaNome').textContent = agente.codigo_universal;
+      document.getElementById('pesquisaCodigo').textContent = agente.codigo_universal;
+      let prompt = '';
+      if (agente.escopo.dominio === 'fisica_teorica') {
+        prompt = gerarSuperPromptFisica(
+          agente.escopo.eixo,
+          agente.escopo.subtopico_inicio,
+          agente.escopo.subtopico_fim,
+          TEMAS_POR_EIXO[agente.escopo.eixo] || ''
+        );
+      } else if (agente.escopo.dominio === 'astrofisica') {
+        const conceito = CONCEITOS_ASTROFISICA.find(c => c.nome === agente.escopo.conceito);
+        if (conceito) prompt = gerarSuperPromptAstrofisica(conceito);
+      }
+      document.getElementById('pesquisaSuperPrompt').value = prompt || 'Super Prompt não disponível';
+      document.getElementById('pesquisaRespostaIA').value = '';
+      document.getElementById('pesquisaCamadasPreview').style.display = 'none';
+      document.getElementById('pesquisaJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarPesquisaRedis').style.display = 'none';
+    }
+
+    document.getElementById('btnCopiarPesquisaPrompt').addEventListener('click', async () => {
+      const prompt = document.getElementById('pesquisaSuperPrompt').value;
+      const ok = await copiarTextoParaClipboard(prompt);
+      document.getElementById('pesquisaStatusMsg').textContent = ok ? '✅ Prompt copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('btnEstruturarPesquisa').addEventListener('click', () => {
+      const texto = document.getElementById('pesquisaRespostaIA').value.trim();
+      if (!texto) {
+        document.getElementById('pesquisaStatusMsg').textContent = '⚠️ Cole a resposta da IA.';
+        return;
+      }
+      const camadas = extrairCamadas(texto);
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+      const codigo = document.getElementById('pesquisaCodigo').textContent;
+      const agora = new Date().toISOString();
+      const jsonResult = {
+        codigo_universal: codigo,
+        versao: 'v1',
+        hash: btoa(codigo + texto).substring(0, 16),
+        escopo: { dominio: 'pesquisa', idioma: 'pt-BR' },
+        conteudo: { resumo, camadas },
+        indexacao: { tags: ['pesquisa'], palavras_chave: [] },
+        governanca: {
+          score_confianca: 0.85,
+          autor: 'IDEnza',
+          revisor: 'Humanoide',
+          aprovado_por: 'Especialista',
+          criado_em: agora,
+          revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+        },
+        origem: {
+          tipo: 'ia_externa',
+          modelo: 'DeepSeek',
+          data_geracao: agora,
+          hash_original: btoa(texto).substring(0, 20),
+          uri_original: `/storage/pesquisa/${codigo}.md`
+        },
+        licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+      };
+      document.getElementById('pesquisaCamadasPreview').style.display = 'block';
+      document.getElementById('pesquisaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('pesquisaJSONPreview').style.display = 'block';
+      document.getElementById('pesquisaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarPesquisaRedis').style.display = 'inline-flex';
+      document.getElementById('pesquisaStatusMsg').textContent = '✅ Estruturado!';
+      setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+      mostrarExplicacao({
+        fontes: ['IA Externa'],
+        camadas: camadas,
+        score_confianca: 0.85,
+        alertaRevisao: jsonResult.governanca.revisado_em,
+        codigo: jsonResult.codigo_universal
+      });
+    });
+
+    document.getElementById('btnEnviarPesquisaRedis').addEventListener('click', async () => {
+      const jsonTexto = document.getElementById('pesquisaJSONPreview').textContent;
+      if (!jsonTexto) return;
+      try {
+        const payload = JSON.parse(jsonTexto);
+        await enviarDiretoRedis(payload, 'pesquisa', payload.codigo_universal, 'pesquisaFeedback');
+      } catch (e) {
+        document.getElementById('pesquisaStatusMsg').textContent = '❌ JSON inválido.';
+      }
+    });
+
+    // ==================== INICIALIZAÇÃO ====================
+    window.addEventListener('load', () => {
+      agentesTeologicos = gerarTodosFisica(3);
+      agentesArqueologicos = gerarAgentesAstrofisica();
+      renderizarTeologia(agentesTeologicos);
+      renderizarArqueologia(agentesArqueologicos);
+      atualizarCatalogoPesquisa();
+    });
+
+    // ==================== ASSISTENTE SIMPLES ====================
+    document.getElementById('assistenteBtn').addEventListener('click', () => {
+      const input = document.getElementById('assistenteInput').value.trim();
+      const respostaDiv = document.getElementById('assistenteResposta');
+      if (!input) {
+        respostaDiv.style.display = 'block';
+        respostaDiv.textContent = 'Por favor, digite sua pergunta.';
+        return;
+      }
+      respostaDiv.style.display = 'block';
+      respostaDiv.textContent = 'Processando sua consulta... (em breve integração com IA)';
+      setTimeout(() => {
+        respostaDiv.textContent = `Você perguntou: "${input}".\n\nEsta é uma resposta simulada. A integração com uma IA real será implementada em breve.`;
+      }, 1000);
+    });
+
+    // ==================== PATCH: Fábrica Cognitiva ====================
+    document.getElementById('fabricaBtnGerar').addEventListener('click', function() {
+      const nome = document.getElementById('fabricaNome').value.trim() || 'Novo Agente';
+      const dominio = document.getElementById('fabricaDominio').value.trim() || 'fisica_teorica';
+      const especialidade = document.getElementById('fabricaEspecialidade').value.trim() || 'Análise física';
+      const palavrasChave = document.getElementById('fabricaPalavrasChave').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+      const camadaDestino = document.getElementById('fabricaCamadaDestino').value;
+      
+      const codigo = `fabrica.${dominio.replace(/[^a-z0-9]/g, '_')}.${Date.now().toString(36)}.v1`;
+      const agora = new Date().toISOString();
+      
+      const resultado = {
+        codigo_universal: codigo,
+        versao: 'v1',
+        hash: btoa(codigo + agora).substring(0, 16),
+        escopo: {
+          dominio: dominio,
+          especialidade: especialidade,
+          idioma: 'pt-BR',
+          camada_destino: camadaDestino
+        },
+        conteudo: {
+          resumo: `Agente cognitivo para ${especialidade}`,
+          camadas: [
+            { nivel: 7, nome: 'Essência', subtemas: [`Fundamentos de ${especialidade}`], equacoes_chave: [], fontes: [] },
+            { nivel: 6, nome: 'Teoria', subtemas: [`Modelos teóricos`], equacoes_chave: [], fontes: [] },
+            { nivel: 5, nome: 'Estruturas', subtemas: [`Equações e simetrias`], equacoes_chave: [], fontes: [] },
+            { nivel: 4, nome: 'Aplicação', subtemas: [`Aplicações práticas`], equacoes_chave: [], fontes: [] },
+            { nivel: 3, nome: 'Métodos', subtemas: [`Técnicas`], equacoes_chave: [], fontes: [] },
+            { nivel: 2, nome: 'Didático', subtemas: [`Ensino`], equacoes_chave: [], fontes: [] },
+            { nivel: 1, nome: 'Curiosidades', subtemas: [`Descobertas`], equacoes_chave: [], fontes: [] }
+          ]
+        },
+        indexacao: {
+          tags: [dominio, especialidade.toLowerCase()],
+          palavras_chave: palavrasChave.length ? palavrasChave : [especialidade.toLowerCase()]
+        },
+        governanca: {
+          score_confianca: 0.80,
+          autor: 'IDEnza',
+          revisor: 'Humanoide',
+          aprovado_por: 'Especialista',
+          criado_em: agora,
+          revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+        },
+        origem: {
+          tipo: 'ia_externa',
+          modelo: 'DeepSeek',
+          data_geracao: agora,
+          hash_original: null,
+          uri_original: `/storage/fabrica/${codigo}.md`
+        },
+        licenca: {
+          tipo: 'CC BY-NC',
+          responsavel: 'IDEnza'
+        }
+      };
+      
+      document.getElementById('fabricaResultado').style.display = 'block';
+      document.getElementById('fabricaCodigoUniversal').textContent = codigo;
+      document.getElementById('fabricaPreviewJSON').textContent = JSON.stringify(resultado, null, 2);
+      document.getElementById('fabricaStatusMsg').textContent = '✅ Artefato gerado com sucesso!';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('fabricaBtnLimpar').addEventListener('click', function() {
+      document.getElementById('fabricaNome').value = '';
+      document.getElementById('fabricaDominio').value = '';
+      document.getElementById('fabricaEspecialidade').value = '';
+      document.getElementById('fabricaPalavrasChave').value = '';
+      document.getElementById('fabricaResultado').style.display = 'none';
+      document.getElementById('fabricaStatusMsg').textContent = 'Campos limpos.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+    });
+
+    document.getElementById('fabricaBtnCopiarJSON').addEventListener('click', async function() {
+      const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+      if (!jsonText) {
+        document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON gerado.';
+        setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+        return;
+      }
+      const ok = await copiarTextoParaClipboard(jsonText);
+      document.getElementById('fabricaStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async function() {
+      const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+      if (!jsonText) {
+        document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON para enviar.';
+        return;
+      }
+      try {
+        const payload = JSON.parse(jsonText);
+        await enviarDiretoRedis(payload, 'fabrica', payload.codigo_universal, 'fabricaFeedback');
+      } catch (e) {
+        document.getElementById('fabricaStatusMsg').textContent = '❌ JSON inválido.';
+      }
+    });
+
+    document.getElementById('btnLimparJSONFabrica').addEventListener('click', function() {
+      document.getElementById('fabricaPreviewJSON').textContent = '';
+      document.getElementById('fabricaStatusMsg').textContent = 'JSON limpo.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+    });
+
+    document.getElementById('fabricaBtnLimparResultado').addEventListener('click', function() {
+      document.getElementById('fabricaResultado').style.display = 'none';
+      document.getElementById('fabricaStatusMsg').textContent = 'Resultado oculto.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+    });
+
+    // ==================== HUMANOIDES ====================
+    const tiposHumanoidesFisica = [
+      { id: 'teorico', icone: '📐', nome: 'Físico Teórico', descricao: 'Especialista em formulações matemáticas e modelos.' },
+      { id: 'experimental', icone: '🔬', nome: 'Físico Experimental', descricao: 'Especialista em medições e experimentos.' },
+      { id: 'astrofisico', icone: '🌌', nome: 'Astrofísico', descricao: 'Especialista em fenômenos cósmicos.' },
+      { id: 'quantico', icone: '🌀', nome: 'Físico Quântico', descricao: 'Especialista em mecânica quântica e informação.' }
+    ];
+
+    const humTypeGrid = document.getElementById('humTypeGrid');
+    tiposHumanoidesFisica.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'hum-type-card';
+      card.innerHTML = `
+        <span class="type-icon">${t.icone}</span>
+        <div class="type-name">${t.nome}</div>
+        <div class="type-code">${t.id}</div>
+      `;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        document.getElementById('humPanel').style.display = 'block';
+        document.getElementById('humIcone').textContent = t.icone;
+        document.getElementById('humNome').textContent = t.nome;
+        document.getElementById('humCodigoBase').textContent = `hum.${t.id}.idenza`;
+        document.getElementById('humDescricao').textContent = t.descricao;
+        document.getElementById('humNomeUsuario').value = '';
+        document.getElementById('humEntrada').value = '';
+        document.getElementById('humResultados').style.display = 'none';
+        document.getElementById('humStatusMsg').textContent = '';
+      });
+      humTypeGrid.appendChild(card);
+    });
+
+    document.getElementById('btnProcessarHum').addEventListener('click', function() {
+      const nomeUsuario = document.getElementById('humNomeUsuario').value.trim() || 'Usuário';
+      const entrada = document.getElementById('humEntrada').value.trim();
+      if (!entrada) {
+        document.getElementById('humStatusMsg').textContent = '⚠️ Insira um contexto ou dúvida.';
+        return;
+      }
+      const agora = new Date().toISOString();
+      const codigo = `hum.${Date.now().toString(36)}.idenza.v1`;
+      const camadas = [
+        { nivel: 7, nome: 'Essência', subtemas: [`Resposta baseada em ${entrada.substring(0, 30)}...`], equacoes_chave: [], fontes: [] },
+        { nivel: 6, nome: 'Teoria', subtemas: [`Conexões teóricas`], equacoes_chave: [], fontes: [] },
+        { nivel: 5, nome: 'Estruturas', subtemas: [`Análise estrutural`], equacoes_chave: [], fontes: [] },
+        { nivel: 4, nome: 'Aplicação', subtemas: [`Como aplicar`], equacoes_chave: [], fontes: [] },
+        { nivel: 3, nome: 'Métodos', subtemas: [`Abordagens`], equacoes_chave: [], fontes: [] },
+        { nivel: 2, nome: 'Didático', subtemas: [`Uso educacional`], equacoes_chave: [], fontes: [] },
+        { nivel: 1, nome: 'Curiosidades', subtemas: [`Fatos interessantes`], equacoes_chave: [], fontes: [] }
+      ];
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo gerado.';
+      
+      const jsonResult = {
+        codigo_universal: codigo,
+        versao: 'v1',
+        hash: btoa(codigo + entrada).substring(0, 16),
+        escopo: {
+          dominio: 'humanoide',
+          usuario: nomeUsuario,
+          idioma: 'pt-BR',
+          contexto: entrada
+        },
+        conteudo: {
+          resumo: resumo,
+          camadas: camadas
+        },
+        indexacao: {
+          tags: ['humanoide', 'fisica', 'astrofisica'],
+          palavras_chave: entrada.split(' ').slice(0, 5).map(w => w.toLowerCase())
+        },
+        governanca: {
+          score_confianca: 0.80,
+          autor: 'IDEnza',
+          revisor: 'Humanoide',
+          aprovado_por: 'Especialista',
+          criado_em: agora,
+          revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0]
+        },
+        origem: {
+          tipo: 'ia_externa',
+          modelo: 'DeepSeek',
+          data_geracao: agora,
+          hash_original: null,
+          uri_original: null
+        },
+        licenca: {
+          tipo: 'CC BY-NC',
+          responsavel: 'IDEnza'
+        }
+      };
+      
+      document.getElementById('humResultados').style.display = 'block';
+      document.getElementById('humCodigoRastreio').textContent = codigo;
+      document.getElementById('humMetricGrid').innerHTML = `
+        <div class="hum-metric-item"><div class="label">Confiança</div><div class="value">85%</div></div>
+        <div class="hum-metric-item"><div class="label">Camadas</div><div class="value">7</div></div>
+        <div class="hum-metric-item"><div class="label">Versão</div><div class="value">v1</div></div>
+      `;
+      document.getElementById('humResposta').textContent = `Resposta gerada para ${nomeUsuario}: ${resumo}`;
+      document.getElementById('humJsonCompleto').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+      document.getElementById('humStatusMsg').textContent = '✅ Processado com sucesso!';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+      
+      window._humPayload = jsonResult;
+    });
+
+    document.getElementById('btnEnviarWorkerHum').addEventListener('click', async function() {
+      const payload = window._humPayload;
+      if (!payload) {
+        document.getElementById('humStatusMsg').textContent = '⚠️ Nenhum dado processado.';
+        return;
+      }
+      await enviarDiretoRedis(payload, 'humanoide', payload.codigo_universal, 'redisFeedbackHum');
+    });
+
+    document.getElementById('btnCopiarJSONHum').addEventListener('click', async function() {
+      const jsonText = document.getElementById('humJsonCompleto').textContent;
+      if (!jsonText) {
+        document.getElementById('humStatusMsg').textContent = '⚠️ Nenhum JSON.';
+        return;
+      }
+      const ok = await copiarTextoParaClipboard(jsonText);
+      document.getElementById('humStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('btnLimparHumJSON').addEventListener('click', function() {
+      document.getElementById('humJsonCompleto').textContent = '';
+      document.getElementById('humStatusMsg').textContent = 'JSON limpo.';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 2000);
+    });
+
+    document.getElementById('btnLimparHum').addEventListener('click', function() {
+      document.getElementById('humNomeUsuario').value = '';
+      document.getElementById('humEntrada').value = '';
+      document.getElementById('humResultados').style.display = 'none';
+      document.getElementById('humStatusMsg').textContent = 'Campos limpos.';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 2000);
+    });
+
+    // ==================== EXPORTAÇÃO (placeholder) ====================
+    document.getElementById('btnExportarTeologia').addEventListener('click', function() {
+      alert('Função de exportação JSON será implementada em breve.');
+    });
+    document.getElementById('btnExportarArqueologia').addEventListener('click', function() {
+      alert('Função de exportação JSON será implementada em breve.');
+    });
+
+    // ==================== CENTRAL REDIS (visual) ====================
+    console.log('IDEnza — Estação de Pesquisa Física e Astrofísica carregada com sucesso!');
+  </script>
+</body>
+</html>

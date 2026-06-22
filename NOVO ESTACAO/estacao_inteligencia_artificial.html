@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Estação de Pesquisa — Inteligência Artificial & LLMs</title>
+  <style>
+    /* ==================== CSS COMPLETO (mantido exatamente igual ao original) ==================== */
+    :root {
+      --bg: #f8f5f0;
+      --card-bg: #ffffff;
+      --petroleum: #0d4f5c;
+      --petroleum-light: #1a6e7a;
+      --gold-dark: #8B6914;
+      --gold: #b8860b;
+      --gold-light: #e6c66a;
+      --text: #1e1e1e;
+      --text-soft: #555;
+      --border: #d0c8b8;
+      --shadow-sm: 2px 2px 6px rgba(0,0,0,0.08);
+      --shadow-md: 3px 3px 10px rgba(0,0,0,0.10);
+      --shadow-lg: 4px 4px 16px rgba(0,0,0,0.12);
+      --success: #0d5c3a;
+      --success-bg: #e0f5e8;
+      --warning: #b8860b;
+      --warning-bg: #fefce8;
+      --error: #b91c1c;
+      --error-bg: #fef2f2;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
+      --theo-purple: #4a1a6b;
+      --theo-purple-light: #7a3a9b;
+      --arch-sand: #c4a882;
+      --arch-sand-light: #dcc8b0;
+      --scroll-bg: #f5efe6;
+      --ia-blue: #0f4c81;
+      --ia-blue-light: #3a7ca5;
+      --llm-green: #2e6b4c;
+      --llm-green-light: #4c9b6a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 16px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-left: 6px solid var(--ia-blue);
+    }
+    header h1 { font-size: 1.3rem; font-weight: 600; color: var(--ia-blue); letter-spacing: 1px; }
+    .badge { background: var(--gold-dark); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-ia { background: var(--ia-blue); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .badge-llm { background: var(--llm-green); color: white; font-size: 0.6rem; font-weight: bold; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .redis-connection-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      box-shadow: var(--shadow-sm);
+    }
+    .redis-status-dot { width: 12px; height: 12px; border-radius: 50% !important; display: inline-block; }
+    .redis-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+    .redis-status-dot.disconnected { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+    .redis-status-dot.sending { background: #eab308; animation: pulse 0.8s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .explain-panel {
+      background: var(--scroll-bg);
+      border: 1px solid var(--ia-blue-light);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      display: none;
+      border-left: 4px solid var(--ia-blue);
+    }
+    .explain-panel .section-title { margin-bottom: 10px; color: var(--ia-blue); }
+    .explain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .explain-item strong { color: var(--ia-blue); font-size: 0.7rem; }
+    .explain-item div { font-size: 0.75rem; color: #333; margin-top: 2px; }
+    .explain-confidence { font-size: 1.4rem; font-weight: 700; color: var(--gold-dark); margin-top: 4px; }
+    .explain-code { font-size: 0.65rem; color: #555; margin-top: 8px; font-family: var(--font-mono); }
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 12px 14px;
+      border: none;
+      background: #f0ece6;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+      color: #666;
+      border-right: 1px solid var(--border);
+    }
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn:hover { background: #e8e0d8; }
+    .tab-btn.active { background: var(--card-bg); color: var(--ia-blue); border-bottom: 3px solid var(--gold-dark); box-shadow: inset 0 -3px 0 var(--gold-dark); }
+    .tab-btn.active.ia-tab { color: var(--ia-blue); border-bottom: 3px solid var(--ia-blue); box-shadow: inset 0 -3px 0 var(--ia-blue); }
+    .tab-btn.active.llm-tab { color: var(--llm-green); border-bottom: 3px solid var(--llm-green); box-shadow: inset 0 -3px 0 var(--llm-green); }
+    .tab-content { display: none; background: var(--card-bg); box-shadow: var(--shadow-md); border: 1px solid var(--border); border-top: none; padding: 20px; }
+    .tab-content.active { display: block; }
+    .section { background: var(--card-bg); box-shadow: var(--shadow-md); border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
+    .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--ia-blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .section-title.ia-title { color: var(--ia-blue); }
+    .section-title.llm-title { color: var(--llm-green); }
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:active { transform: translateY(1px); box-shadow: none; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-gold { background: var(--gold-dark); color: white; border: 1px solid #6a4f0a; }
+    .btn-outline { background: transparent; border: 1px solid var(--ia-blue-light); color: var(--ia-blue); }
+    .btn-ia { background: var(--ia-blue); color: white; border: 1px solid #0a3a5c; }
+    .btn-llm { background: var(--llm-green); color: white; border: 1px solid #1a4a2a; }
+    .btn-petroleum { background: var(--petroleum); color: white; border: 1px solid #0a3a44; }
+    .btn-data { background: #0d5c3a; color: white; border: 1px solid #064025; }
+    .btn-purple { background: #6b21a8; color: white; border: 1px solid #4c1d7a; }
+    .btn-gold:hover, .btn-ia:hover, .btn-llm:hover, .btn-petroleum:hover, .btn-data:hover, .btn-purple:hover { opacity: 0.9; }
+    .btn-outline:hover { background: #f5efe6; }
+    .raw-textarea {
+      width: 100%;
+      min-height: 100px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      resize: vertical;
+      color: var(--text);
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.06);
+    }
+    .raw-textarea.ia-textarea { min-height: 120px; border-left: 4px solid var(--ia-blue); }
+    .raw-textarea.llm-textarea { min-height: 120px; border-left: 4px solid var(--llm-green); }
+    .generated-question {
+      width: 100%;
+      min-height: 120px;
+      background: #f5efe6;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      margin-top: 8px;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
+      color: #1e1e1e;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .camadas-preview {
+      background: #f5efe6;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 8px;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.05);
+      color: #1e1e1e;
+    }
+    .ia-json-preview, .llm-json-preview {
+      background: #f5efe6;
+      border: 1px solid #c4b0a0;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 12px;
+      color: #1e1e1e;
+    }
+    .llm-json-preview { background: #f0f5f2; border-color: var(--llm-green); }
+    .status-msg { font-size: 0.7rem; color: var(--petroleum-light); margin-top: 6px; }
+    .redis-feedback {
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      border-left: 4px solid var(--petroleum-light);
+      background: #f0f8f9;
+      display: none;
+      line-height: 1.6;
+    }
+    .redis-feedback.show { display: block; }
+    .redis-feedback.success { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+    .redis-feedback.error { border-color: var(--error); background: var(--error-bg); color: var(--error); }
+    .redis-feedback.loading { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); }
+    .expando {
+      border: 1px solid var(--border);
+      background: white;
+      box-shadow: var(--shadow-sm);
+      margin-top: 6px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      max-height: 32px;
+    }
+    .expando.open { max-height: 600px; overflow-y: auto; }
+    .expando-toggle { padding: 6px 14px; font-size: 0.65rem; color: var(--text-soft); cursor: pointer; text-align: left; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; background: #fafafa; border-bottom: 1px solid transparent; }
+    .expando.open .expando-toggle { border-bottom-color: var(--border); }
+    .expando-body { padding: 10px 14px; font-size: 0.7rem; display: none; }
+    .expando.open .expando-body { display: block; }
+    .agent-select-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      padding: 6px;
+      background: #fafbfc;
+    }
+    .agent-select-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .agent-select-item:hover { background: #f5efe6; }
+    .agent-select-item input[type="radio"] { margin: 0; }
+    .hum-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .hum-type-card {
+      border: 1px solid var(--border);
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafdfd;
+      text-align: center;
+    }
+    .hum-type-card:hover { border-color: var(--ia-blue); box-shadow: var(--shadow-md); background: #f5efe6; }
+    .hum-type-card.selected { border-color: var(--ia-blue); background: #e8e4f0; box-shadow: var(--shadow-md); }
+    .hum-type-card .type-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .hum-type-card .type-name { font-size: 0.7rem; font-weight: 700; color: var(--ia-blue); }
+    .hum-type-card .type-code { font-size: 0.5rem; color: #888; font-family: var(--font-mono); }
+    .hum-metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
+    .hum-metric-item { background: #f5efe6; padding: 8px; border: 1px solid #d0c8b8; text-align: center; }
+    .hum-metric-item .label { font-size: 0.55rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+    .hum-metric-item .value { font-size: 1.1rem; font-weight: 700; color: var(--ia-blue); font-family: var(--font-mono); }
+    .hum-resposta-box { background: #fff; border: 1px solid var(--ia-blue-light); padding: 16px; margin-top: 12px; font-size: 0.85rem; line-height: 1.6; color: #333; }
+    .hum-alert-box { padding: 12px 16px; margin: 8px 0; border-left: 5px solid #ccc; background: #f9f9f9; font-size: 0.75rem; }
+    .hum-alert-box.baixo { border-color: #22c55e; background: #f0fdf4; }
+    .hum-alert-box.medio { border-color: #eab308; background: #fefce8; }
+    .hum-alert-box.alto { border-color: #f97316; background: #fff7ed; }
+    .ia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .ia-card {
+      border: 1px solid #c4cce0;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f7f9ff;
+      text-align: center;
+    }
+    .ia-card:hover { border-color: var(--ia-blue); box-shadow: var(--shadow-md); background: #f0f4ff; }
+    .ia-card.selected { border-color: var(--ia-blue); background: #e0e8f5; box-shadow: var(--shadow-md); }
+    .ia-card .ia-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+    .ia-card .ia-name { font-size: 0.7rem; font-weight: 700; color: var(--ia-blue); }
+    .ia-card .ia-detail { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .ia-card .ia-versiculo { font-size: 0.5rem; color: var(--ia-blue); font-style: italic; margin-top: 2px; }
+    .ia-progress-bar { width: 100%; height: 6px; background: #e0e0e0; margin: 4px 0; border-radius: 3px !important; overflow: hidden; }
+    .ia-progress-bar .fill { height: 100%; background: var(--ia-blue); transition: width 0.3s; }
+    .llm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .llm-card {
+      border: 1px solid var(--llm-green);
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f4faf6;
+      text-align: center;
+    }
+    .llm-card:hover { border-color: #2a6a4a; box-shadow: var(--shadow-md); background: #eaf5ed; }
+    .llm-card.selected { border-color: #2a6a4a; background: #d4e8da; box-shadow: var(--shadow-md); }
+    .llm-card .llm-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+    .llm-card .llm-name { font-size: 0.7rem; font-weight: 700; color: var(--llm-green); }
+    .llm-card .llm-detail { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .llm-card .llm-period { font-size: 0.5rem; color: #2a6a4a; font-style: italic; margin-top: 2px; }
+    .fabrica-tipo-btn.active { background: var(--ia-blue); color: white; border: 1px solid #0a3a5c; }
+    .eng-payload-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; margin-top: 8px; }
+    .eng-payload-table th { background: #f5efe6; padding: 8px 10px; text-align: left; color: var(--ia-blue); border-bottom: 2px solid var(--ia-blue-light); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .eng-payload-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--text-soft); }
+    .multi-redis-hub { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+    @media (max-width: 800px) { .multi-redis-hub { grid-template-columns: 1fr; } }
+    .redis-cluster-panel { border: 2px solid #ccc; background: #fcfcfc; box-shadow: var(--shadow-lg); padding: 16px; }
+    .redis-cluster-panel.science-cluster { border-color: var(--ia-blue-light); background: #f5f8fc; }
+    .redis-cluster-panel.ops-cluster { border-color: var(--llm-green); background: #f4faf6; }
+    .redis-slot-card {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s;
+    }
+    .redis-slot-card.connected { border-left: 5px solid #22c55e; background: #f9fef9; }
+    .redis-slot-card.disconnected { border-left: 5px solid #ef4444; background: #fef9f9; }
+    .redis-slot-card .slot-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .redis-slot-card .slot-name { font-weight: 700; font-size: 0.75rem; color: var(--text); font-family: var(--font-mono); flex: 1; min-width: 120px; }
+    .redis-slot-card .slot-name input { border: 1px solid transparent; background: transparent; font-weight: 700; font-size: 0.75rem; font-family: var(--font-mono); width: 100%; padding: 4px; color: var(--text); transition: border 0.2s; }
+    .redis-slot-card .slot-name input:focus { border-color: var(--border); background: #fff; outline: none; }
+    .redis-slot-dot { width: 10px; height: 10px; border-radius: 50% !important; display: inline-block; }
+    .redis-slot-dot.on { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+    .redis-slot-dot.off { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+    .redis-slot-dot.testing { background: #eab308; animation: pulse 0.8s infinite; }
+    .slot-credentials { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .slot-credentials input { border: 1px solid var(--border); padding: 5px 7px; font-family: var(--font-mono); font-size: 0.6rem; width: 100%; color: var(--text); }
+    .slot-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mini-status-text { font-size: 0.55rem; color: #888; font-family: var(--font-mono); margin-top: 4px; }
+    .diretorio-interligado {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px dashed var(--border);
+      background: #f9f9f9;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .diretorio-interligado .cluster-line { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: white; border: 1px solid var(--border); border-radius: 4px !important; font-size: 0.6rem; }
+    .cluster-line.science { border-color: var(--ia-blue-light); color: var(--ia-blue); }
+    .cluster-line.ops { border-color: var(--llm-green); color: var(--llm-green); }
+    .cluster-line .linked-icon { font-size: 0.8rem; }
+    #multiRedisSlotBar { display: flex; align-items: center; gap: 6px; margin-left: 6px; }
+    .redis-slot-mini-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50% !important;
+      display: inline-block;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .redis-slot-mini-dot.connected-dot { border-color: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.7); }
+    .redis-slot-mini-dot.disconnected-dot { border-color: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,0.5); }
+    .redis-slot-mini-dot:hover { transform: scale(1.3); z-index: 2; }
+    .slot-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .slot-modal-overlay.open { display: flex; }
+    .slot-modal {
+      background: white;
+      border: 2px solid var(--ia-blue-light);
+      padding: 24px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-family: var(--font-mono);
+      border-radius: 6px !important;
+    }
+    .slot-modal h3 { font-size: 0.9rem; color: var(--ia-blue); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .slot-modal label { font-size: 0.65rem; font-weight: 700; color: var(--ia-blue); display: block; margin: 8px 0 2px; }
+    .slot-modal input { width: 100%; padding: 8px; font-family: var(--font-mono); font-size: 0.7rem; border: 1px solid var(--border); background: #fafbfc; margin-bottom: 4px; }
+    .slot-modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+    .slot-modal .test-status { font-size: 0.6rem; margin-top: 4px; color: #555; }
+    .ia-code-display { background: var(--ia-blue); color: #dce8f5; padding: 6px 12px; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 1px; display: inline-block; margin: 4px 0; }
+    .llm-code-display { background: var(--llm-green); color: #e0f5e8; padding: 6px 12px; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 1px; display: inline-block; margin: 4px 0; }
+    @media (max-width: 600px) {
+      body { padding: 8px; }
+      .tab-btn { padding: 8px 10px; font-size: 0.58rem; }
+      .hum-metric-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .hum-type-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .ia-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .llm-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    }
+	.top-nav-special {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: #2d5a27;
+    border-bottom: 2px solid var(--gold-dark);
+}
+.top-nav-special a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    transition: 0.2s;
+    border-radius: 4px !important;
+}
+.top-nav-special a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+  </style>
+</head>
+<body>
+<div class="top-nav-special">
+    <a href="governanca.html">🛡️ Governança (Sala de Controle)</a>
+    <a href="painel.html" target="_blank" class="painel-link">🌐 IDENZA Painel</a>
+    <a href="https://idenza.pages.dev" target="_blank" class="client-link">🌐 IDENZA Client</a>
+</div>
+  <!-- ==================== BARRA REDIS ==================== -->
+  <div class="redis-connection-bar">
+    <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+    <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+    <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+  </div>
+
+  <!-- ========== ASSISTENTE FIXO ========== -->
+  <div id="assistenteFixo" style="
+    background: linear-gradient(135deg, #0f4c81 0%, #3a7ca5 100%);
+    color: white;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  ">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 2rem;">🧠</span>
+      <div>
+        <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px;">Olá! Sou seu assistente de IA Generativa & LLMs</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em Engenharia de Prompt, Agentes e Sistemas Multiagentes</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <input type="text" id="assistenteInput" placeholder="Digite sua dúvida sobre IA, RAG ou Fine Tuning..." 
+             style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+      <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Enviar</button>
+    </div>
+    <div id="assistenteResposta" style="
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px !important;
+      padding: 12px 16px;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #f0f0f0;
+    "></div>
+  </div>
+
+  <!-- ==================== PAINEL DE TRANSPARÊNCIA ==================== -->
+  <div class="explain-panel" id="explainPanel">
+    <div class="section-title">🔍 Transparência da Resposta</div>
+    <div class="explain-grid">
+      <div class="explain-item"><strong>Fontes utilizadas</strong><div id="explainSources">—</div></div>
+      <div class="explain-item"><strong>Camadas executadas</strong><div id="explainLayers">—</div></div>
+      <div class="explain-item"><strong>Nível de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+      <div class="explain-item"><strong>Próxima revisão</strong><div id="explainReview">—</div></div>
+    </div>
+    <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+  </div>
+
+  <!-- ==================== HEADER ==================== -->
+  <header>
+    <h1>🧠 Estação de Pesquisa — Inteligência Artificial & LLMs</h1>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span class="badge-ia">🤖 IA Generativa</span>
+      <span class="badge-llm">📚 LLMs</span>
+      <span class="badge">7 Camadas</span>
+      <span class="badge" style="background:#0f4c81;color:white;">Super Prompts</span>
+    </div>
+  </header>
+
+  <!-- ==================== NAVEGAÇÃO ==================== -->
+  <div class="tab-nav">
+    <button class="tab-btn active ia-tab" data-tab="tab-ia">🤖 IA Generativa</button>
+    <button class="tab-btn llm-tab" data-tab="tab-llm">📚 LLMs & RAG</button>
+    <button class="tab-btn" data-tab="tab-humanoides">🧬 Humanoides</button>
+    <button class="tab-btn" data-tab="tab-cognitivo">🏭 Fábrica Cognitiva</button>
+    <button class="tab-btn" data-tab="tab-pesquisa">🔬 Pesquisa</button>
+  </div>
+
+  <!-- ==================== TAB 1: IA GENERATIVA ==================== -->
+  <div class="tab-content active" id="tab-ia">
+    <div class="section">
+      <div class="section-title ia-title"><span>🤖</span> Agentes de IA Generativa — Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Cada agente de IA possui um Super Prompt completo com 7 camadas.</strong>
+        Selecione um agente, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+        <br><span style="color:var(--ia-blue);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+      </p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-ia" id="btnGerarIA">🚀 Gerar Todos os Agentes de IA</button>
+        <button class="btn btn-outline" id="btnExportarIA">📥 Exportar JSON</button>
+      </div>
+      <div class="redis-feedback" id="iaFeedback"></div>
+      <div class="status-msg" id="iaStatusMsg"></div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Tópico</label>
+        <input type="text" id="iaFiltro" placeholder="Ex: Transformers, Difusão, Prompt..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+      </div>
+      <div id="iaGrid" class="ia-grid"></div>
+    </div>
+
+    <!-- PAINEL DE DETALHE COM FUNCIONALIDADES DE PESQUISA -->
+    <div class="section" id="iaDetalhe" style="display:none;">
+      <div class="section-title ia-title"><span>🤖</span> <span id="iaDetalheNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código: <span class="ia-code-display" id="iaDetalheCodigo"></span></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+        <span class="badge-ia" id="iaDetalheTopico"></span>
+        <span class="badge" id="iaDetalheBloco"></span>
+        <span class="badge" style="background:#0a3a5c;color:white;" id="iaDetalheProgresso"></span>
+      </div>
+      <div style="margin-top:8px;"><div class="ia-progress-bar"><div class="fill" id="iaDetalheBarra" style="width:0%;"></div></div></div>
+      
+      <!-- SUPER PROMPT -->
+      <div style="margin-top:16px; background:#f0f4ff; padding:16px; border-left:4px solid var(--ia-blue);">
+        <strong style="font-size:0.8rem;color:var(--ia-blue);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+        <div id="iaDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #d0d5e0; max-height:400px; overflow-y:auto;"></div>
+      </div>
+      
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-outline" id="btnCopiarIAPrompt">📋 Copiar Super Prompt</button>
+        <button class="btn btn-outline" id="btnCopiarJSONIA">📋 Copiar JSON</button>
+      </div>
+
+      <!-- COLAR RESPOSTA DA IA -->
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--ia-blue); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+        <textarea class="raw-textarea ia-textarea" id="iaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+      </div>
+      <button class="btn btn-ia" id="btnEstruturarIA" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+      
+      <div class="camadas-preview" id="iaCamadasPreview" style="display:none;"></div>
+      <div class="ia-json-preview" id="iaJSONPreview" contenteditable="true" style="display:none;"></div>
+      <button class="btn btn-outline" id="btnLimparIAJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+      
+      <div style="margin-top:12px;">
+        <button class="btn btn-ia" id="btnEnviarIARedis" style="display:none;">Enviar para Redis</button>
+      </div>
+      <div class="redis-feedback" id="iaFeedbackDetalhe"></div>
+      <div class="status-msg" id="iaStatusDetalhe"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: LLMs & RAG ==================== -->
+  <div class="tab-content" id="tab-llm">
+    <div class="section">
+      <div class="section-title llm-title"><span>📚</span> Agentes de LLMs & RAG — Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Cada agente de LLM possui um Super Prompt completo com 7 camadas.</strong>
+        Selecione um modelo, copie o prompt, cole a resposta da IA e estruture o conhecimento.
+        <br><span style="color:var(--llm-green);">⬇️ Clique em um agente para abrir o painel de pesquisa.</span>
+      </p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn-llm" id="btnGerarLLM">🚀 Gerar Todos os Agentes de LLM</button>
+        <button class="btn btn-outline" id="btnExportarLLM">📥 Exportar JSON</button>
+      </div>
+      <div class="redis-feedback" id="llmFeedback"></div>
+      <div class="status-msg" id="llmStatusMsg"></div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem;font-weight:700;color:var(--llm-green);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">🔍 Filtrar por Modelo ou Técnica</label>
+        <input type="text" id="llmFiltro" placeholder="Ex: GPT, BERT, RAG, Fine Tuning..." style="width:100%; padding:8px; border:1px solid var(--border); font-size:0.8rem; margin-bottom:12px;">
+      </div>
+      <div id="llmGrid" class="llm-grid"></div>
+    </div>
+
+    <!-- PAINEL DE DETALHE LLM -->
+    <div class="section" id="llmDetalhe" style="display:none;">
+      <div class="section-title llm-title"><span>📚</span> <span id="llmDetalheNome"></span></div>
+      <p style="font-size:0.6rem; color:#888;">Código: <span class="llm-code-display" id="llmDetalheCodigo"></span></p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+        <span class="badge-llm" id="llmDetalheModelo"></span>
+        <span class="badge" style="background:#1a4a2a;color:white;" id="llmDetalheTecnica"></span>
+      </div>
+      
+      <!-- SUPER PROMPT -->
+      <div style="margin-top:16px; background:#eaf5ed; padding:16px; border-left:4px solid var(--llm-green);">
+        <strong style="font-size:0.8rem;color:var(--llm-green);">⚡ SUPER PROMPT — Instruções para IA:</strong>
+        <div id="llmDetalheSuperPrompt" style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #c0d5c0; max-height:400px; overflow-y:auto;"></div>
+      </div>
+      
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-outline" id="btnCopiarLLMPrompt">📋 Copiar Super Prompt</button>
+        <button class="btn btn-outline" id="btnCopiarJSONLLM">📋 Copiar JSON</button>
+      </div>
+
+      <!-- COLAR RESPOSTA DA IA -->
+      <div style="margin-top:16px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--llm-green); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+        <textarea class="raw-textarea llm-textarea" id="llmRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+      </div>
+      <button class="btn btn-llm" id="btnEstruturarLLM" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+      
+      <div class="camadas-preview" id="llmCamadasPreview" style="display:none;"></div>
+      <div class="llm-json-preview" id="llmJSONPreview" contenteditable="true" style="display:none;"></div>
+      <button class="btn btn-outline" id="btnLimparLLMJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+      
+      <div style="margin-top:12px;">
+        <button class="btn btn-llm" id="btnEnviarLLMRedis" style="display:none;">Enviar para Redis</button>
+      </div>
+      <div class="redis-feedback" id="llmFeedbackDetalhe"></div>
+      <div class="status-msg" id="llmStatusDetalhe"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: HUMANOIDES ==================== -->
+  <div class="tab-content" id="tab-humanoides">
+    <div class="section">
+      <div class="section-title ia-title"><span>🧬</span> Humanoides Especializados</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Humanoides cognitivos para IA, Engenharia de Prompt e Sistemas Multiagentes.</strong>
+        Selecione um tipo, insira o contexto e processe nas 7 camadas com Super Prompts.
+      </p>
+      <div class="hum-type-grid" id="humTypeGrid"></div>
+      <div id="humPanel" style="display:none; margin-top:16px;">
+        <div class="section-title ia-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+        <p style="font-size:0.6rem; color:#888;">Código Base: <span class="ia-code-display" id="humCodigoBase"></span></p>
+        <p style="font-size:0.65rem; color:#666;" id="humDescricao"></p>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--ia-blue); text-transform:uppercase; letter-spacing:1px;">👤 Nome do Usuário:</label>
+          <input type="text" class="raw-textarea" id="humNomeUsuario" placeholder="Ex: Dev, Pesquisador..." style="min-height:36px; width:100%;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--ia-blue); text-transform:uppercase; letter-spacing:1px;">📝 Entrada / Contexto:</label>
+          <textarea class="raw-textarea ia-textarea" id="humEntrada" placeholder="Descreva o problema de IA, prompt ou arquitetura..."></textarea>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+          <button class="btn btn-gold" id="btnProcessarHum">Processar (7 Camadas)</button>
+          <button class="btn btn-outline" id="btnLimparHum">Limpar</button>
+          <button class="btn btn-outline" id="btnCopiarJSONHum">Copiar JSON</button>
+          <button class="btn btn-ia" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+        </div>
+        <div class="redis-feedback" id="redisFeedbackHum"></div>
+        <div class="status-msg" id="humStatusMsg"></div>
+        <div id="humResultados" style="display:none;">
+          <div class="hum-alert-box" id="humAlertaBox" style="display:none;"></div>
+          <div class="section-title ia-title" style="margin-top:16px;"><span>📊</span> Métricas</div>
+          <p style="font-size:0.6rem; color:#888;">Código: <span class="ia-code-display" id="humCodigoRastreio"></span></p>
+          <div class="hum-metric-grid" id="humMetricGrid"></div>
+          <div class="section-title ia-title" style="margin-top:16px;"><span>💬</span> Resposta (Camada 7)</div>
+          <div class="hum-resposta-box" id="humResposta"></div>
+          <div class="section-title ia-title" style="margin-top:16px;"><span>🗂️</span> JSON Completo</div>
+          <div class="ia-json-preview" id="humJsonCompleto" contenteditable="true" style="white-space:pre-wrap;"></div>
+          <button class="btn btn-outline" id="btnLimparHumJSON" style="margin-top:6px;">🗑️ Limpar JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: FÁBRICA COGNITIVA ==================== -->
+  <div class="tab-content" id="tab-cognitivo">
+    <div class="section">
+      <div class="section-title ia-title"><span>🏭</span> Fábrica Cognitiva — IA & LLMs</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        <strong>Gere novos Especialistas, Humanoides e Objetos Redis</strong> com Super Prompts completos.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;" id="fabricaTipoGrid">
+        <button class="btn btn-outline fabrica-tipo-btn active" data-tipo="especialista">Especialista Digital</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="humanoide">Humanoide Cognitivo</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="perfil">Perfil Cognitivo</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="objeto">Objeto Redis</button>
+        <button class="btn btn-outline fabrica-tipo-btn" data-tipo="completo">Estrutura Completa</button>
+      </div>
+      <div id="fabricaPainelConfig">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;">Nome</label>
+          <input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Agente de Engenharia de Prompt" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;">Domínio</label>
+          <input type="text" class="raw-textarea" id="fabricaDominio" placeholder="Ex: IA Generativa" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;">Especialidade</label>
+          <input type="text" class="raw-textarea" id="fabricaEspecialidade" placeholder="Ex: Criação de Prompts para LLMs" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;">Palavras-chave</label>
+          <input type="text" class="raw-textarea" id="fabricaPalavrasChave" placeholder="prompt, engenharia, llm, agente" style="min-height:36px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.7rem;font-weight:700;color:var(--ia-blue);text-transform:uppercase;letter-spacing:1px;display:block;">Camada de Destino</label>
+          <select class="raw-textarea" id="fabricaCamadaDestino" style="min-height:36px;">
+            <option value="L7">L7 - Essência da IA</option>
+            <option value="L6">L6 - Arquitetura & Algoritmos</option>
+            <option value="L5">L5 - Estruturas de Dados</option>
+            <option value="L4" selected>L4 - Aplicação Prática</option>
+            <option value="L3">L3 - Contextualização</option>
+            <option value="L2">L2 - Inferência Guiada</option>
+            <option value="L1">L1 - Resposta Imediata</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+          <button class="btn btn-ia" id="fabricaBtnGerar">Gerar</button>
+          <button class="btn btn-outline" id="fabricaBtnLimpar">Limpar</button>
+          <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+          <button class="btn btn-ia" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+          <button class="btn btn-purple" id="fabricaBtnExportarCatalogo" style="display:none;">📋 Exportar p/ Catálogo</button>
+        </div>
+      </div>
+      <div id="fabricaResultado" style="display:none;margin-top:20px;">
+        <div class="section-title ia-title"><span>📊</span> Resultado</div>
+        <p style="font-size:0.6rem;color:#888;">Código: <span class="ia-code-display" id="fabricaCodigoUniversal"></span></p>
+        <div class="ia-json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+        <button class="btn btn-outline" id="btnLimparJSONFabrica" style="margin-top:6px;">🗑️ Limpar JSON</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn btn-outline" id="fabricaBtnCopiarJSON">Copiar JSON</button>
+          <button class="btn btn-ia" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+          <button class="btn btn-outline" id="fabricaBtnLimparResultado" style="color:#b91c1c;border-color:#b91c1c;">🗑️ Limpar Resultado</button>
+        </div>
+      </div>
+      <div class="redis-feedback" id="fabricaFeedback"></div>
+      <div class="status-msg" id="fabricaStatusMsg"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: PESQUISA ==================== -->
+  <div class="tab-content" id="tab-pesquisa">
+    <div class="section">
+      <div class="section-title ia-title"><span>🔬</span> Pesquisa com Super Prompts</div>
+      <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+        Selecione um agente do catálogo (gerado nas abas anteriores) e realize a pesquisa completa.
+      </p>
+      <div id="catalogoPesquisa"></div>
+      <div id="panelPesquisa" style="display:none; margin-top:16px;">
+        <div class="section-title ia-title"><span>📖</span> <span id="pesquisaNome"></span></div>
+        <p style="font-size:0.6rem; color:#888;">Código: <span class="ia-code-display" id="pesquisaCodigo"></span></p>
+        <div style="margin-top:12px;">
+          <strong style="font-size:0.7rem;color:var(--ia-blue);">⚡ SUPER PROMPT GERADO:</strong>
+          <textarea class="generated-question" id="pesquisaSuperPrompt" style="min-height:200px;"></textarea>
+        </div>
+        <button class="btn btn-outline" id="btnCopiarPesquisaPrompt">📋 Copiar Prompt</button>
+        <div style="margin-top:12px;">
+          <label style="font-size:0.7rem; font-weight:700; color:var(--ia-blue); text-transform:uppercase; letter-spacing:1px; display:block;">📥 Cole a resposta da IA:</label>
+          <textarea class="raw-textarea" id="pesquisaRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+        </div>
+        <button class="btn btn-ia" id="btnEstruturarPesquisa" style="margin-top:8px;">Estruturar nas 7 Camadas</button>
+        <div class="camadas-preview" id="pesquisaCamadasPreview" style="display:none;"></div>
+        <div class="ia-json-preview" id="pesquisaJSONPreview" contenteditable="true" style="display:none;"></div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-ia" id="btnEnviarPesquisaRedis" style="display:none;">Enviar para Redis</button>
+        </div>
+        <div class="redis-feedback" id="pesquisaFeedback"></div>
+        <div class="status-msg" id="pesquisaStatusMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CENTRAL REDIS ==================== -->
+  <div class="section" id="multiRedisSection">
+    <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+    <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Configure até 6 conexões Redis independentes.</p>
+    <div class="multi-redis-hub">
+      <div class="redis-cluster-panel science-cluster">
+        <div class="section-title sci-title"><span>🧪</span> Cluster IA</div>
+        <div id="scienceSlotsContainer"></div>
+      </div>
+      <div class="redis-cluster-panel ops-cluster">
+        <div class="section-title ops-title"><span>⚡</span> Cluster LLM</div>
+        <div id="opsSlotsContainer"></div>
+      </div>
+    </div>
+    <div class="diretorio-interligado" id="diretorioInterligado">
+      <strong style="font-size:0.65rem;color:#555;">📡 Diretório Interligado:</strong>
+      <span id="diretorioStatus" style="color:#888;">Aguardando conexões...</span>
+    </div>
+  </div>
+
+  <!-- ==================== MODAIS ==================== -->
+  <div class="slot-modal-overlay" id="slotModalOverlay">
+    <div class="slot-modal">
+      <h3>Configurar Slot</h3>
+      <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome">
+      <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+      <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+      <div class="test-status" id="slotModalStatus"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+        <button class="btn btn-ia" id="slotModalSalvar">Salvar</button>
+        <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== CONFIGURAÇÃO REDIS ====================
+    const REDIS_CONFIG = {
+      url: 'https://welcomed-satyr-116661.upstash.io',
+      token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+    };
+
+    // ==================== AUXILIARES ====================
+    function gerarCodigoUnico(prefixo) {
+      return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`;
+    }
+
+    async function copiarTextoParaClipboard(texto) {
+      if (!texto) { console.warn('Nada para copiar.'); return false; }
+      try {
+        await navigator.clipboard.writeText(texto);
+        return true;
+      } catch (e) {
+        console.warn('Clipboard API falhou, usando fallback:', e);
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = texto;
+          ta.style.position = 'fixed';
+          ta.style.top = '-9999px';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e2) { console.error('Falha no fallback de cópia:', e2); return false; }
+      }
+    }
+
+    function updateRedisStatus(status) {
+      const dot = document.getElementById('redisStatusDot');
+      const label = document.getElementById('redisStatusLabel');
+      dot.className = 'redis-status-dot';
+      switch(status) {
+        case 'connected': dot.classList.add('connected'); label.textContent = 'Redis: Conectado'; break;
+        case 'disconnected': dot.classList.add('disconnected'); label.textContent = 'Redis: Desconectado'; break;
+        case 'sending': dot.classList.add('sending'); label.textContent = 'Redis: Enviando...'; break;
+      }
+    }
+
+    async function testarConexaoRedis() {
+      updateRedisStatus('sending');
+      try {
+        const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, { 
+          headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` } 
+        });
+        if (response.ok) updateRedisStatus('connected'); else updateRedisStatus('disconnected');
+      } catch { updateRedisStatus('disconnected'); }
+    }
+    testarConexaoRedis();
+
+    // ==================== TABS ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ==================== SISTEMA COGNITIVO ====================
+    const COGNITIVE_SYSTEM = {
+      regulatory: {
+        addMetadata(data) {
+          return { ...data, metadata: { 
+            data_validacao: new Date().toISOString(),
+            data_revisao: data.alertaRevisao || new Date(Date.now() + 90*86400000).toISOString(),
+            criticidade: 'baixa',
+            status_regulatorio: 'validado',
+            nivel_confianca: data.score_confianca || 0.85
+          }};
+        }
+      },
+      protection: {
+        sanitizeOutput(data) {
+          const sanitized = { ...data };
+          delete sanitized._internal;
+          return sanitized;
+        }
+      }
+    };
+
+    // ==================== IA GENERATIVA (Antiga Teologia) ====================
+    const TOPICOS_IA = {
+      'Transformers': { subtopicos: 'Atenção, Codificador, Decodificador' },
+      'Difusão': { subtopicos: 'Ruído, Denoising, Stable Diffusion' },
+      'GANs': { subtopicos: 'Gerador, Discriminador, Adversarial' },
+      'LLMs': { subtopicos: 'GPT, BERT, LLaMA, Contexto' },
+      'Engenharia de Prompt': { subtopicos: 'Zero-shot, Chain-of-Thought, Tree-of-Thought' },
+      'RAG': { subtopicos: 'Recuperação, Vetorização, Embeddings' },
+      'Agentes Autônomos': { subtopicos: 'ReAct, Tool Use, Memória' },
+      'Fine Tuning': { subtopicos: 'LoRA, QLoRA, Transfer Learning' },
+      'Sistemas Multiagentes': { subtopicos: 'Orquestração, Swarm, Colaboração' }
+    };
+
+    function gerarSuperPromptIA(topico, subtopico) {
+      return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE IA ⚡
+
+Você é um nó especializado em Inteligência Artificial e Modelos Generativos do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO, RASTREÁVEL e REUTILIZÁVEL sobre ${topico} (${subtopico}).
+
+## 🏛️ ARQUITETURA COGNITIVA UNIVERSAL — 7 CAMADAS DE IA
+
+### 7. ESSÊNCIA DA IA
+- Qual o princípio fundamental por trás de ${topico}?
+- Qual é o insight matemático ou computacional central?
+
+### 6. ARQUITETURA & ALGORITMOS
+- Como a arquitetura é estruturada?
+- Quais algoritmos sustentam o funcionamento?
+
+### 5. ESTRUTURA DE DADOS & REPRESENTAÇÕES
+- Como os dados são codificados (tokens, embeddings, vetores)?
+- Qual o fluxo de processamento?
+
+### 4. APLICAÇÃO PRÁTICA & CASOS DE USO
+- Quais as principais aplicações reais de ${topico}?
+- Exemplos de código ou pipeline (conceitual).
+
+### 3. TREINAMENTO & OTIMIZAÇÃO
+- Como é feito o fine tuning ou treinamento?
+- Quais as métricas de avaliação?
+
+### 2. LIMITAÇÕES & ÉTICA
+- Quais os vieses e limitações conhecidos?
+- Considerações éticas e de segurança.
+
+### 1. CURIOSIDADES & FRONTEIRAS
+- Fatos surpreendentes e direções futuras de pesquisa.
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter referências técnicas específicas
+2. Cite fontes (papers, bibliotecas, frameworks)
+3. Linguagem técnica precisa, mas acessível
+4. **NUNCA utilize o símbolo cerquilha (#) para títulos ou listas**
+5. Inclua metadados ao final
+
+## 🎯 TÓPICO A SER ANALISADO
+**Tópico**: ${topico}
+**Subtópico**: ${subtopico}
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise textual, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Essência da IA", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 6, "nome": "Arquitetura & Algoritmos", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 5, "nome": "Estrutura de Dados", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 4, "nome": "Aplicação Prática", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 3, "nome": "Treinamento & Otimização", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 2, "nome": "Limitações & Ética", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades & Fronteiras", "subtemas": ["..."], "referencias": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+    }
+
+    let agentesIA = [];
+    let agenteIASelecionado = null;
+    let iaEstruturado = null;
+
+    function gerarTodosIA() {
+      const todos = [];
+      for (const [topico, dados] of Object.entries(TOPICOS_IA)) {
+        const subArray = dados.subtopicos.split(', ').map(s => s.trim());
+        for (const sub of subArray) {
+          const codigo = `ia.${topico.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${sub.toLowerCase().replace(/[^a-z0-9]/g, '_')}.v1`;
+          todos.push({
+            codigo_universal: codigo,
+            escopo: { dominio: 'ia_generativa', topico: topico, subtopico: sub, idioma: 'pt-BR' },
+            conteudo: { resumo: `Análise de ${topico} (${sub})`, camadas: [] },
+            indexacao: { tags: [topico.toLowerCase(), sub.toLowerCase()], palavras_chave: [topico, sub] },
+            governanca: { score_confianca: 0.92, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+          });
+        }
+      }
+      return todos;
+    }
+
+    function renderizarIA(agentes) {
+      const grid = document.getElementById('iaGrid');
+      grid.innerHTML = '';
+      if (!agentes || agentes.length === 0) {
+        grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente de IA gerado.</p>';
+        return;
+      }
+      const filtro = document.getElementById('iaFiltro')?.value?.toLowerCase() || '';
+      const filtrados = agentes.filter(a => a.escopo.topico.toLowerCase().includes(filtro) || a.escopo.subtopico.toLowerCase().includes(filtro));
+      for (const a of filtrados) {
+        const card = document.createElement('div');
+        card.className = 'ia-card';
+        card.innerHTML = `<span class="ia-icon">🤖</span><div class="ia-name">${a.escopo.topico}</div><div class="ia-detail">${a.escopo.subtopico}</div>`;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.ia-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          agenteIASelecionado = a;
+          exibirDetalheIA(a);
+        });
+        grid.appendChild(card);
+      }
+    }
+
+    function exibirDetalheIA(a) {
+      const panel = document.getElementById('iaDetalhe');
+      panel.style.display = 'block';
+      document.getElementById('iaDetalheNome').textContent = `${a.escopo.topico} (${a.escopo.subtopico})`;
+      document.getElementById('iaDetalheCodigo').textContent = a.codigo_universal;
+      document.getElementById('iaDetalheTopico').textContent = `📌 ${a.escopo.topico}`;
+      document.getElementById('iaDetalheBloco').textContent = `📄 ${a.escopo.subtopico}`;
+      document.getElementById('iaDetalheProgresso').textContent = 'v1 • pt-BR';
+      document.getElementById('iaDetalheBarra').style.width = '30%';
+      document.getElementById('iaDetalheSuperPrompt').textContent = gerarSuperPromptIA(a.escopo.topico, a.escopo.subtopico);
+      document.getElementById('iaRespostaIA').value = '';
+      document.getElementById('iaCamadasPreview').style.display = 'none';
+      document.getElementById('iaJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarIARedis').style.display = 'none';
+    }
+
+    document.getElementById('btnGerarIA').addEventListener('click', () => {
+      agentesIA = gerarTodosIA();
+      renderizarIA(agentesIA);
+      document.getElementById('iaStatusMsg').textContent = `✅ ${agentesIA.length} agentes de IA gerados!`;
+      setTimeout(() => { document.getElementById('iaStatusMsg').textContent = ''; }, 4000);
+      atualizarCatalogoPesquisa();
+    });
+
+    document.getElementById('btnCopiarIAPrompt').addEventListener('click', async function() {
+      const statusEl = document.getElementById('iaStatusDetalhe');
+      if (!agenteIASelecionado) {
+        statusEl.textContent = '⚠️ Selecione um agente de IA primeiro.';
+        setTimeout(() => statusEl.textContent = '', 3000);
+        return;
+      }
+      const prompt = gerarSuperPromptIA(agenteIASelecionado.escopo.topico, agenteIASelecionado.escopo.subtopico);
+      if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+        statusEl.textContent = '⚠️ Super Prompt não disponível.';
+        return;
+      }
+      const ok = await copiarTextoParaClipboard(prompt);
+      if (ok) statusEl.textContent = '✅ Super Prompt copiado!';
+      else statusEl.textContent = '❌ Falha ao copiar.';
+      setTimeout(() => statusEl.textContent = '', 4000);
+    });
+
+    document.getElementById('btnCopiarJSONIA').addEventListener('click', async () => {
+      if (!agenteIASelecionado) return;
+      const ok = await copiarTextoParaClipboard(JSON.stringify(agenteIASelecionado, null, 2));
+      document.getElementById('iaStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('iaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('iaFiltro').addEventListener('input', () => renderizarIA(agentesIA));
+
+    function extrairCamadas(texto) {
+      if (!texto || typeof texto !== 'string') return [];
+      try {
+        const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/);
+        if (jsonMatch) {
+          const obj = JSON.parse(jsonMatch[0]);
+          if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+            return obj.camadas.map(c => ({ nivel: c.nivel, nome: c.nome, subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [], referencias: c.referencias || [] }));
+          }
+        }
+      } catch (e) {}
+      // Fallback parsing simples
+      const camadas = [];
+      const titulos = [
+        { nivel: 7, regex: /\b(7|sete)[\.\)\-\s:]*\s*(ESS[EÊ]NCIA|ESSENCE|FUNDAMENTO)/i, nome: 'Essência da IA' },
+        { nivel: 6, regex: /\b(6|seis)[\.\)\-\s:]*\s*(ARQUITETURA|ALGORITMOS)/i, nome: 'Arquitetura & Algoritmos' },
+        { nivel: 5, regex: /\b(5|cinco)[\.\)\-\s:]*\s*(ESTRUTURA|DADOS)/i, nome: 'Estrutura de Dados' },
+        { nivel: 4, regex: /\b(4|quatro)[\.\)\-\s:]*\s*(APLICA[CÇ][AÃ]O|PR[AÁ]TICA)/i, nome: 'Aplicação Prática' },
+        { nivel: 3, regex: /\b(3|tr[EÊ]s)[\.\)\-\s:]*\s*(TREINAMENTO|OTIMIZA[CÇ][AÃ]O)/i, nome: 'Treinamento & Otimização' },
+        { nivel: 2, regex: /\b(2|dois)[\.\)\-\s:]*\s*(LIMITA[CÇ][OÕ]ES|[ÉE]TICA)/i, nome: 'Limitações & Ética' },
+        { nivel: 1, regex: /\b(1|um)[\.\)\-\s:]*\s*(CURIOSIDADES|FRONTEIRAS)/i, nome: 'Curiosidades & Fronteiras' }
+      ];
+      let camadaAtual = null;
+      const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
+      for (const linha of linhas) {
+        let match = null;
+        for (const t of titulos) {
+          const m = linha.match(t.regex);
+          if (m) { match = { nivel: t.nivel, nome: t.nome }; break; }
+        }
+        if (match) {
+          camadaAtual = { nivel: match.nivel, nome: match.nome, subtemas: [], referencias: [] };
+          camadas.push(camadaAtual);
+        } else if (camadaAtual && !/^---+$/.test(linha) && !/^\*\*?[\s\*]*$/.test(linha)) {
+          camadaAtual.subtemas.push(linha.replace(/^[-*#\s]+/, ''));
+        }
+      }
+      camadas.sort((a, b) => b.nivel - a.nivel);
+      return camadas;
+    }
+
+    document.getElementById('btnEstruturarIA').addEventListener('click', () => {
+      if (!agenteIASelecionado) { document.getElementById('iaStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.'; return; }
+      const texto = document.getElementById('iaRespostaIA').value.trim();
+      if (!texto) { document.getElementById('iaStatusDetalhe').textContent = '⚠️ Cole a resposta da IA.'; return; }
+      const camadas = extrairCamadas(texto);
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+      const jsonResult = {
+        codigo_universal: agenteIASelecionado.codigo_universal,
+        escopo: agenteIASelecionado.escopo,
+        conteudo: { resumo, camadas },
+        governanca: { ...agenteIASelecionado.governanca, score_confianca: 0.88, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+      };
+      iaEstruturado = jsonResult;
+      document.getElementById('iaCamadasPreview').style.display = 'block';
+      document.getElementById('iaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('iaJSONPreview').style.display = 'block';
+      document.getElementById('iaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarIARedis').style.display = 'inline-flex';
+      document.getElementById('iaStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+      setTimeout(() => { document.getElementById('iaStatusDetalhe').textContent = ''; }, 3000);
+      mostrarExplicacao({ fontes: ['IA Externa', 'Super Prompt IDEnza'], camadas, score_confianca: 0.88, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+    });
+
+    document.getElementById('btnEnviarIARedis').addEventListener('click', async () => {
+      if (!iaEstruturado) return;
+      document.getElementById('iaStatusDetalhe').textContent = 'Enviando...';
+      await enviarDiretoRedis(iaEstruturado, 'ia', iaEstruturado.codigo_universal, 'iaFeedbackDetalhe');
+      document.getElementById('iaStatusDetalhe').textContent = 'Concluído.';
+      setTimeout(() => { document.getElementById('iaStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    // ==================== LLMs & RAG (Antiga Arqueologia) ====================
+    const LLM_AGENTES = [
+      { nome: 'GPT-4', tipo: 'LLM', descricao: 'Modelo de linguagem da OpenAI', tecnicas: 'Transformer, RLHF' },
+      { nome: 'BERT', tipo: 'LLM', descricao: 'Modelo bidirecional do Google', tecnicas: 'Masked LM' },
+      { nome: 'LLaMA', tipo: 'LLM', descricao: 'Modelo open-source da Meta', tecnicas: 'Transformer' },
+      { nome: 'RAG', tipo: 'Técnica', descricao: 'Geração aumentada por recuperação', tecnicas: 'Embeddings, Vetorização' },
+      { nome: 'Fine Tuning', tipo: 'Técnica', descricao: 'Ajuste fino de modelos', tecnicas: 'LoRA, Transfer Learning' },
+      { nome: 'Agentes Autônomos', tipo: 'Sistema', descricao: 'Agentes com ferramentas e memória', tecnicas: 'ReAct, Tool Use' },
+      { nome: 'Sistemas Multiagentes', tipo: 'Sistema', descricao: 'Orquestração de múltiplos agentes', tecnicas: 'Swarm, Colaboração' },
+      { nome: 'Vetorização', tipo: 'Infra', descricao: 'Representação vetorial de dados', tecnicas: 'Embeddings, Similaridade' }
+    ];
+
+    function gerarSuperPromptLLM(item) {
+      return `⚡ ATIVAÇÃO DE NÓ COGNITIVO IDENZA — PROTOCOLO DE LLM ⚡
+
+Você é um nó especializado em LLMs e Técnicas Avançadas do Ecossistema IDENZA.
+Sua missão é gerar conhecimento ESTRUTURADO sobre ${item.nome} (${item.tipo}).
+
+## 🏛️ ARQUITETURA COGNITIVA — 7 CAMADAS LLM
+
+### 7. ESSÊNCIA DO MODELO/TÉCNICA
+- Importância para o campo de IA
+### 6. ARQUITETURA INTERNA
+- Detalhes da arquitetura e algoritmos
+### 5. CORRELAÇÕES COM OUTRAS TÉCNICAS
+- Conexões com outras abordagens
+### 4. APLICAÇÕES PRÁTICAS
+- Casos de uso reais e exemplos
+### 3. TREINAMENTO & IMPLEMENTAÇÃO
+- Como treinar ou implementar
+### 2. LIMITAÇÕES E DESAFIOS
+- Dificuldades e desafios conhecidos
+### 1. CURIOSIDADES E FRONTEIRAS
+- Fatos interessantes e tendências
+
+## 📜 REGRAS IMUTÁVEIS
+1. Cada camada deve conter referências específicas
+2. Cite fontes (papers, repos, documentação)
+3. **NUNCA utilize o símbolo cerquilha (#)**
+4. Inclua metadados ao final
+
+## 🎯 ITEM A SER ANALISADO
+**Nome**: ${item.nome}
+**Tipo**: ${item.tipo}
+**Descrição**: ${item.descricao}
+**Técnicas**: ${item.tecnicas}
+
+**⚠️ FORMATO DE RESPOSTA OBRIGATÓRIO:** Após sua análise, forneça OBRIGATORIAMENTE um bloco JSON válido com as 7 camadas estruturadas:
+
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Essência", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 6, "nome": "Arquitetura Interna", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 5, "nome": "Correlações", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 4, "nome": "Aplicações Práticas", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 3, "nome": "Treinamento & Implementação", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 2, "nome": "Limitações e Desafios", "subtemas": ["..."], "referencias": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades", "subtemas": ["..."], "referencias": ["..."] }
+  ]
+}
+\`\`\`
+
+Inicie agora a geração do artefato cognitivo imutável.`;
+    }
+
+    let agentesLLM = [];
+    let agenteLLMSelecionado = null;
+    let llmEstruturado = null;
+
+    function gerarAgentesLLM() {
+      return LLM_AGENTES.map(item => {
+        const codigo = `llm.${item.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.v1`;
+        return {
+          codigo_universal: codigo,
+          escopo: { dominio: 'llm_rag', nome: item.nome, tipo: item.tipo, descricao: item.descricao, tecnicas: item.tecnicas, idioma: 'pt-BR' },
+          conteudo: { resumo: `Análise de ${item.nome}`, camadas: [] },
+          indexacao: { tags: [item.tipo.toLowerCase(), item.nome.toLowerCase()], palavras_chave: [item.nome, ...item.tecnicas.split(', ')] },
+          governanca: { score_confianca: 0.90, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+        };
+      });
+    }
+
+    function renderizarLLM(agentes) {
+      const grid = document.getElementById('llmGrid');
+      grid.innerHTML = '';
+      if (!agentes || agentes.length === 0) {
+        grid.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum agente de LLM gerado.</p>';
+        return;
+      }
+      const filtro = document.getElementById('llmFiltro')?.value?.toLowerCase() || '';
+      const filtrados = agentes.filter(a => a.escopo.nome.toLowerCase().includes(filtro) || a.escopo.tipo.toLowerCase().includes(filtro) || a.escopo.tecnicas.toLowerCase().includes(filtro));
+      for (const a of filtrados) {
+        const card = document.createElement('div');
+        card.className = 'llm-card';
+        card.innerHTML = `<span class="llm-icon">📚</span><div class="llm-name">${a.escopo.nome}</div><div class="llm-detail">${a.escopo.tipo}</div><div class="llm-period">${a.escopo.tecnicas}</div>`;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.llm-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          agenteLLMSelecionado = a;
+          exibirDetalheLLM(a);
+        });
+        grid.appendChild(card);
+      }
+    }
+
+    function exibirDetalheLLM(a) {
+      const panel = document.getElementById('llmDetalhe');
+      panel.style.display = 'block';
+      document.getElementById('llmDetalheNome').textContent = a.escopo.nome;
+      document.getElementById('llmDetalheCodigo').textContent = a.codigo_universal;
+      document.getElementById('llmDetalheModelo').textContent = `📌 ${a.escopo.tipo}`;
+      document.getElementById('llmDetalheTecnica').textContent = `📄 ${a.escopo.tecnicas}`;
+      const item = LLM_AGENTES.find(i => i.nome === a.escopo.nome);
+      document.getElementById('llmDetalheSuperPrompt').textContent = item ? gerarSuperPromptLLM(item) : 'Super Prompt não disponível';
+      document.getElementById('llmRespostaIA').value = '';
+      document.getElementById('llmCamadasPreview').style.display = 'none';
+      document.getElementById('llmJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarLLMRedis').style.display = 'none';
+    }
+
+    document.getElementById('btnGerarLLM').addEventListener('click', () => {
+      agentesLLM = gerarAgentesLLM();
+      renderizarLLM(agentesLLM);
+      document.getElementById('llmStatusMsg').textContent = `✅ ${agentesLLM.length} agentes de LLM gerados!`;
+      setTimeout(() => { document.getElementById('llmStatusMsg').textContent = ''; }, 4000);
+      atualizarCatalogoPesquisa();
+    });
+
+    document.getElementById('btnCopiarLLMPrompt').addEventListener('click', async function() {
+      const statusEl = document.getElementById('llmStatusDetalhe');
+      if (!agenteLLMSelecionado) { statusEl.textContent = '⚠️ Selecione um agente de LLM.'; return; }
+      const item = LLM_AGENTES.find(i => i.nome === agenteLLMSelecionado.escopo.nome);
+      if (!item) { statusEl.textContent = '⚠️ Item não encontrado.'; return; }
+      const prompt = gerarSuperPromptLLM(item);
+      const ok = await copiarTextoParaClipboard(prompt);
+      if (ok) statusEl.textContent = '✅ Super Prompt copiado!';
+      else statusEl.textContent = '❌ Falha ao copiar.';
+      setTimeout(() => statusEl.textContent = '', 4000);
+    });
+
+    document.getElementById('btnCopiarJSONLLM').addEventListener('click', async () => {
+      if (!agenteLLMSelecionado) return;
+      const ok = await copiarTextoParaClipboard(JSON.stringify(agenteLLMSelecionado, null, 2));
+      document.getElementById('llmStatusDetalhe').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('llmStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('llmFiltro').addEventListener('input', () => renderizarLLM(agentesLLM));
+
+    document.getElementById('btnEstruturarLLM').addEventListener('click', () => {
+      if (!agenteLLMSelecionado) { document.getElementById('llmStatusDetalhe').textContent = '⚠️ Selecione um agente primeiro.'; return; }
+      const texto = document.getElementById('llmRespostaIA').value.trim();
+      if (!texto) { document.getElementById('llmStatusDetalhe').textContent = '⚠️ Cole a resposta da IA.'; return; }
+      const camadas = extrairCamadas(texto);
+      const l7 = camadas.find(c => c.nivel === 7);
+      const resumo = l7 ? l7.subtemas.join(' ') : 'Resumo não disponível.';
+      const jsonResult = {
+        codigo_universal: agenteLLMSelecionado.codigo_universal,
+        escopo: agenteLLMSelecionado.escopo,
+        conteudo: { resumo, camadas },
+        governanca: { ...agenteLLMSelecionado.governanca, score_confianca: 0.85, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+      };
+      llmEstruturado = jsonResult;
+      document.getElementById('llmCamadasPreview').style.display = 'block';
+      document.getElementById('llmCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('llmJSONPreview').style.display = 'block';
+      document.getElementById('llmJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarLLMRedis').style.display = 'inline-flex';
+      document.getElementById('llmStatusDetalhe').textContent = '✅ Estruturado com sucesso!';
+      setTimeout(() => { document.getElementById('llmStatusDetalhe').textContent = ''; }, 3000);
+      mostrarExplicacao({ fontes: ['IA Externa', 'Super Prompt IDEnza'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+    });
+
+    document.getElementById('btnEnviarLLMRedis').addEventListener('click', async () => {
+      if (!llmEstruturado) return;
+      document.getElementById('llmStatusDetalhe').textContent = 'Enviando...';
+      await enviarDiretoRedis(llmEstruturado, 'llm', llmEstruturado.codigo_universal, 'llmFeedbackDetalhe');
+      document.getElementById('llmStatusDetalhe').textContent = 'Concluído.';
+      setTimeout(() => { document.getElementById('llmStatusDetalhe').textContent = ''; }, 3000);
+    });
+
+    // ==================== COMPARTILHADOS (Explicação, Redis, Catálogo, etc.) ====================
+    function mostrarExplicacao(meta) {
+      const panel = document.getElementById('explainPanel');
+      if (!panel) return;
+      panel.style.display = 'block';
+      document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+      let camadasNome = '—';
+      if (meta.camadas && Array.isArray(meta.camadas) && meta.camadas.length > 0) {
+        camadasNome = meta.camadas.map(c => c.nome || `Camada ${c.nivel}`).join(' → ');
+      }
+      document.getElementById('explainLayers').textContent = camadasNome;
+      document.getElementById('explainConfidence').textContent = ((meta.score_confianca || 0.85) * 100).toFixed(0) + '%';
+      document.getElementById('explainReview').textContent = meta.alertaRevisao || 'Não definida';
+      document.getElementById('explainCode').textContent = meta.codigo || '—';
+    }
+
+    async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+      const feedbackEl = document.getElementById(feedbackElementId);
+      const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+      const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+      updateRedisStatus('sending');
+      if (feedbackEl) {
+        feedbackEl.className = 'redis-feedback show loading';
+        feedbackEl.textContent = '⏳ Enviando para o Redis...';
+      }
+      try {
+        const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+        const redisKey = `idenza:${tipo}:${codigo}`;
+        const response = await fetch(`${redisUrl}/set/${redisKey}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(sanitizedPayload)
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        updateRedisStatus('connected');
+        if (feedbackEl) {
+          feedbackEl.className = 'redis-feedback show success';
+          feedbackEl.innerHTML = `✅ <strong>Enviado com sucesso!</strong><br>📁 Chave: <code>${redisKey}</code><br>📏 Tamanho: ${JSON.stringify(sanitizedPayload).length} bytes`;
+        }
+      } catch (error) {
+        console.error('Erro Redis:', error);
+        updateRedisStatus('disconnected');
+        if (feedbackEl) {
+          feedbackEl.className = 'redis-feedback show error';
+          feedbackEl.innerHTML = `❌ <strong>Erro no envio!</strong><br>📝 ${error.message}`;
+        }
+      }
+    }
+
+    function atualizarCatalogoPesquisa() {
+      const container = document.getElementById('catalogoPesquisa');
+      if (!container) return;
+      const todosAgentes = [...agentesIA, ...agentesLLM];
+      if (todosAgentes.length === 0) {
+        container.innerHTML = '<p style="font-size:0.7rem;color:#888;">Gere agentes nas abas IA ou LLM primeiro.</p>';
+        return;
+      }
+      container.innerHTML = todosAgentes.map(a => `
+        <div class="agent-select-item" data-codigo="${a.codigo_universal}">
+          <input type="radio" name="agentePesquisa" value="${a.codigo_universal}">
+          <span>${a.codigo_universal} — ${a.escopo.topico || a.escopo.nome || 'Agente'}</span>
+        </div>
+      `).join('');
+      container.querySelectorAll('.agent-select-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const codigo = item.dataset.codigo;
+          const agente = todosAgentes.find(a => a.codigo_universal === codigo);
+          if (agente) abrirPesquisa(agente);
+        });
+      });
+    }
+
+    function abrirPesquisa(agente) {
+      document.getElementById('panelPesquisa').style.display = 'block';
+      document.getElementById('pesquisaNome').textContent = agente.codigo_universal;
+      document.getElementById('pesquisaCodigo').textContent = agente.codigo_universal;
+      let prompt = '';
+      if (agente.escopo.dominio === 'ia_generativa') {
+        prompt = gerarSuperPromptIA(agente.escopo.topico, agente.escopo.subtopico);
+      } else if (agente.escopo.dominio === 'llm_rag') {
+        const item = LLM_AGENTES.find(i => i.nome === agente.escopo.nome);
+        if (item) prompt = gerarSuperPromptLLM(item);
+      }
+      document.getElementById('pesquisaSuperPrompt').value = prompt || 'Super Prompt não disponível';
+      document.getElementById('pesquisaRespostaIA').value = '';
+      document.getElementById('pesquisaCamadasPreview').style.display = 'none';
+      document.getElementById('pesquisaJSONPreview').style.display = 'none';
+      document.getElementById('btnEnviarPesquisaRedis').style.display = 'none';
+    }
+
+    document.getElementById('btnCopiarPesquisaPrompt').addEventListener('click', async () => {
+      const prompt = document.getElementById('pesquisaSuperPrompt').value;
+      const ok = await copiarTextoParaClipboard(prompt);
+      document.getElementById('pesquisaStatusMsg').textContent = ok ? '✅ Prompt copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('btnEstruturarPesquisa').addEventListener('click', () => {
+      const texto = document.getElementById('pesquisaRespostaIA').value.trim();
+      if (!texto) { document.getElementById('pesquisaStatusMsg').textContent = '⚠️ Cole a resposta da IA.'; return; }
+      const camadas = extrairCamadas(texto);
+      const jsonResult = {
+        codigo_universal: document.getElementById('pesquisaCodigo').textContent,
+        escopo: { dominio: 'pesquisa', idioma: 'pt-BR' },
+        conteudo: { resumo: camadas.find(c => c.nivel === 7)?.subtemas.join(' ') || '', camadas },
+        governanca: { score_confianca: 0.85, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+      };
+      document.getElementById('pesquisaCamadasPreview').style.display = 'block';
+      document.getElementById('pesquisaCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+      document.getElementById('pesquisaJSONPreview').style.display = 'block';
+      document.getElementById('pesquisaJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarPesquisaRedis').style.display = 'inline-flex';
+      document.getElementById('pesquisaStatusMsg').textContent = '✅ Estruturado!';
+      setTimeout(() => { document.getElementById('pesquisaStatusMsg').textContent = ''; }, 3000);
+      mostrarExplicacao({ fontes: ['IA Externa'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+    });
+
+    document.getElementById('btnEnviarPesquisaRedis').addEventListener('click', async () => {
+      const jsonTexto = document.getElementById('pesquisaJSONPreview').textContent;
+      if (!jsonTexto) return;
+      try {
+        const payload = JSON.parse(jsonTexto);
+        await enviarDiretoRedis(payload, 'pesquisa', payload.codigo_universal, 'pesquisaFeedback');
+      } catch (e) { document.getElementById('pesquisaStatusMsg').textContent = '❌ JSON inválido.'; }
+    });
+
+    // ==================== INICIALIZAÇÃO ====================
+    window.addEventListener('load', () => {
+      agentesIA = gerarTodosIA();
+      agentesLLM = gerarAgentesLLM();
+      renderizarIA(agentesIA);
+      renderizarLLM(agentesLLM);
+      atualizarCatalogoPesquisa();
+    });
+
+    // ==================== ASSISTENTE SIMPLES ====================
+    document.getElementById('assistenteBtn').addEventListener('click', () => {
+      const input = document.getElementById('assistenteInput').value.trim();
+      const respostaDiv = document.getElementById('assistenteResposta');
+      if (!input) { respostaDiv.style.display = 'block'; respostaDiv.textContent = 'Por favor, digite sua pergunta.'; return; }
+      respostaDiv.style.display = 'block';
+      respostaDiv.textContent = 'Processando sua consulta sobre IA... (simulação)';
+      setTimeout(() => { respostaDiv.textContent = `Você perguntou: "${input}".\n\nResposta simulada. A integração com uma IA real será implementada em breve.`; }, 1000);
+    });
+
+    // ==================== FÁBRICA COGNITIVA (Adaptada) ====================
+    document.getElementById('fabricaBtnGerar').addEventListener('click', function() {
+      const nome = document.getElementById('fabricaNome').value.trim() || 'Novo Agente';
+      const dominio = document.getElementById('fabricaDominio').value.trim() || 'ia_generativa';
+      const especialidade = document.getElementById('fabricaEspecialidade').value.trim() || 'Análise de IA';
+      const palavrasChave = document.getElementById('fabricaPalavrasChave').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+      const codigo = `fabrica.${dominio.replace(/[^a-z0-9]/g, '_')}.${Date.now().toString(36)}.v1`;
+      const resultado = {
+        codigo_universal: codigo,
+        escopo: { dominio, especialidade, idioma: 'pt-BR' },
+        conteudo: { resumo: `Agente para ${especialidade}`, camadas: [] },
+        indexacao: { tags: [dominio], palavras_chave: palavrasChave.length ? palavrasChave : [especialidade] },
+        governanca: { score_confianca: 0.80, criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+      };
+      document.getElementById('fabricaResultado').style.display = 'block';
+      document.getElementById('fabricaCodigoUniversal').textContent = codigo;
+      document.getElementById('fabricaPreviewJSON').textContent = JSON.stringify(resultado, null, 2);
+      document.getElementById('fabricaStatusMsg').textContent = '✅ Artefato gerado!';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('fabricaBtnLimpar').addEventListener('click', function() {
+      document.getElementById('fabricaNome').value = '';
+      document.getElementById('fabricaDominio').value = '';
+      document.getElementById('fabricaEspecialidade').value = '';
+      document.getElementById('fabricaPalavrasChave').value = '';
+      document.getElementById('fabricaResultado').style.display = 'none';
+      document.getElementById('fabricaStatusMsg').textContent = 'Campos limpos.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 2000);
+    });
+
+    document.getElementById('fabricaBtnCopiarJSON').addEventListener('click', async function() {
+      const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+      if (!jsonText) { document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON.'; return; }
+      const ok = await copiarTextoParaClipboard(jsonText);
+      document.getElementById('fabricaStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha ao copiar.';
+      setTimeout(() => { document.getElementById('fabricaStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async function() {
+      const jsonText = document.getElementById('fabricaPreviewJSON').textContent;
+      if (!jsonText) { document.getElementById('fabricaStatusMsg').textContent = '⚠️ Nenhum JSON.'; return; }
+      try {
+        const payload = JSON.parse(jsonText);
+        await enviarDiretoRedis(payload, 'fabrica', payload.codigo_universal, 'fabricaFeedback');
+      } catch (e) { document.getElementById('fabricaStatusMsg').textContent = '❌ JSON inválido.'; }
+    });
+
+    // ==================== PATCH: Humanoides (IA) ====================
+    const tiposHumanoides = [
+      { id: 'eng_prompt', icone: '✍️', nome: 'Engenheiro de Prompt', descricao: 'Especialista em criação de prompts para LLMs.' },
+      { id: 'dev_agentes', icone: '🤖', nome: 'Desenvolvedor de Agentes', descricao: 'Focado em agentes autônomos e multiagentes.' },
+      { id: 'pesquisador_ia', icone: '🔬', nome: 'Pesquisador de IA', descricao: 'Análise teórica e experimental de modelos.' },
+      { id: 'mlops', icone: '⚙️', nome: 'MLOps Engineer', descricao: 'Deploy, monitoramento e fine tuning de LLMs.' }
+    ];
+
+    const humTypeGrid = document.getElementById('humTypeGrid');
+    tiposHumanoides.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'hum-type-card';
+      card.innerHTML = `<span class="type-icon">${t.icone}</span><div class="type-name">${t.nome}</div><div class="type-code">${t.id}</div>`;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        document.getElementById('humPanel').style.display = 'block';
+        document.getElementById('humIcone').textContent = t.icone;
+        document.getElementById('humNome').textContent = t.nome;
+        document.getElementById('humCodigoBase').textContent = `hum.${t.id}.idenza`;
+        document.getElementById('humDescricao').textContent = t.descricao;
+        document.getElementById('humNomeUsuario').value = '';
+        document.getElementById('humEntrada').value = '';
+        document.getElementById('humResultados').style.display = 'none';
+      });
+      humTypeGrid.appendChild(card);
+    });
+
+    document.getElementById('btnProcessarHum').addEventListener('click', function() {
+      const nomeUsuario = document.getElementById('humNomeUsuario').value.trim() || 'Usuário';
+      const entrada = document.getElementById('humEntrada').value.trim();
+      if (!entrada) { document.getElementById('humStatusMsg').textContent = '⚠️ Insira um contexto.'; return; }
+      const agora = new Date().toISOString();
+      const codigo = `hum.${Date.now().toString(36)}.idenza.v1`;
+      const camadas = [
+        { nivel: 7, nome: 'Essência da Solução', subtemas: [`Resposta para: ${entrada.substring(0, 30)}...`], referencias: [] },
+        { nivel: 6, nome: 'Arquitetura Proposta', subtemas: [`Estrutura conceitual`], referencias: [] },
+        { nivel: 5, nome: 'Fluxo de Dados', subtemas: [`Pipeline de processamento`], referencias: [] },
+        { nivel: 4, nome: 'Implementação Prática', subtemas: [`Exemplo de código ou lógica`], referencias: [] },
+        { nivel: 3, nome: 'Treinamento & Ajuste', subtemas: [`Métricas e otimização`], referencias: [] },
+        { nivel: 2, nome: 'Riscos & Limitações', subtemas: [`Desafios esperados`], referencias: [] },
+        { nivel: 1, nome: 'Fronteiras', subtemas: [`Próximos passos`], referencias: [] }
+      ];
+      const jsonResult = {
+        codigo_universal: codigo,
+        escopo: { dominio: 'humanoide', usuario: nomeUsuario, contexto: entrada, idioma: 'pt-BR' },
+        conteudo: { resumo: camadas[0].subtemas[0], camadas },
+        indexacao: { tags: ['humanoide', 'ia'], palavras_chave: entrada.split(' ').slice(0, 5).map(w => w.toLowerCase()) },
+        governanca: { score_confianca: 0.80, criado_em: agora, revisado_em: new Date(Date.now() + 90*86400000).toISOString().split('T')[0] }
+      };
+      document.getElementById('humResultados').style.display = 'block';
+      document.getElementById('humCodigoRastreio').textContent = codigo;
+      document.getElementById('humMetricGrid').innerHTML = '<div class="hum-metric-item"><div class="label">Confiança</div><div class="value">85%</div></div><div class="hum-metric-item"><div class="label">Camadas</div><div class="value">7</div></div>';
+      document.getElementById('humResposta').textContent = `Resposta para ${nomeUsuario}: ${camadas[0].subtemas[0]}`;
+      document.getElementById('humJsonCompleto').textContent = JSON.stringify(jsonResult, null, 2);
+      document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+      document.getElementById('humStatusMsg').textContent = '✅ Processado!';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+      window._humPayload = jsonResult;
+    });
+
+    document.getElementById('btnEnviarWorkerHum').addEventListener('click', async function() {
+      if (!window._humPayload) { document.getElementById('humStatusMsg').textContent = '⚠️ Nenhum dado.'; return; }
+      await enviarDiretoRedis(window._humPayload, 'humanoide', window._humPayload.codigo_universal, 'redisFeedbackHum');
+    });
+
+    document.getElementById('btnCopiarJSONHum').addEventListener('click', async function() {
+      const jsonText = document.getElementById('humJsonCompleto').textContent;
+      if (!jsonText) return;
+      const ok = await copiarTextoParaClipboard(jsonText);
+      document.getElementById('humStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha.';
+      setTimeout(() => { document.getElementById('humStatusMsg').textContent = ''; }, 3000);
+    });
+
+    document.getElementById('btnLimparHumJSON').addEventListener('click', () => { document.getElementById('humJsonCompleto').textContent = ''; });
+    document.getElementById('btnLimparHum').addEventListener('click', () => {
+      document.getElementById('humNomeUsuario').value = '';
+      document.getElementById('humEntrada').value = '';
+      document.getElementById('humResultados').style.display = 'none';
+    });
+
+    // ==================== EXPORTAÇÃO (Placeholder) ====================
+    document.getElementById('btnExportarIA').addEventListener('click', () => alert('Exportação JSON para IA em breve.'));
+    document.getElementById('btnExportarLLM').addEventListener('click', () => alert('Exportação JSON para LLM em breve.'));
+    document.getElementById('btnLimparIAJSON').addEventListener('click', () => document.getElementById('iaJSONPreview').textContent = '');
+    document.getElementById('btnLimparLLMJSON').addEventListener('click', () => document.getElementById('llmJSONPreview').textContent = '');
+    document.getElementById('btnLimparJSONFabrica').addEventListener('click', () => document.getElementById('fabricaPreviewJSON').textContent = '');
+    document.getElementById('fabricaBtnLimparResultado').addEventListener('click', () => document.getElementById('fabricaResultado').style.display = 'none');
+
+    console.log('IDEnza — Estação de IA & LLMs carregada!');
+  </script>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEnza — Plataforma Cognitiva Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style1.css">
+    <style>
+        .export-fab-inline {
+            background: var(--copper-ghost);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            padding: 4px 10px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-block;
+            margin-top: 6px;
+            align-self: flex-start;
+        }
+        .export-fab-inline:hover {
+            background: rgba(200, 122, 79, 0.1);
+            color: var(--copper);
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-copper);
+        }
+        #panelContext .sidebar-list {
+            gap: 6px;
+        }
+        #panelContext .sidebar-item {
+            padding: 10px 12px;
+        }
+        .compliance-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--navy-card);
+            border: 1px solid var(--copper);
+            color: var(--cream);
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            padding: 12px 16px;
+            border-radius: 2px;
+            box-shadow: var(--shadow-elevated);
+            white-space: normal;
+            max-width: 260px;
+            z-index: 20;
+            animation: fadeInTooltip 0.25s ease;
+            pointer-events: none;
+        }
+        @keyframes fadeInTooltip {
+            from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .compliance-footer span {
+            position: relative;
+        }
+        /* Estilo para o link de recuperação inline */
+        .forgot-password-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(200,122,79,0.05);
+            border: 1px solid rgba(200,122,79,0.15);
+            text-align: left;
+        }
+        .forgot-password-inline input {
+            background: var(--navy-deep);
+            border: 1px solid rgba(200,122,79,0.2);
+            color: var(--cream);
+            padding: 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+        }
+        .forgot-password-inline .btn-sm {
+            align-self: flex-end;
+        }
+        .link-esqueci-senha {
+            color: var(--copper);
+            font-size: 0.75rem;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            margin-top: 0.5rem;
+            font-family: var(--font-sans);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY DE LOGIN / CADASTRO -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>IDEnza</h2>
+            <p class="subtle">Acesse seu ambiente inteligente</p>
+            <div class="login-tabs">
+                <button class="login-tab active" data-method="email">E‑mail</button>
+                <button class="login-tab" data-method="apikey">Chave de Acesso</button>
+                <button class="login-tab" data-method="register">Criar Conta</button>
+            </div>
+            <div id="login-panel-email" class="login-panel active">
+                <form id="login-form-email">
+                    <div class="form-group"><label>E‑mail</label><input type="email" id="login-email" required></div>
+                    <div class="form-group"><label>Senha</label><input type="password" id="login-password" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                    <button type="button" class="link-esqueci-senha" id="showForgotPassword">Esqueci minha senha?</button>
+                    <div id="forgotPasswordInline" class="forgot-password-inline" style="display:none;">
+                        <label style="font-size:0.7rem; color:var(--text-muted);">Informe seu e‑mail para recuperar o acesso:</label>
+                        <input type="email" id="forgot-email" placeholder="seu@email.com">
+                        <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                            <button type="button" class="btn btn-sm btn-outline" id="cancelForgotPassword">Cancelar</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="submitForgotPassword">Enviar</button>
+                        </div>
+                        <div id="forgotMessage" style="font-size:0.7rem; color:var(--copper); margin-top:0.3rem;"></div>
+                    </div>
+                </form>
+            </div>
+            <div id="login-panel-apikey" class="login-panel">
+                <form id="login-form-apikey">
+                    <div class="form-group"><label>Chave de Acesso</label><input type="text" id="apikey-input" required></div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+            </div>
+            <div id="login-panel-register" class="login-panel">
+                <form id="register-form">
+                    <div class="form-group"><label>Nome</label><input type="text" id="register-name" required></div>
+                    <div class="form-group"><label>E‑mail</label><input type="email" id="register-email" required></div>
+                    <div class="form-group"><label>Senha</label><input type="password" id="register-password" required minlength="6"></div>
+                    <button type="submit" class="btn btn-primary">Criar Conta</button>
+                </form>
+            </div>
+            <div class="login-error" id="login-error"></div>
+            <p class="tiny">Ao acessar, você concorda com os Termos de Uso.</p>
+            <button class="btn-outline" style="margin-top:1rem;padding:0.4rem 1rem;font-size:0.7rem;" onclick="localStorage.clear(); location.reload();">Limpar acesso (teste)</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE HISTÓRICO -->
+    <div id="historicoModal" class="historico-modal">
+        <div class="historico-modal-content">
+            <div class="historico-modal-header">
+                <span>📋 Histórico de Interações</span>
+                <button id="closeHistoricoModal">✕</button>
+            </div>
+            <div class="historico-list" id="historicoList"></div>
+            <div class="historico-actions">
+                <button id="exportHistoricoCSV">Exportar CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPAL -->
+    <div class="app-shell" id="appShell" style="display:none;">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-panel" id="panelSpecialists">
+                <h2 class="sidebar-panel-title">Temas & Especialistas</h2>
+                <ul class="sidebar-list" id="specialistList">
+                    <li class="sidebar-item">Tecnologia</li>
+                    <li class="sidebar-item">Blockchain</li>
+                    <li class="sidebar-item">Negócios</li>
+                    <li class="sidebar-item active">Arquitetura SaaS</li>
+                </ul>
+            </div>
+            <div class="sidebar-panel" id="panelContext">
+                <h2 class="sidebar-panel-title">Categorias & Contexto</h2>
+                <ul class="sidebar-list" id="contextList">
+                    <li class="sidebar-item">Plataforma</li>
+                    <li class="sidebar-item active">Multi-tenant</li>
+                    <li class="sidebar-item">Escalabilidade</li>
+                    <li class="sidebar-item">API Gateway</li>
+                </ul>
+                <div class="tabs-container">
+                    <ul class="tab-list" id="clientTabs">
+                        <li><a data-tab="tab-notas" class="active">📝 Notas</a></li>
+                        <li><a data-tab="tab-conta">👤 Minha Conta</a></li>
+                        <li><a data-tab="tab-historico">📋 Histórico</a></li>
+                    </ul>
+                </div>
+                <div class="theme-marker" id="themeMarker" title="Alternar tema Navy / Clean">
+                    <span class="theme-square"></span>
+                    <span class="theme-label">Navy Copper</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-area" id="mainArea">
+            <div class="chat-header">
+                <span class="chat-header-title">Centro Cognitivo</span>
+                <div class="chat-header-indicators">
+                    <span class="indicator"><span class="dot"></span> Foco: <span class="val highlight" id="focusVal">Plataforma SaaS</span></span>
+                    <span class="indicator">Especialista: <span class="val" id="specVal">Arquiteto de Software</span></span>
+                    <span class="indicator">Confiança: <span class="val highlight" id="confVal">87%</span></span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg ai">
+                    <span class="msg-label">IDEnza</span>
+                    <p class="msg-content">Olá, eu sou o <strong style="color:var(--copper);">Orquestrador Cognitivo IDEnza</strong> — um humanoide direcional que vai compreendendo sua intenção enquanto você descreve sua ideia.</p>
+                    <span class="msg-time">— agora</span>
+                    <button class="export-fab-inline" id="exportConversationBtn">📥 Exportar Conversa</button>
+                </div>
+            </div>
+        </main>
+
+        <div class="input-area" id="inputAreaContainer">
+            <div class="tags-grid-container" id="tagsGridContainer">
+                <div class="tags-grid" id="tagsGrid"></div>
+            </div>
+            <div class="input-wrapper" id="inputWrapper">
+                <textarea id="userInput" placeholder="Descreva sua ideia livremente..." rows="1" aria-label="Campo de entrada cognitiva"></textarea>
+                <button class="send-btn" id="sendBtn" aria-label="Enviar" title="Enviar mensagem">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </button>
+                <button class="mic-btn" id="micBtn" title="Gravar áudio" aria-label="Microfone">🎤</button>
+            </div>
+            <div class="compliance-footer">
+                <span data-tooltip="IDEnza é um orquestrador cognitivo que compreende e expande ideias de forma interativa.">Quem é IDEnza</span>
+                <span data-tooltip="Nosso objetivo é amplificar a cognição humana, conectando conhecimento e tecnologia de forma fluida.">Nossos Objetivos</span>
+                <span data-tooltip="Responsabilidade no uso ético da IA, transparência e privacidade desde a concepção.">Responsabilidade</span>
+                <span data-tooltip="Leia nossos Termos de Uso para entender as diretrizes de utilização da plataforma.">Termos de Uso</span>
+                <span data-tooltip="A privacidade dos seus dados é prioridade. Consulte nossa política.">Privacidade</span>
+                <span data-tooltip="Compromisso com acessibilidade universal, seguindo as melhores práticas internacionais.">Acessibilidade</span>
+                <span data-tooltip="Conformidade com normas e regulamentações, incluindo proteção de dados e segurança.">Compliance</span>
+                <span class="daily-counter" id="dailyCounter">0 perguntas hoje</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip flutuante -->
+    <div id="complianceTooltip" class="compliance-tooltip"></div>
+
+    <script>
+        (function() {
+            // ═══════════ BACKENDS ═══════════
+            const WORKER_AUTH = 'https://cluster-governance.av9-aproptech.workers.dev';          // Autenticação (login/me/register)
+            const WORKER_COGNITIVO = 'https://knowledgegatekeeper.avz9-aproptech.workers.dev'; // Orquestrador Cognitivo
+            const API_MIC = 'http://localhost:5000/perguntar';
+
+            // ═══════════ LOCAL STORAGE ═══════════
+            const LS_API_KEY = 'idenza_api_key';
+            const LS_TOKEN = 'idenza_token';
+            const LS_SESSION = 'idenza_cognitive_session';
+            const LS_TIMESTAMPS = 'idenza_perguntas_timestamps';
+            const LS_THEME_COUNTS = 'idenza_theme_counts';
+            const LS_HISTORICO = 'idenza_historico';
+            const LS_NOTEPAD = 'idenza_notepad';
+
+            let apiKey = localStorage.getItem(LS_API_KEY) || '';
+            let token = localStorage.getItem(LS_TOKEN) || '';
+
+            // Elementos DOM
+            const chatMessages = document.getElementById('chatMessages');
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const specialistList = document.getElementById('specialistList');
+            const contextList = document.getElementById('contextList');
+            const focusVal = document.getElementById('focusVal');
+            const specVal = document.getElementById('specVal');
+            const confVal = document.getElementById('confVal');
+            const tagsGrid = document.getElementById('tagsGrid');
+            const tagsGridContainer = document.getElementById('tagsGridContainer');
+            const themeMarker = document.getElementById('themeMarker');
+            const themeLabel = themeMarker?.querySelector('.theme-label');
+            const clientTabs = document.getElementById('clientTabs');
+            const micBtn = document.getElementById('micBtn');
+            const dailyCounter = document.getElementById('dailyCounter');
+            const historicoModal = document.getElementById('historicoModal');
+            const historicoList = document.getElementById('historicoList');
+            const appShell = document.getElementById('appShell');
+            const loginOverlay = document.getElementById('loginOverlay');
+            const exportConversationBtn = document.getElementById('exportConversationBtn');
+            const complianceTooltip = document.getElementById('complianceTooltip');
+            let tooltipTimeout;
+            let lastAIResponse = '';
+
+            // ═══════════ SESSÃO COGNITIVA ═══════════
+            function getSessionId() {
+                let sid = localStorage.getItem(LS_SESSION);
+                if (!sid) {
+                    sid = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                    localStorage.setItem(LS_SESSION, sid);
+                }
+                return sid;
+            }
+
+            // ═══════════ ARMAZENAMENTO LOCAL ═══════════
+            function salvarHistorico(prompt, resposta) {
+                let historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                historico.unshift({ data: new Date().toISOString(), prompt, resposta: resposta.substring(0, 200) });
+                if (historico.length > 50) historico.pop();
+                localStorage.setItem(LS_HISTORICO, JSON.stringify(historico));
+            }
+
+            function contarPergunta() {
+                const agora = Date.now();
+                let timestamps = JSON.parse(localStorage.getItem(LS_TIMESTAMPS) || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < 86400000);
+                timestamps.push(agora);
+                localStorage.setItem(LS_TIMESTAMPS, JSON.stringify(timestamps));
+                atualizarContador();
+            }
+
+            function atualizarContador() {
+                const agora = Date.now();
+                let timestamps = JSON.parse(localStorage.getItem(LS_TIMESTAMPS) || '[]');
+                timestamps = timestamps.filter(ts => agora - ts < 86400000);
+                const count = timestamps.length;
+                if (dailyCounter) dailyCounter.textContent = count + ' pergunta' + (count !== 1 ? 's' : '') + ' hoje';
+            }
+
+            function incrementarContagemTema(agent) {
+                let contagens = JSON.parse(localStorage.getItem(LS_THEME_COUNTS) || '{}');
+                contagens[agent] = (contagens[agent] || 0) + 1;
+                localStorage.setItem(LS_THEME_COUNTS, JSON.stringify(contagens));
+            }
+
+            // ═══════════ UI DINÂMICA ═══════════
+            function updateSidebarList(listEl, items) {
+                if (!listEl || !items) return;
+                listEl.style.opacity = '0.45';
+                listEl.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    listEl.innerHTML = '';
+                    items.forEach((item, i) => {
+                        const li = document.createElement('li');
+                        li.className = 'sidebar-item';
+                        li.textContent = item;
+                        if (i === 0) li.classList.add('active');
+                        listEl.appendChild(li);
+                    });
+                    listEl.style.opacity = '1';
+                }, 220);
+            }
+
+            function updateHeaderIndicators(state) {
+                if (!state) return;
+                const domain = state.domain || 'Geral';
+                const humanoid = state.humanoid || 'Generalista';
+                const confidence = state.confidence != null ? Math.round(state.confidence) : 0;
+                if (focusVal.textContent !== domain) {
+                    focusVal.style.opacity = '0';
+                    setTimeout(() => { focusVal.textContent = domain; focusVal.style.opacity = '1'; }, 140);
+                }
+                if (specVal.textContent !== humanoid) {
+                    specVal.style.opacity = '0';
+                    setTimeout(() => { specVal.textContent = humanoid; specVal.style.opacity = '1'; }, 140);
+                }
+                const confText = confidence + '%';
+                if (confVal.textContent !== confText) {
+                    confVal.style.transform = 'scale(1.1)';
+                    confVal.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+                    confVal.textContent = confText;
+                    setTimeout(() => { confVal.style.transform = 'scale(1)'; }, 350);
+                }
+            }
+
+            function updateTags(tagsArray) {
+                if (!tagsArray || !tagsArray.length) {
+                    tagsGridContainer.classList.remove('visible');
+                    return;
+                }
+                const sizes = ['size-sm', 'size-sm', 'size-md', 'size-md', 'size-md', 'size-lg', 'size-lg', 'size-sm', 'size-md', 'size-lg'];
+                let html = '';
+                tagsArray.forEach((tag, i) => {
+                    const sizeClass = sizes[i] || 'size-md';
+                    const isHighlight = i === 0 || i === tagsArray.length - 1;
+                    const highlightClass = isHighlight ? 'highlight-tag' : '';
+                    const delay = (i * 0.08) % 1.2;
+                    html += `<span class="grid-tag ${sizeClass} ${highlightClass}" style="--tag-delay:${delay}s;">#${tag}</span>`;
+                });
+                tagsGrid.innerHTML = html;
+                tagsGridContainer.classList.add('visible');
+            }
+
+            function addMessage(type, content) {
+                const div = document.createElement('div');
+                div.className = `msg ${type}`;
+                const label = document.createElement('span');
+                label.className = 'msg-label';
+                label.textContent = type === 'user' ? 'Você' : 'IDEnza';
+                const p = document.createElement('p');
+                p.className = 'msg-content';
+                p.innerHTML = content.replace(/\n/g, '<br>');
+                const time = document.createElement('span');
+                time.className = 'msg-time';
+                const now = new Date();
+                time.textContent = `— ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                div.appendChild(label); div.appendChild(p); div.appendChild(time);
+                chatMessages.appendChild(div);
+                requestAnimationFrame(() => chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' }));
+                if (type === 'ai') lastAIResponse = content;
+            }
+
+            // ═══════════ ENVIO PARA O ORQUESTRADOR COGNITIVO ═══════════
+            async function handleSubmit() {
+                const message = userInput.value.trim();
+                if (!message) return;
+                addMessage('user', message);
+                userInput.value = '';
+                userInput.style.height = 'auto';
+                userInput.focus();
+
+                const thinkingDiv = document.createElement('div');
+                thinkingDiv.className = 'msg ai';
+                thinkingDiv.innerHTML = '<span class="msg-label">IDEnza</span><p class="msg-content">⏳ Processando...</p>';
+                chatMessages.appendChild(thinkingDiv);
+                chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+
+                try {
+                    const sessionId = getSessionId();
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (apiKey) headers['x-api-key'] = apiKey;
+                    const res = await fetch(`${WORKER_COGNITIVO}/api/conversation`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({ message, sessionId })
+                    });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    thinkingDiv.remove();
+
+                    if (data.cognitive_state) {
+                        const state = data.cognitive_state;
+                        const agentNames = (state.agents_found || []).map(uid => uid.split('.')[1] || uid);
+                        updateSidebarList(specialistList, agentNames.length ? agentNames : ['Generalista']);
+                        updateSidebarList(contextList, (state.tags || []).map(t => t.charAt(0).toUpperCase() + t.slice(1)));
+                        updateHeaderIndicators(state);
+                        updateTags(state.tags || []);
+                    }
+                    const resposta = data.text || data.resposta || 'Resposta não disponível.';
+                    addMessage('ai', resposta);
+                    salvarHistorico(message, resposta);
+                    contarPergunta();
+                } catch (err) {
+                    thinkingDiv.remove();
+                    addMessage('ai', '⚠️ Erro de conexão com o Orquestrador Cognitivo.');
+                    console.error(err);
+                }
+            }
+
+            // ═══════════ TTS ═══════════
+            function speak(text) {
+                if (!text) return;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (lastAIResponse) speak(lastAIResponse);
+                }
+            });
+
+            // ═══════════ MICROFONE ═══════════
+            let mediaRecorder, audioChunks = [], isRecording = false;
+            micBtn.addEventListener('click', async () => {
+                if (isRecording) { pararGravacao(); return; }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = async () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        await transcreverAudio(blob);
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('recording');
+                    micBtn.textContent = '⏹️';
+                } catch (err) { alert('Microfone não disponível.'); }
+            });
+            function pararGravacao() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    micBtn.classList.remove('recording');
+                    micBtn.textContent = '🎤';
+                }
+            }
+            async function transcreverAudio(blob) {
+                const formData = new FormData();
+                formData.append('audio', blob, 'gravacao.webm');
+                try {
+                    const resp = await fetch(API_MIC, { method: 'POST', body: formData });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        userInput.value += ' ' + (data.texto || data.text || '');
+                        userInput.dispatchEvent(new Event('input'));
+                    }
+                } catch (e) { console.warn('Falha na transcrição:', e); }
+            }
+
+            // ═══════════ EXPORTAÇÃO ═══════════
+            exportConversationBtn.addEventListener('click', () => {
+                const msgs = chatMessages.querySelectorAll('.msg');
+                let texto = '';
+                msgs.forEach(msg => {
+                    const label = msg.querySelector('.msg-label')?.textContent || '';
+                    const content = msg.querySelector('.msg-content')?.textContent || '';
+                    const time = msg.querySelector('.msg-time')?.textContent || '';
+                    texto += `${label} ${content} ${time}\n\n`;
+                });
+                const blob = new Blob([texto], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'conversa-idenza.txt';
+                a.click();
+            });
+
+            // ═══════════ HISTÓRICO MODAL ═══════════
+            function atualizarHistoricoModal() {
+                const historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                if (!historico.length) {
+                    historicoList.innerHTML = '<p style="color:#8A9CAF;font-size:0.8rem;">Nenhuma interação registrada.</p>';
+                    return;
+                }
+                let html = '';
+                historico.forEach(item => {
+                    const data = new Date(item.data);
+                    html += `<div class="historico-item"><div class="h-data">${data.toLocaleString('pt-BR')}</div><div class="h-prompt">${item.prompt}</div><div class="h-resposta">${item.resposta}</div></div>`;
+                });
+                historicoList.innerHTML = html;
+            }
+            document.getElementById('closeHistoricoModal').addEventListener('click', () => historicoModal.classList.remove('open'));
+            historicoModal.addEventListener('click', e => { if (e.target === historicoModal) historicoModal.classList.remove('open'); });
+            document.getElementById('exportHistoricoCSV').addEventListener('click', () => {
+                const historico = JSON.parse(localStorage.getItem(LS_HISTORICO) || '[]');
+                if (!historico.length) return alert('Nenhum histórico.');
+                let csv = 'Data,Hora,Prompt,Resposta\n';
+                historico.forEach(item => {
+                    const d = new Date(item.data);
+                    csv += `"${d.toLocaleDateString('pt-BR')}","${d.toLocaleTimeString('pt-BR')}","${item.prompt.replace(/"/g,'""')}","${item.resposta.replace(/"/g,'""')}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'historico-idenza.csv';
+                a.click();
+            });
+
+            // ═══════════ ABAS LATERAIS ═══════════
+            clientTabs.addEventListener('click', e => {
+                const target = e.target.closest('a');
+                if (!target) return;
+                e.preventDefault();
+                const tab = target.dataset.tab;
+                if (tab === 'tab-conta') { alert('Funcionalidade em desenvolvimento.'); return; }
+                if (tab === 'tab-historico') { atualizarHistoricoModal(); historicoModal.classList.add('open'); return; }
+                if (tab === 'tab-notas') {
+                    const notasModal = document.getElementById('notasModal');
+                    if (notasModal) {
+                        notasModal.classList.add('open');
+                        const notasEditor = document.getElementById('notasEditor');
+                        const saved = localStorage.getItem(LS_NOTEPAD);
+                        if (saved && notasEditor) notasEditor.value = saved;
+                        if (notasEditor) notasEditor.focus();
+                    } else { alert('Bloco de notas não disponível nesta versão.'); }
+                }
+            });
+
+            // ═══════════ TOOLTIP RODAPÉ ═══════════
+            document.querySelectorAll('.compliance-footer span[data-tooltip]').forEach(span => {
+                span.addEventListener('click', function(e) {
+                    const text = this.getAttribute('data-tooltip');
+                    complianceTooltip.textContent = text;
+                    const rect = this.getBoundingClientRect();
+                    complianceTooltip.style.left = rect.left + rect.width/2 + 'px';
+                    complianceTooltip.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+                    complianceTooltip.style.display = 'block';
+                    clearTimeout(tooltipTimeout);
+                    tooltipTimeout = setTimeout(() => { complianceTooltip.style.display = 'none'; }, 4000);
+                });
+            });
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.compliance-footer span[data-tooltip]')) complianceTooltip.style.display = 'none';
+            });
+
+            // ═══════════ LOGIN / CADASTRO / RECUPERAÇÃO ═══════════
+            function abrirDashboard(userData) {
+                loginOverlay.style.display = 'none';
+                appShell.style.display = 'grid';
+                atualizarContador();
+                userInput.focus();
+            }
+
+            // Login por e-mail
+            document.getElementById('login-form-email').addEventListener('submit', async e => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                const errorDiv = document.getElementById('login-error');
+                if (!email || !password) { errorDiv.textContent = 'Preencha todos os campos'; return; }
+                errorDiv.textContent = '⏳ Entrando...';
+                try {
+                    const res = await fetch(`${WORKER_AUTH}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (data.token && data.user) {
+                        localStorage.setItem(LS_API_KEY, data.user.api_key);
+                        localStorage.setItem(LS_TOKEN, data.token);
+                        apiKey = data.user.api_key;
+                        token = data.token;
+                        abrirDashboard(data.user);
+                    } else {
+                        errorDiv.textContent = data.error || 'Credenciais inválidas';
+                    }
+                } catch (err) { errorDiv.textContent = 'Erro de conexão'; }
+            });
+
+            // Login por chave de acesso
+            document.getElementById('login-form-apikey').addEventListener('submit', async e => {
+                e.preventDefault();
+                const key = document.getElementById('apikey-input').value.trim();
+                const errorDiv = document.getElementById('login-error');
+                if (!key) { errorDiv.textContent = 'Informe a chave'; return; }
+                errorDiv.textContent = '⏳ Verificando...';
+                try {
+                    const res = await fetch(`${WORKER_AUTH}/api/me`, { headers: { 'x-api-key': key } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        localStorage.setItem(LS_API_KEY, key);
+                        apiKey = key;
+                        abrirDashboard(data);
+                    } else { errorDiv.textContent = 'Chave inválida'; }
+                } catch (err) { errorDiv.textContent = 'Erro de conexão'; }
+            });
+
+            // Cadastro
+            document.getElementById('register-form').addEventListener('submit', async e => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value.trim();
+                const email = document.getElementById('register-email').value.trim();
+                const password = document.getElementById('register-password').value;
+                const errorDiv = document.getElementById('login-error');
+                if (!name || !email || !password) { errorDiv.textContent = 'Preencha todos os campos'; return; }
+                if (password.length < 6) { errorDiv.textContent = 'Senha deve ter no mínimo 6 caracteres'; return; }
+                errorDiv.textContent = '⏳ Criando conta...';
+                try {
+                    const res = await fetch(`${WORKER_AUTH}/api/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password })
+                    });
+                    const data = await res.json();
+                    if (data.token && data.user) {
+                        localStorage.setItem(LS_API_KEY, data.user.api_key);
+                        localStorage.setItem(LS_TOKEN, data.token);
+                        apiKey = data.user.api_key;
+                        token = data.token;
+                        abrirDashboard(data.user);
+                    } else {
+                        errorDiv.textContent = data.error || 'Erro ao cadastrar';
+                    }
+                } catch (err) { errorDiv.textContent = 'Erro de conexão'; }
+            });
+
+            // Recuperação de senha (Esqueci minha senha)
+            const showForgotBtn = document.getElementById('showForgotPassword');
+            const forgotInline = document.getElementById('forgotPasswordInline');
+            const cancelForgotBtn = document.getElementById('cancelForgotPassword');
+            const submitForgotBtn = document.getElementById('submitForgotPassword');
+            const forgotEmailInput = document.getElementById('forgot-email');
+            const forgotMessage = document.getElementById('forgotMessage');
+
+            showForgotBtn.addEventListener('click', () => {
+                forgotInline.style.display = 'flex';
+                showForgotBtn.style.display = 'none';
+                document.getElementById('login-error').textContent = '';
+            });
+
+            cancelForgotBtn.addEventListener('click', () => {
+                forgotInline.style.display = 'none';
+                showForgotBtn.style.display = 'inline-block';
+                forgotMessage.textContent = '';
+                forgotEmailInput.value = '';
+            });
+
+            submitForgotBtn.addEventListener('click', async () => {
+                const email = forgotEmailInput.value.trim();
+                if (!email) {
+                    forgotMessage.textContent = 'Informe o e-mail.';
+                    return;
+                }
+                submitForgotBtn.disabled = true;
+                submitForgotBtn.textContent = 'Enviando...';
+                try {
+                    const res = await fetch(`${WORKER_AUTH}/api/auth/forgot-password`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    if (res.ok) {
+                        forgotMessage.textContent = '✅ Se existir, enviaremos as instruções.';
+                        forgotEmailInput.value = '';
+                    } else {
+                        const data = await res.json();
+                        forgotMessage.textContent = data.error || 'Erro ao processar.';
+                    }
+                } catch (err) {
+                    forgotMessage.textContent = 'Erro de conexão.';
+                } finally {
+                    submitForgotBtn.disabled = false;
+                    submitForgotBtn.textContent = 'Enviar';
+                }
+            });
+
+            // Tabs do overlay
+            document.querySelectorAll('.login-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.login-panel').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('login-panel-' + this.dataset.method).classList.add('active');
+                    document.getElementById('login-error').textContent = '';
+                });
+            });
+
+            // Auto-login
+            (async function autoLogin() {
+                if (apiKey) {
+                    try {
+                        const res = await fetch(`${WORKER_AUTH}/api/me`, { headers: { 'x-api-key': apiKey } });
+                        if (res.ok) { abrirDashboard(await res.json()); return; }
+                        else { localStorage.removeItem(LS_API_KEY); localStorage.removeItem(LS_TOKEN); apiKey = ''; token = ''; }
+                    } catch (e) {}
+                }
+                loginOverlay.style.display = 'flex';
+            })();
+
+            // ═══════════ EVENTOS DE INPUT ═══════════
+            sendBtn.addEventListener('click', handleSubmit);
+            userInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
+            });
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+            });
+
+            // ═══════════ INICIALIZAÇÃO ═══════════
+            function init() {
+                if (themeMarker) {
+                    themeMarker.addEventListener('click', () => {
+                        document.body.classList.toggle('theme-clean');
+                        const isClean = document.body.classList.contains('theme-clean');
+                        if (themeLabel) themeLabel.textContent = isClean ? 'Clean' : 'Navy Copper';
+                    });
+                }
+                const notasEditor = document.getElementById('notasEditor');
+                if (notasEditor) {
+                    const saved = localStorage.getItem(LS_NOTEPAD);
+                    if (saved) notasEditor.value = saved;
+                    const closeNotasModal = document.getElementById('closeNotasModal');
+                    if (closeNotasModal) closeNotasModal.addEventListener('click', () => {
+                        localStorage.setItem(LS_NOTEPAD, notasEditor.value);
+                        document.getElementById('notasModal').classList.remove('open');
+                    });
+                    const notasModal = document.getElementById('notasModal');
+                    if (notasModal) notasModal.addEventListener('click', e => {
+                        if (e.target === notasModal) { localStorage.setItem(LS_NOTEPAD, notasEditor.value); notasModal.classList.remove('open'); }
+                    });
+                    let saveTimeout;
+                    notasEditor.addEventListener('input', () => {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(() => localStorage.setItem(LS_NOTEPAD, notasEditor.value), 1000);
+                    });
+                    document.getElementById('copyNotasBtn')?.addEventListener('click', () => navigator.clipboard.writeText(notasEditor.value).then(() => alert('Copiado!')));
+                    document.getElementById('pasteNotasBtn')?.addEventListener('click', async () => { notasEditor.value += await navigator.clipboard.readText(); localStorage.setItem(LS_NOTEPAD, notasEditor.value); });
+                    document.getElementById('pdfNotasBtn')?.addEventListener('click', () => window.print());
+                }
+                atualizarContador();
+            }
+            window.addEventListener('DOMContentLoaded', init);
+            if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(init, 1);
+        })();
+    </script>
+</body>
+</html>

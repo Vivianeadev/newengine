@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Governança IDEnza — Mestre Total</title>
+  <style>
+    /* ===== CSS ===== */
+    :root {
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --petroleum: #0a3f4b;
+      --petroleum-light: #1b6b7a;
+      --gold-dark: #9e7610;
+      --gold: #c9942c;
+      --gold-light: #e6c66a;
+      --text: #1e1e1e;
+      --text-soft: #555;
+      --border: #d0d4d9;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-lg: 0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
+      --success: #0d5c3a;
+      --success-bg: #e6f4ed;
+      --warning: #b8860b;
+      --warning-bg: #fefce8;
+      --error: #b91c1c;
+      --error-bg: #fef2f2;
+      --font-mono: 'Fira Code', 'Courier New', monospace;
+      --deep-science: #0a2f44;
+      --deep-science-light: #1a4f6a;
+      --deep-science-border: #2a6f8a;
+      --operational: #5c3d0a;
+      --operational-light: #8a5f1a;
+      --operational-border: #b0802a;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --transition: all 0.2s ease;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 20px;
+      max-width: 1340px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--petroleum);
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      background: var(--gold-dark);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+    }
+    .badge-hum {
+      background: var(--petroleum);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+    }
+    .badge-data {
+      background: #0d5c3a;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+    }
+    .section {
+      background: var(--card-bg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+    .section:hover { box-shadow: var(--shadow-md); }
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--petroleum);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.3px;
+    }
+    .btn:active { transform: translateY(1px); box-shadow: none; }
+    .btn-gold { background: var(--gold-dark); color: white; border: 1px solid #8b6910; }
+    .btn-gold:hover { background: #b8941a; }
+    .btn-outline { background: transparent; border: 1px solid var(--petroleum-light); color: var(--petroleum); }
+    .btn-outline:hover { background: #f0f8fa; }
+    .btn-petroleum { background: var(--petroleum); color: white; border: 1px solid #062a33; }
+    .btn-petroleum:hover { background: var(--petroleum-light); }
+    .btn-data { background: #0d5c3a; color: white; border: 1px solid #064025; }
+    .btn-data:hover { background: #0f6e45; }
+    .btn-purple { background: #6b21a8; color: white; border: 1px solid #4c1d7a; }
+    .btn-purple:hover { background: #7c2db5; }
+    .btn-danger { background: #b91c1c; color: white; border: 1px solid #7a1313; }
+    .btn-danger:hover { background: #d12a2a; }
+    .btn-sm { font-size: 0.65rem; padding: 4px 12px; }
+    .eng-payload-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.7rem;
+      margin-top: 10px;
+    }
+    .eng-payload-table th {
+      background: #f0f8fa;
+      padding: 10px 12px;
+      text-align: left;
+      color: var(--petroleum);
+      border-bottom: 2px solid var(--petroleum-light);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .eng-payload-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-soft);
+      vertical-align: middle;
+    }
+    .redis-slot-card {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border-radius: var(--radius-sm);
+      position: relative;
+    }
+    .redis-slot-card.connected { border-left: 5px solid #22c55e; background: #f9fef9; }
+    .redis-slot-card.disconnected { border-left: 5px solid #ef4444; background: #fef9f9; }
+    .redis-slot-card .slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .redis-slot-card .slot-name { font-weight: 700; font-size: 0.75rem; color: var(--text); }
+    .redis-slot-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .redis-slot-dot.on { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.7); }
+    .redis-slot-dot.off { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+    .slot-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .slot-modal-overlay.open { display: flex; }
+    .slot-modal {
+      background: white;
+      border: 2px solid var(--petroleum-light);
+      padding: 28px;
+      max-width: 700px;
+      width: 92%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      border-radius: var(--radius-md);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .slot-modal h3 {
+      font-size: 0.9rem;
+      color: var(--petroleum);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .slot-modal label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--petroleum);
+      display: block;
+      margin: 10px 0 4px;
+    }
+    .slot-modal input, .slot-modal textarea, .slot-modal select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      margin-bottom: 6px;
+    }
+    .slot-modal .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .slot-modal pre {
+      background: #f7f9fb;
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .status-msg { font-size: 0.7rem; color: var(--petroleum-light); margin-top: 8px; font-style: italic; }
+    .badge-valid { background: #22c55e; color: white; padding: 2px 10px; border-radius: var(--radius-sm); font-size: 0.6rem; }
+    .badge-expired { background: #ef4444; color: white; padding: 2px 10px; border-radius: var(--radius-sm); font-size: 0.6rem; }
+    .badge-review { background: #eab308; color: white; padding: 2px 10px; border-radius: var(--radius-sm); font-size: 0.6rem; }
+    .badge-conflict { background: #f97316; color: white; padding: 2px 10px; border-radius: var(--radius-sm); font-size: 0.6rem; }
+    .gov-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+    }
+    .gov-stats-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+    }
+    .gov-stats-item .badge { margin-right: 4px; }
+    .gov-stats-item strong { font-size: 1.1rem; }
+    #govTabelaBody tr:hover { background: #f0f8fa; }
+    .action-buttons { display: flex; gap: 4px; flex-wrap: wrap; }
+    .cluster-actions { display: flex; gap: 4px; margin-top: 4px; }
+    @media (max-width: 600px) {
+      .gov-stats { gap: 10px; }
+      .eng-payload-table th, .eng-payload-table td { font-size: 0.6rem; padding: 6px 8px; }
+    }
+	.top-nav-special {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: #2d5a27;
+    border-bottom: 2px solid var(--gold-dark);
+}
+.top-nav-special a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    transition: 0.2s;
+    border-radius: 4px !important;
+}
+.top-nav-special a:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+  </style>
+</head>
+<body>
+<div class="top-nav-special">
+    <a href="painel.html" target="_blank" class="painel-link">🌐 IDENZA Painel</a>
+    <a href="https://idenza.pages.dev" target="_blank" class="client-link">🌐 IDENZA Client</a>
+</div>
+<header>
+  <h1>🏛️ Governança IDEnza — Mestre Total</h1>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <span class="badge">6 Caixas Fixas</span>
+    <span class="badge-hum">+ Dinâmicas</span>
+    <span class="badge-data">CRUD Completo</span>
+  </div>
+</header>
+
+<!-- Estatísticas -->
+<div class="section">
+  <div class="section-title">📊 Estatísticas do Sistema Imunológico</div>
+  <div class="gov-stats" id="govStats">
+    <div class="gov-stats-item"><span class="badge" style="background:#22c55e;">✅ Ativos</span> <strong id="govTotalAtivos">0</strong></div>
+    <div class="gov-stats-item"><span class="badge" style="background:#ef4444;">❌ Expirados</span> <strong id="govTotalExpirados">0</strong></div>
+    <div class="gov-stats-item"><span class="badge" style="background:#eab308;">⚠️ Revisão</span> <strong id="govTotalRevisao">0</strong></div>
+    <div class="gov-stats-item"><span class="badge" style="background:#f97316;">🔴 Conflitos</span> <strong id="govTotalConflitos">0</strong></div>
+    <div class="gov-stats-item"><span class="badge" style="background:#6c757d;">📦 Total</span> <strong id="govTotalTotal">0</strong></div>
+  </div>
+</div>
+
+<!-- Índice Mestre -->
+<div class="section">
+  <div class="section-title">📋 Índice Mestre de ACIs</div>
+  <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">
+    Todos os ACIs das caixas Redis. Gerencie com CRUD completo.
+  </p>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+    <input type="text" id="govSearchInput" placeholder="Buscar por UID, título ou hash..." style="flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.8rem;">
+    <button class="btn btn-petroleum" id="govSearchBtn">🔍 Buscar</button>
+    <button class="btn btn-outline" id="govRefreshBtn">🔄 Atualizar</button>
+    <button class="btn btn-data" id="govAddAciBtn">➕ Novo ACI</button>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="eng-payload-table" id="govTabelaAcis">
+      <thead>
+        <tr>
+          <th>UID</th>
+          <th>Título</th>
+          <th>Versão</th>
+          <th>Status</th>
+          <th>Hash</th>
+          <th>Redis</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="govTabelaBody">
+        <tr><td colspan="7" style="text-align:center; color:#888;">Carregando ACIs...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="status-msg" id="govStatusMsg">Aguardando consulta...</div>
+</div>
+
+<!-- Registry dos Redis (com gerenciamento) -->
+<div class="section">
+  <div class="section-title">
+    🗄️ Registry dos Redis — Clusters Conectados
+    <button class="btn btn-data btn-sm" id="govAddClusterBtn" style="margin-left:auto;">➕ Adicionar Cluster</button>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;" id="govRedisRegistry">
+    <!-- Preenchido via JavaScript -->
+  </div>
+</div>
+
+<!-- MODAL DE DETALHES DO ACI -->
+<div class="slot-modal-overlay" id="govModalOverlay">
+  <div class="slot-modal">
+    <h3 id="govModalTitle">Detalhes do ACI</h3>
+    <pre id="govModalContent">Carregando...</pre>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="govModalRevalidar">🔄 Revalidar</button>
+      <button class="btn btn-danger" id="govModalRegenerar">⚡ Forçar Regeneração</button>
+      <button class="btn btn-danger" id="govModalExcluir">🗑️ Excluir</button>
+      <button class="btn btn-outline" id="govModalFechar">Fechar</button>
+    </div>
+    <div class="status-msg" id="govModalStatus"></div>
+  </div>
+</div>
+
+<!-- MODAL PARA NOVO ACI -->
+<div class="slot-modal-overlay" id="govNovoAciOverlay">
+  <div class="slot-modal">
+    <h3>➕ Novo Artefato Cognitivo (ACI)</h3>
+    <label>UID (opcional, gerado automático)</label>
+    <input type="text" id="novoAciUid" placeholder="Ex: aci_my_new_001">
+    <label>Título</label>
+    <input type="text" id="novoAciTitulo" placeholder="Ex: Agente de Inovação">
+    <label>Versão</label>
+    <input type="text" id="novoAciVersao" placeholder="1.0.0">
+    <label>Hash (opcional)</label>
+    <input type="text" id="novoAciHash" placeholder="hash...">
+    <label>Conteúdo (JSON do ACI)</label>
+    <textarea id="novoAciConteudo" rows="8" placeholder='{"nome": "Meu ACI", "descricao": "..."}'></textarea>
+    <label>Cluster de destino</label>
+    <select id="novoAciCluster"></select>
+    <div class="modal-actions">
+      <button class="btn btn-data" id="novoAciSalvar">💾 Salvar no Redis</button>
+      <button class="btn btn-outline" id="novoAciFechar">Cancelar</button>
+    </div>
+    <div class="status-msg" id="novoAciStatus"></div>
+  </div>
+</div>
+
+<!-- MODAL PARA ADICIONAR CLUSTER -->
+<div class="slot-modal-overlay" id="govAddClusterOverlay">
+  <div class="slot-modal">
+    <h3>➕ Adicionar Cluster Redis</h3>
+    <label>Nome</label>
+    <input type="text" id="novoClusterNome" placeholder="Ex: Caixa Amarela">
+    <label>URL</label>
+    <input type="text" id="novoClusterUrl" placeholder="https://...upstash.io">
+    <label>Token</label>
+    <input type="text" id="novoClusterToken" placeholder="Token de acesso">
+    <div class="modal-actions">
+      <button class="btn btn-data" id="novoClusterSalvar">💾 Adicionar</button>
+      <button class="btn btn-outline" id="novoClusterFechar">Cancelar</button>
+    </div>
+    <div class="status-msg" id="novoClusterStatus"></div>
+  </div>
+</div>
+
+<script>
+  // =========================================================================
+  // 1. CONFIGURAÇÃO FIXA DAS 6 CAIXAS + CLUSTERS DINÂMICOS
+  // =========================================================================
+  const FIXED_CLUSTERS = [
+    { name: 'Caixa Branca', url: 'https://premium-dove-145094.upstash.io', token: 'gQAAAAAAAjbGAAIgcDFiNDc1Njc5NmYxNTI0NThlODNhZGNjYTQ0YThiN2YyZQ', color: '#f0f0f0', fixed: true },
+    { name: 'Caixa Roxa',    url: 'https://busy-puma-128407.upstash.io', token: 'gQAAAAAAAfWXAAIgcDE0MjM4NzNmNTY4Yzg0ZDVjODMwMDZjOWQ2ZjE5NTQxYg', color: '#9b59b6', fixed: true },
+    { name: 'Caixa Preta',   url: 'https://welcomed-satyr-116661.upstash.io', token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ', color: '#2c3e50', fixed: true },
+    { name: 'Caixa Azul',    url: 'https://tidy-muskrat-128571.upstash.io', token: 'gQAAAAAAAfY7AAIgcDE4ZTEyZDgwZTgzZTY0Zjk1OGI2MTY0OWY2Mjc0YzY5OQ', color: '#3498db', fixed: true },
+    { name: 'Caixa Verde',   url: 'https://saving-peacock-130283.upstash.io', token: 'gQAAAAAAAfzrAAIgcDJhMmUzMDNiYmRhYTI0MzdhYWE5Y2MyOWYwNjQ4MDZjOQ', color: '#2ecc71', fixed: true },
+    { name: 'Caixa Rosa',    url: 'https://fluent-dove-150720.upstash.io', token: 'gQAAAAAAAkzAAAIgcDIwNjJmMzQxNzJkZDQ0Yjk1OGVmMmExNDAzMTUxN2RhZg', color: '#fd79a8', fixed: true }
+  ];
+
+  // Carrega clusters adicionais do localStorage
+  function getClusters() {
+    const saved = localStorage.getItem('idenza_clusters_dinamicos');
+    const dinamic = saved ? JSON.parse(saved) : [];
+    return [...FIXED_CLUSTERS, ...dinamic];
+  }
+
+  function saveClusters(clusters) {
+    const dinamic = clusters.filter(c => !c.fixed);
+    localStorage.setItem('idenza_clusters_dinamicos', JSON.stringify(dinamic));
+  }
+
+  // =========================================================================
+  // 2. FUNÇÕES DE ACESSO AO REDIS VIA REST
+  // =========================================================================
+  async function redisFetch(cluster, command, ...args) {
+    const key = args.join('/');
+    const url = `${cluster.url}/${command}/${encodeURIComponent(key)}`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${cluster.token}` }
+    });
+    if (!response.ok) {
+      throw new Error(`Erro ${response.status} em ${cluster.name}: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.result !== undefined ? data.result : data;
+  }
+
+  async function redisGet(cluster, key) {
+    try { return await redisFetch(cluster, 'get', key); } catch (e) { return null; }
+  }
+
+  async function redisSet(cluster, key, value) {
+    try { return await redisFetch(cluster, 'set', key, JSON.stringify(value)); } catch (e) { return null; }
+  }
+
+  async function redisDel(cluster, key) {
+    try { return await redisFetch(cluster, 'del', key); } catch (e) { return null; }
+  }
+
+  async function redisKeys(cluster, pattern) {
+    try {
+      const result = await redisFetch(cluster, 'keys', pattern);
+      if (Array.isArray(result)) return result;
+      if (typeof result === 'string') return [result];
+      return [];
+    } catch (e) { return []; }
+  }
+
+  // =========================================================================
+  // 3. CARREGAR TODOS OS ACIs DE TODOS OS CLUSTERS
+  // =========================================================================
+  async function carregarTodosACIs() {
+    const clusters = getClusters();
+    const todosACIs = [];
+    for (const cluster of clusters) {
+      try {
+        let keys = await redisKeys(cluster, 'aci:*');
+        const keys2 = await redisKeys(cluster, 'idenza:aci:*');
+        keys = [...new Set([...keys, ...keys2])];
+        for (const key of keys) {
+          const raw = await redisGet(cluster, key);
+          if (raw) {
+            let aci;
+            try { aci = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { aci = { raw, uid: key, titulo: 'Dado bruto' }; }
+            aci._redisKey = key;
+            aci._clusterName = cluster.name;
+            aci._clusterUrl = cluster.url;
+            todosACIs.push(aci);
+          }
+        }
+      } catch (e) {
+        console.warn(`Erro ao buscar ACIs em ${cluster.name}:`, e);
+      }
+    }
+    return todosACIs;
+  }
+
+  // =========================================================================
+  // 4. RENDERIZAÇÃO
+  // =========================================================================
+  function renderizarTabela(acis, filtro = '') {
+    const tbody = document.getElementById('govTabelaBody');
+    const statusMsg = document.getElementById('govStatusMsg');
+    let filtered = acis;
+    if (filtro.trim()) {
+      const term = filtro.trim().toLowerCase();
+      filtered = acis.filter(a => {
+        const uid = (a.uid || a._redisKey || '').toLowerCase();
+        const titulo = (a.titulo || a.nome || '').toLowerCase();
+        const hash = (a.hash || '').toLowerCase();
+        return uid.includes(term) || titulo.includes(term) || hash.includes(term);
+      });
+    }
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">Nenhum ACI encontrado${filtro ? ' para o filtro "'+filtro+'"' : ''}</td></tr>`;
+      statusMsg.textContent = `Total: ${acis.length} ACIs. Nenhum exibido.`;
+      atualizarEstatisticas(acis);
+      return;
+    }
+    let html = '';
+    const agora = new Date();
+    for (const aci of filtered) {
+      const uid = aci.uid || aci._redisKey || 'N/A';
+      const titulo = aci.titulo || aci.nome || aci.pergunta || 'Sem título';
+      const versao = aci.version || aci.versao || '1.0.0';
+      const hash = aci.hash || aci._hash || '---';
+      const cluster = aci._clusterName || 'Desconhecido';
+      let statusClass = 'badge-valid', statusText = 'Válido';
+      const validoAte = aci.valido_ate || aci.alertaRevisao || aci.metadata?.data_revisao;
+      if (validoAte) {
+        const dataValidade = new Date(validoAte);
+        if (dataValidade < agora) { statusClass = 'badge-expired'; statusText = 'Expirado'; }
+        else if (dataValidade - agora < 30 * 86400000) { statusClass = 'badge-review'; statusText = 'Revisão'; }
+      } else if (aci.status === 'revisao' || aci.requires_review) { statusClass = 'badge-review'; statusText = 'Revisão'; }
+      if (aci.conflitos && aci.conflitos.length > 0) { statusClass = 'badge-conflict'; statusText = 'Conflito'; }
+
+      html += `
+        <tr>
+          <td><code style="font-size:0.6rem;">${uid.substring(0, 20)}...</code></td>
+          <td><strong>${titulo}</strong></td>
+          <td><span class="badge" style="background:#6c757d;">v${versao}</span></td>
+          <td><span class="${statusClass}">${statusText}</span></td>
+          <td><code style="font-size:0.55rem;">${hash.substring(0, 12)}...</code></td>
+          <td><span style="font-size:0.6rem; background:#eef7f8; padding:2px 8px; border-radius:4px;">${cluster}</span></td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn btn-outline btn-sm" onclick="verDetalhes('${uid}')">🔍</button>
+              <button class="btn btn-data btn-sm" onclick="revalidarACI('${uid}')">🔄</button>
+              <button class="btn btn-danger btn-sm" onclick="excluirACI('${uid}')">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+    tbody.innerHTML = html;
+    statusMsg.textContent = `Exibindo ${filtered.length} de ${acis.length} ACIs.`;
+    atualizarEstatisticas(acis);
+  }
+
+  function atualizarEstatisticas(acis) {
+    const agora = new Date();
+    let ativos = 0, expirados = 0, revisao = 0, conflitos = 0;
+    for (const aci of acis) {
+      const validoAte = aci.valido_ate || aci.alertaRevisao || aci.metadata?.data_revisao;
+      if (aci.conflitos && aci.conflitos.length > 0) { conflitos++; continue; }
+      if (validoAte) {
+        const dataValidade = new Date(validoAte);
+        if (dataValidade < agora) expirados++;
+        else if (dataValidade - agora < 30 * 86400000) revisao++;
+        else ativos++;
+      } else if (aci.status === 'revisao' || aci.requires_review) revisao++;
+      else ativos++;
+    }
+    document.getElementById('govTotalAtivos').textContent = ativos;
+    document.getElementById('govTotalExpirados').textContent = expirados;
+    document.getElementById('govTotalRevisao').textContent = revisao;
+    document.getElementById('govTotalConflitos').textContent = conflitos;
+    document.getElementById('govTotalTotal').textContent = acis.length;
+  }
+
+  // =========================================================================
+  // 5. AÇÕES: Detalhes, Revalidar, Excluir, Regenerar
+  // =========================================================================
+  let selectedACI = null;
+
+  window.verDetalhes = async function(uid) {
+    const acis = window._todosACIs || [];
+    const aci = acis.find(a => (a.uid || a._redisKey) === uid);
+    if (!aci) { document.getElementById('govModalStatus').textContent = '⚠️ ACI não encontrado.'; return; }
+    selectedACI = aci;
+    document.getElementById('govModalTitle').textContent = `Detalhes: ${aci.titulo || aci.nome || uid}`;
+    document.getElementById('govModalContent').textContent = JSON.stringify(aci, null, 2);
+    document.getElementById('govModalStatus').textContent = '';
+    document.getElementById('govModalOverlay').classList.add('open');
+  };
+
+  window.revalidarACI = async function(uid) {
+    const acis = window._todosACIs || [];
+    const aci = acis.find(a => (a.uid || a._redisKey) === uid);
+    if (!aci) { alert('ACI não encontrado.'); return; }
+    const novaData = new Date(); novaData.setDate(novaData.getDate() + 90);
+    aci.valido_ate = novaData.toISOString();
+    aci.alertaRevisao = novaData.toISOString();
+    const cluster = getClusters().find(c => c.name === aci._clusterName);
+    if (cluster) {
+      const result = await redisSet(cluster, aci._redisKey, aci);
+      if (result !== null) {
+        document.getElementById('govStatusMsg').textContent = `✅ ACI ${uid} revalidado.`;
+        carregarEAtualizar();
+      } else {
+        document.getElementById('govStatusMsg').textContent = `❌ Falha ao revalidar ${uid}.`;
+      }
+    } else {
+      alert('Cluster não encontrado.');
+    }
+  };
+
+  window.excluirACI = async function(uid) {
+    if (!confirm(`Tem certeza que deseja excluir o ACI ${uid}?`)) return;
+    const acis = window._todosACIs || [];
+    const aci = acis.find(a => (a.uid || a._redisKey) === uid);
+    if (!aci) { alert('ACI não encontrado.'); return; }
+    const cluster = getClusters().find(c => c.name === aci._clusterName);
+    if (cluster) {
+      const result = await redisDel(cluster, aci._redisKey);
+      if (result !== null) {
+        document.getElementById('govStatusMsg').textContent = `🗑️ ACI ${uid} excluído.`;
+        carregarEAtualizar();
+      } else {
+        document.getElementById('govStatusMsg').textContent = `❌ Falha ao excluir ${uid}.`;
+      }
+    } else {
+      alert('Cluster não encontrado.');
+    }
+  };
+
+  window.forcarRegeneracao = async function(uid) {
+    const acis = window._todosACIs || [];
+    const aci = acis.find(a => (a.uid || a._redisKey) === uid);
+    if (!aci) { alert('ACI não encontrado.'); return; }
+    aci.requires_regeneration = true;
+    aci.status = 'revisao';
+    const cluster = getClusters().find(c => c.name === aci._clusterName);
+    if (cluster) {
+      const result = await redisSet(cluster, aci._redisKey, aci);
+      if (result !== null) {
+        document.getElementById('govStatusMsg').textContent = `⚡ ACI ${uid} marcado para regeneração.`;
+        carregarEAtualizar();
+      } else {
+        document.getElementById('govStatusMsg').textContent = `❌ Falha ao marcar regeneração.`;
+      }
+    } else {
+      alert('Cluster não encontrado.');
+    }
+  };
+
+  // =========================================================================
+  // 6. MODAL: NOVO ACI
+  // =========================================================================
+  function abrirNovoAci() {
+    const clusters = getClusters();
+    const select = document.getElementById('novoAciCluster');
+    select.innerHTML = '';
+    clusters.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      opt.textContent = c.name;
+      select.appendChild(opt);
+    });
+    document.getElementById('novoAciUid').value = '';
+    document.getElementById('novoAciTitulo').value = '';
+    document.getElementById('novoAciVersao').value = '1.0.0';
+    document.getElementById('novoAciHash').value = '';
+    document.getElementById('novoAciConteudo').value = '{"nome": "Meu ACI", "descricao": "..."}';
+    document.getElementById('novoAciStatus').textContent = '';
+    document.getElementById('govNovoAciOverlay').classList.add('open');
+  }
+
+  document.getElementById('govAddAciBtn').addEventListener('click', abrirNovoAci);
+  document.getElementById('novoAciFechar').addEventListener('click', () => {
+    document.getElementById('govNovoAciOverlay').classList.remove('open');
+  });
+
+  document.getElementById('novoAciSalvar').addEventListener('click', async () => {
+    const uid = document.getElementById('novoAciUid').value.trim() || 'aci_' + Date.now().toString(36);
+    const titulo = document.getElementById('novoAciTitulo').value.trim() || 'Novo ACI';
+    const versao = document.getElementById('novoAciVersao').value.trim() || '1.0.0';
+    const hash = document.getElementById('novoAciHash').value.trim() || '';
+    let conteudo;
+    try {
+      conteudo = JSON.parse(document.getElementById('novoAciConteudo').value);
+    } catch (e) {
+      document.getElementById('novoAciStatus').textContent = '❌ Conteúdo JSON inválido.';
+      return;
+    }
+    const clusterName = document.getElementById('novoAciCluster').value;
+    const cluster = getClusters().find(c => c.name === clusterName);
+    if (!cluster) {
+      document.getElementById('novoAciStatus').textContent = '❌ Cluster não encontrado.';
+      return;
+    }
+    // Monta o objeto ACI
+    const aci = {
+      uid,
+      titulo,
+      versao,
+      hash,
+      ...conteudo,
+      valido_ate: new Date(Date.now() + 90*86400000).toISOString(),
+      data_criacao: new Date().toISOString()
+    };
+    const key = `aci:${uid}`;
+    const result = await redisSet(cluster, key, aci);
+    if (result !== null) {
+      document.getElementById('novoAciStatus').textContent = `✅ ACI ${uid} salvo em ${cluster.name}.`;
+      document.getElementById('govNovoAciOverlay').classList.remove('open');
+      carregarEAtualizar();
+    } else {
+      document.getElementById('novoAciStatus').textContent = `❌ Erro ao salvar em ${cluster.name}.`;
+    }
+  });
+
+  // =========================================================================
+  // 7. MODAL: ADICIONAR CLUSTER
+  // =========================================================================
+  document.getElementById('govAddClusterBtn').addEventListener('click', () => {
+    document.getElementById('novoClusterNome').value = '';
+    document.getElementById('novoClusterUrl').value = '';
+    document.getElementById('novoClusterToken').value = '';
+    document.getElementById('novoClusterStatus').textContent = '';
+    document.getElementById('govAddClusterOverlay').classList.add('open');
+  });
+
+  document.getElementById('novoClusterFechar').addEventListener('click', () => {
+    document.getElementById('govAddClusterOverlay').classList.remove('open');
+  });
+
+  document.getElementById('novoClusterSalvar').addEventListener('click', () => {
+    const nome = document.getElementById('novoClusterNome').value.trim();
+    const url = document.getElementById('novoClusterUrl').value.trim();
+    const token = document.getElementById('novoClusterToken').value.trim();
+    if (!nome || !url || !token) {
+      document.getElementById('novoClusterStatus').textContent = '⚠️ Preencha todos os campos.';
+      return;
+    }
+    const clusters = getClusters();
+    if (clusters.find(c => c.name === nome)) {
+      document.getElementById('novoClusterStatus').textContent = '⚠️ Já existe um cluster com esse nome.';
+      return;
+    }
+    const novoCluster = { name: nome, url, token, color: '#888', fixed: false };
+    const atualizados = [...clusters, novoCluster];
+    saveClusters(atualizados.filter(c => !c.fixed));
+    document.getElementById('govAddClusterOverlay').classList.remove('open');
+    carregarEAtualizar();
+  });
+
+  // =========================================================================
+  // 8. RENDERIZAR REGISTRY DOS REDIS (com edição/remoção para dinâmicos)
+  // =========================================================================
+  async function renderizarRegistry() {
+    const container = document.getElementById('govRedisRegistry');
+    const clusters = getClusters();
+    let html = '';
+    for (const cluster of clusters) {
+      let status = 'disconnected', dotClass = 'off', statusText = 'Desconectado';
+      try {
+        await redisFetch(cluster, 'ping');
+        status = 'connected'; dotClass = 'on'; statusText = 'Conectado';
+      } catch (e) { status = 'disconnected'; dotClass = 'off'; statusText = 'Erro'; }
+      let dbSize = '?';
+      try { const size = await redisFetch(cluster, 'dbsize'); dbSize = size || '0'; } catch {}
+
+      const isFixed = cluster.fixed === true;
+      html += `
+        <div class="redis-slot-card ${status}" style="border-left-color: ${cluster.color || '#ccc'};">
+          <div class="slot-header">
+            <div class="slot-name"><strong>${cluster.name}</strong></div>
+            <span class="redis-slot-dot ${dotClass}"></span>
+          </div>
+          <div style="font-size:0.6rem;color:#555;margin-top:4px;">
+            ${cluster.url.replace(/^https?:\/\//, '')}
+          </div>
+          <div style="font-size:0.55rem;color:#888;margin-top:4px;">
+            Status: ${statusText} &nbsp;|&nbsp; Chaves: ${dbSize}
+          </div>
+          ${!isFixed ? `
+            <div class="cluster-actions">
+              <button class="btn btn-outline btn-sm" onclick="editarCluster('${cluster.name}')">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="removerCluster('${cluster.name}')">🗑️</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  window.removerCluster = function(nome) {
+    if (!confirm(`Remover cluster "${nome}"?`)) return;
+    const clusters = getClusters();
+    const atualizados = clusters.filter(c => c.name !== nome);
+    saveClusters(atualizados.filter(c => !c.fixed));
+    carregarEAtualizar();
+  };
+
+  window.editarCluster = function(nome) {
+    const clusters = getClusters();
+    const cluster = clusters.find(c => c.name === nome);
+    if (!cluster || cluster.fixed) return;
+    // Abre um prompt simples para editar (pode melhorar com modal)
+    const newUrl = prompt('Nova URL:', cluster.url);
+    if (newUrl === null) return;
+    const newToken = prompt('Novo Token:', cluster.token);
+    if (newToken === null) return;
+    cluster.url = newUrl.trim();
+    cluster.token = newToken.trim();
+    saveClusters(clusters.filter(c => !c.fixed));
+    carregarEAtualizar();
+  };
+
+  // =========================================================================
+  // 9. FUNÇÃO PRINCIPAL – CARREGAR E ATUALIZAR TUDO
+  // =========================================================================
+  async function carregarEAtualizar() {
+    const statusMsg = document.getElementById('govStatusMsg');
+    statusMsg.textContent = '⏳ Carregando ACIs de todos os clusters...';
+    try {
+      const acis = await carregarTodosACIs();
+      window._todosACIs = acis;
+      const filtro = document.getElementById('govSearchInput').value;
+      renderizarTabela(acis, filtro);
+      await renderizarRegistry();
+      statusMsg.textContent = `✅ ${acis.length} ACIs carregados de ${getClusters().length} clusters.`;
+    } catch (e) {
+      statusMsg.textContent = `❌ Erro: ${e.message}`;
+    }
+  }
+
+  // =========================================================================
+  // 10. EVENTOS DE BUSCA, ATUALIZAÇÃO, MODAIS
+  // =========================================================================
+  document.getElementById('govSearchBtn').addEventListener('click', () => {
+    const acis = window._todosACIs || [];
+    const filtro = document.getElementById('govSearchInput').value;
+    renderizarTabela(acis, filtro);
+  });
+  document.getElementById('govSearchInput').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') document.getElementById('govSearchBtn').click();
+  });
+  document.getElementById('govRefreshBtn').addEventListener('click', carregarEAtualizar);
+
+  // Botões do modal de detalhes
+  document.getElementById('govModalFechar').addEventListener('click', () => {
+    document.getElementById('govModalOverlay').classList.remove('open');
+  });
+  document.getElementById('govModalRevalidar').addEventListener('click', () => {
+    if (selectedACI) {
+      revalidarACI(selectedACI.uid || selectedACI._redisKey);
+      document.getElementById('govModalOverlay').classList.remove('open');
+    }
+  });
+  document.getElementById('govModalRegenerar').addEventListener('click', () => {
+    if (selectedACI) {
+      forcarRegeneracao(selectedACI.uid || selectedACI._redisKey);
+      document.getElementById('govModalOverlay').classList.remove('open');
+    }
+  });
+  document.getElementById('govModalExcluir').addEventListener('click', () => {
+    if (selectedACI) {
+      excluirACI(selectedACI.uid || selectedACI._redisKey);
+      document.getElementById('govModalOverlay').classList.remove('open');
+    }
+  });
+
+  // Fechar modais ao clicar fora
+  document.querySelectorAll('.slot-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // =========================================================================
+  // 11. CARREGAMENTO INICIAL
+  // =========================================================================
+  carregarEAtualizar();
+  console.log('🏛️ Governança IDEnza — Mestre Total carregada. Operações CRUD reais via Redis.');
+</script>
+</body>
+</html>

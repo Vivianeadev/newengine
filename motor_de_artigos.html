@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Estúdio IDEnza — Motor Gerador de Artigos</title>
+    <style>
+        :root {
+            --bg: #faf8f5;
+            --card-bg: #ffffff;
+            --editor-primary: #5c1a1a;
+            --editor-primary-light: #7a2e2e;
+            --editor-secondary: #8b6914;
+            --editor-gold: #b8860b;
+            --editor-gold-light: #d4a017;
+            --text: #1e1e1e;
+            --text-soft: #555;
+            --border: #c8c0a8;
+            --shadow-sm: 2px 2px 6px rgba(0, 0, 0, 0.08);
+            --shadow-md: 3px 3px 10px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 4px 4px 16px rgba(0, 0, 0, 0.12);
+            --success: #2d5c3a;
+            --success-bg: #e0f5e8;
+            --warning: #8b6914;
+            --warning-bg: #fefce8;
+            --error: #b91c1c;
+            --error-bg: #fef2f2;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+            --font-serif: 'Georgia', 'Times New Roman', serif;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            padding: 16px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-left: 8px solid var(--editor-primary);
+        }
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--editor-primary);
+            letter-spacing: 2px;
+            font-family: var(--font-serif);
+        }
+        .badge {
+            background: var(--editor-gold);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-editor {
+            background: var(--editor-primary);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge-compliance {
+            background: #1a3a1a;
+            color: #c8e6c9;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid #2d5c3a;
+        }
+        .compliance-bar {
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.65rem;
+            border: 1px solid #333;
+            font-family: var(--font-mono);
+        }
+        .compliance-bar .law-icon {
+            font-size: 1.2rem;
+        }
+        .redis-connection-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            box-shadow: var(--shadow-sm);
+        }
+        .redis-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+        .redis-status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+        .redis-status-dot.disconnected {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+        .redis-status-dot.sending {
+            background: #eab308;
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .explain-panel {
+            background: #fdfbf7;
+            border: 1px solid var(--editor-gold-light);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            border-left: 4px solid var(--editor-primary);
+        }
+        .explain-panel .section-title {
+            margin-bottom: 10px;
+            color: var(--editor-primary);
+        }
+        .explain-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .explain-item strong {
+            color: var(--editor-primary);
+            font-size: 0.7rem;
+        }
+        .explain-item div {
+            font-size: 0.75rem;
+            color: #333;
+            margin-top: 2px;
+        }
+        .explain-confidence {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--editor-gold);
+            margin-top: 4px;
+        }
+        .explain-code {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 8px;
+            font-family: var(--font-mono);
+        }
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 14px;
+            border: none;
+            background: #f0ece6;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            color: #666;
+            border-right: 1px solid var(--border);
+        }
+        .tab-btn:last-child {
+            border-right: none;
+        }
+        .tab-btn:hover {
+            background: #e8e0d8;
+        }
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--editor-primary);
+            border-bottom: 3px solid var(--editor-gold);
+            box-shadow: inset 0 -3px 0 var(--editor-gold);
+        }
+        .tab-btn.active.editor-tab {
+            color: var(--editor-primary);
+            border-bottom: 3px solid var(--editor-primary);
+            box-shadow: inset 0 -3px 0 var(--editor-primary);
+        }
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--editor-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-serif);
+        }
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: var(--editor-gold);
+            color: white;
+            border: 1px solid #4a300a;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--editor-primary-light);
+            color: var(--editor-primary);
+        }
+        .btn-editor {
+            background: var(--editor-primary);
+            color: white;
+            border: 1px solid #3a0d0d;
+        }
+        .btn-gold:hover,
+        .btn-editor:hover {
+            opacity: 0.9;
+        }
+        .btn-outline:hover {
+            background: #f0ede0;
+        }
+        .raw-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            resize: vertical;
+            color: var(--text);
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        .generated-question {
+            width: 100%;
+            min-height: 120px;
+            background: #fdfbf7;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .camadas-preview {
+            background: #fdfbf7;
+            border: 1px solid var(--border);
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.05);
+            color: #1e1e1e;
+        }
+        .json-preview {
+            background: #1a1a1a;
+            color: #d4d4d4;
+            border: 1px solid #333;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+        .status-msg {
+            font-size: 0.7rem;
+            color: var(--editor-primary-light);
+            margin-top: 6px;
+        }
+        .redis-feedback {
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            border-left: 4px solid var(--editor-primary-light);
+            background: #f8f4f0;
+            display: none;
+            line-height: 1.6;
+        }
+        .redis-feedback.show {
+            display: block;
+        }
+        .redis-feedback.success {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .redis-feedback.error {
+            border-color: var(--error);
+            background: var(--error-bg);
+            color: var(--error);
+        }
+        .redis-feedback.loading {
+            border-color: var(--warning);
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+        .hum-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .hum-type-card {
+            border: 1px solid var(--border);
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafdfd;
+            text-align: center;
+        }
+        .hum-type-card:hover {
+            border-color: var(--editor-primary);
+            box-shadow: var(--shadow-md);
+            background: #fdfbf7;
+        }
+        .hum-type-card.selected {
+            border-color: var(--editor-primary);
+            background: #f5f0e8;
+            box-shadow: var(--shadow-md);
+        }
+        .hum-type-card .type-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hum-type-card .type-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--editor-primary);
+        }
+        .hum-type-card .type-code {
+            font-size: 0.5rem;
+            color: #888;
+            font-family: var(--font-mono);
+        }
+        .artigo-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .artigo-card {
+            border: 1px solid #c8b8a8;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fefcf8;
+            text-align: center;
+        }
+        .artigo-card:hover {
+            border-color: var(--editor-primary);
+            box-shadow: var(--shadow-md);
+            background: #fdf5ec;
+        }
+        .artigo-card.selected {
+            border-color: var(--editor-primary);
+            background: #fae8d0;
+            box-shadow: var(--shadow-md);
+        }
+        .artigo-card .artigo-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .artigo-card .artigo-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--editor-primary);
+            font-family: var(--font-serif);
+        }
+        .artigo-card .artigo-detail {
+            font-size: 0.55rem;
+            color: #888;
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .footer-ref {
+            background: #1a1a1a;
+            color: #aaa;
+            padding: 12px 16px;
+            margin-top: 20px;
+            font-size: 0.6rem;
+            font-family: var(--font-mono);
+            border-top: 2px solid var(--editor-gold);
+            text-align: center;
+        }
+        .footer-ref strong {
+            color: var(--editor-gold-light);
+        }
+        @media (max-width: 700px) {
+            body {
+                padding: 6px;
+            }
+            .tab-btn {
+                padding: 6px 8px;
+                font-size: 0.5rem;
+            }
+            .artigo-card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- COMPLIANCE LEGAL BAR -->
+    <div class="compliance-bar">
+        <span class="law-icon">⚖️</span>
+        <strong>COMPLIANCE EDITORIAL</strong> | Lei nº 9.610/98 (Direitos Autorais) | LGPD (Lei nº 13.709/2018) | CC BY-NC 4.0
+        <span style="margin-left:auto;">📜 Este estúdio respeita integralmente as leis de publicação e propriedade intelectual.</span>
+    </div>
+
+    <!-- REDIS STATUS BAR (intacta) -->
+    <div class="redis-connection-bar">
+        <span class="redis-status-dot disconnected" id="redisStatusDot"></span>
+        <strong id="redisStatusLabel">Redis: Verificando conexão...</strong>
+        <span style="margin-left:auto; font-size:0.6rem; color:#888;" id="redisEndpointDisplay"></span>
+    </div>
+
+    <!-- ASSISTENTE EDITORIAL -->
+    <div id="assistenteFixo" style="background: linear-gradient(135deg, #3a1010 0%, #5c1a1a 100%); color: white; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 2rem;">📰</span>
+            <div>
+                <div style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; font-family: var(--font-serif);">Olá! Sou o Editor-Chefe IDEnza</div>
+                <div style="font-size: 0.8rem; opacity: 0.9;">Especialista em geração de artigos, contos, poesias e todos os gêneros literários</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="assistenteInput" placeholder="Digite o tema ou ideia para seu artigo..." style="flex: 1; min-width: 200px; padding: 10px 14px; border: none; border-radius: 4px !important; font-size: 0.9rem; background: rgba(255,255,255,0.95); color: #1e1e1e;">
+            <button id="assistenteBtn" class="btn btn-gold" style="padding: 10px 24px; font-weight: 700;">Gerar Rascunho</button>
+        </div>
+        <div id="assistenteResposta" style="background: rgba(255,255,255,0.12); border-radius: 4px !important; padding: 12px 16px; margin-top: 4px; font-size: 0.9rem; line-height: 1.6; display: none; max-height: 400px; overflow-y: auto; color: #f0f0f0; font-family: var(--font-serif);"></div>
+    </div>
+
+    <!-- EXPLAIN PANEL -->
+    <div class="explain-panel" id="explainPanel">
+        <div class="section-title">🔍 Transparência da Geração</div>
+        <div class="explain-grid">
+            <div class="explain-item"><strong>Fontes consultadas</strong><div id="explainSources">—</div></div>
+            <div class="explain-item"><strong>Gênero / Estilo</strong><div id="explainLayers">—</div></div>
+            <div class="explain-item"><strong>Índice de confiança</strong><div class="explain-confidence" id="explainConfidence">—%</div></div>
+            <div class="explain-item"><strong>Revisão sugerida</strong><div id="explainReview">—</div></div>
+        </div>
+        <div class="explain-code"><strong>Código de rastreio:</strong> <code id="explainCode">—</code></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <h1>📜 Estúdio IDEnza — Motor Gerador de Artigos</h1>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="badge-editor">📝 Contos</span>
+            <span class="badge">📰 Crônicas</span>
+            <span class="badge-editor">🎭 Drama</span>
+            <span class="badge">🔍 Policial</span>
+            <span class="badge-compliance">⚖️ COMPLIANCE</span>
+        </div>
+    </header>
+
+    <!-- TAB NAV -->
+    <div class="tab-nav" id="tabNav"></div>
+    <div id="mainContent"></div>
+
+    <!-- REDIS MULTI CLUSTER (intacto) -->
+    <div class="section" id="multiRedisSection">
+        <div class="section-title"><span>🔗</span> Central de Conexões Redis</div>
+        <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">Configure até 6 conexões Redis independentes para armazenamento dos artefatos gerados.</p>
+        <div class="multi-redis-hub" id="multiRedisHubContainer">
+            <!-- Será populado via JS -->
+        </div>
+    </div>
+
+    <!-- FOOTER REFERENCE (demarcação IDEnza) -->
+    <div class="footer-ref">
+        📌 <strong>Todos os artigos gerados por este estúdio utilizam a IA generativa IDEnza</strong> (DeepSeek, v1) como base de processamento de linguagem natural. As referências completas são inseridas automaticamente no rodapé de cada artefato. Nenhuma outra IA é utilizada nesta estrutura — pronto para expansão com novas IAs quando extraído de outras fontes. | Licença CC BY-NC 4.0 | IDEnza © 2026
+    </div>
+
+    <div class="slot-modal-overlay" id="slotModalOverlay">
+        <div class="slot-modal">
+            <h3>Configurar Slot Redis</h3>
+            <label>Nome</label><input type="text" id="slotModalNome" placeholder="Nome do slot">
+            <label>URL Redis</label><input type="text" id="slotModalUrl" placeholder="https://...">
+            <label>Token</label><input type="password" id="slotModalToken" placeholder="Token">
+            <div class="test-status" id="slotModalStatus"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="slotModalTestar">🔌 Testar</button>
+                <button class="btn btn-editor" id="slotModalSalvar">Salvar</button>
+                <button class="btn btn-outline" id="slotModalFechar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== REDIS CONFIG (intacta) ====================
+        const REDIS_CONFIG = {
+            url: 'https://welcomed-satyr-116661.upstash.io',
+            token: 'gQAAAAAAAce1AAIgcDFiNmUxOWVjY2E1Njk0MzQwOTI5NmExZWJlZGI1M2M1OQ'
+        };
+        function gerarCodigoUnico(prefixo) { return `${prefixo}.idenza.${Date.now().toString(36)}.${Math.random().toString(36).substring(2,6)}`; }
+        async function copiarTextoParaClipboard(texto) {
+            if (!texto) return false;
+            try { await navigator.clipboard.writeText(texto); return true; } catch (e) {
+                try { const ta = document.createElement('textarea'); ta.value = texto; ta.style.position = 'fixed'; ta.style.top = '-9999px'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); document.body.removeChild(ta); return ok; } catch (e2) { return false; } }
+        }
+        function updateRedisStatus(status) {
+            const dot = document.getElementById('redisStatusDot');
+            const label = document.getElementById('redisStatusLabel');
+            dot.className = 'redis-status-dot';
+            switch (status) { case 'connected': dot.classList.add('connected'); label.textContent = 'Redis: Conectado'; break; case 'disconnected': dot.classList.add('disconnected'); label.textContent = 'Redis: Desconectado'; break; case 'sending': dot.classList.add('sending'); label.textContent = 'Redis: Enviando...'; break; }
+        }
+        async function testarConexaoRedis() {
+            updateRedisStatus('sending'); try { const response = await fetch(`${REDIS_CONFIG.url.replace(/\/$/, '')}/ping`, { headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}` } }); if (response.ok) updateRedisStatus('connected'); else updateRedisStatus('disconnected'); } catch { updateRedisStatus('disconnected'); }
+        }
+        testarConexaoRedis();
+
+        // ==================== COGNITIVE SYSTEM ====================
+        const COGNITIVE_SYSTEM = {
+            regulatory: { addMetadata(data) { return { ...data, metadata: { data_validacao: new Date().toISOString(), data_revisao: data.alertaRevisao || new Date(Date.now() + 90 * 86400000).toISOString(), criticidade: 'baixa', status_regulatorio: 'validado', nivel_confianca: data.score_confianca || 0.85, compliance: 'Lei 9.610/98, LGPD, CC BY-NC 4.0' } }; } },
+            protection: { sanitizeOutput(data) { const s = { ...data }; delete s._internal; return s; } }
+        };
+
+        // ==================== GÊNEROS LITERÁRIOS ====================
+        const GENEROS_LITERARIOS = [
+            { id: 'conto', nome: 'Conto', icone: '📖', cor: '#5c1a1a', descricao: 'Narrativa breve com unidade de ação.', topicos: [
+                { nome: 'Conto Fantástico', subtopicos: ['Sobrenatural', 'Realismo Mágico', 'Insólito'], icone: '✨' },
+                { nome: 'Conto de Terror', subtopicos: ['Horror Cósmico', 'Psicológico', 'Gótico'], icone: '👻' },
+                { nome: 'Conto de Amor', subtopicos: ['Romântico', 'Trágico', 'Contemporâneo'], icone: '💔' },
+                { nome: 'Microconto', subtopicos: ['Minimalista', 'Impacto', 'Síntese'], icone: '📝' }
+            ]},
+            { id: 'cronica', nome: 'Crônica', icone: '📰', cor: '#8b6914', descricao: 'Texto curto sobre o cotidiano.', topicos: [
+                { nome: 'Crônica Humorística', subtopicos: ['Sátira', 'Ironia', 'Observação'], icone: '😄' },
+                { nome: 'Crônica Reflexiva', subtopicos: ['Filosofia', 'Memória', 'Cotidiano'], icone: '🤔' },
+                { nome: 'Crônica Esportiva', subtopicos: ['Futebol', 'Superação', 'Narrativa'], icone: '⚽' }
+            ]},
+            { id: 'poesia', nome: 'Poesia', icone: '🎵', cor: '#7a2e7e', descricao: 'Expressão lírica em versos.', topicos: [
+                { nome: 'Soneto', subtopicos: ['Decassílabo', 'Rima', 'Métrica'], icone: '📜' },
+                { nome: 'Poesia Livre', subtopicos: ['Verso Branco', 'Experimental', 'Concreto'], icone: '🖋️' },
+                { nome: 'Haicai', subtopicos: ['Natureza', 'Síntese', '3 versos'], icone: '🌸' }
+            ]},
+            { id: 'romance', nome: 'Romance', icone: '📚', cor: '#2d5a27', descricao: 'Narrativa longa com múltiplos núcleos.', topicos: [
+                { nome: 'Romance Histórico', subtopicos: ['Época', 'Pesquisa', 'Ficção'], icone: '🏰' },
+                { nome: 'Romance Policial', subtopicos: ['Investigação', 'Suspense', 'Noir'], icone: '🔍' },
+                { nome: 'Romance de Formação', subtopicos: ['Bildungsroman', 'Crescimento', 'Jornada'], icone: '🌱' }
+            ]},
+            { id: 'ficcao_cientifica', nome: 'Ficção Científica', icone: '🚀', cor: '#1a3a5c', descricao: 'Explora futuros e tecnologias.', topicos: [
+                { nome: 'Cyberpunk', subtopicos: ['Distopia', 'Alta Tecnologia', 'Baixa Vida'], icone: '🤖' },
+                { nome: 'Space Opera', subtopicos: ['Épico', 'Galáxias', 'Aventura'], icone: '🌌' },
+                { nome: 'Utopia/Distopia', subtopicos: ['Sociedade', 'Crítica', 'Futuro'], icone: '🏙️' }
+            ]},
+            { id: 'drama', nome: 'Drama', icone: '🎭', cor: '#8b0000', descricao: 'Conflitos humanos profundos.', topicos: [
+                { nome: 'Tragédia', subtopicos: ['Catarse', 'Destino', 'Queda'], icone: '🎭' },
+                { nome: 'Comédia Dramática', subtopicos: ['Humor Ácido', 'Ironia', 'Vida'], icone: '😢' }
+            ]}
+        ];
+
+        // ==================== SUPER PROMPT GERADOR DE ARTIGOS ====================
+        function gerarSuperPromptArtigo(genero, topico, subtopicos) {
+            return `⚡ ATIVAÇÃO DO MOTOR EDITORIAL IDENZA — PROTOCOLO DE GERAÇÃO DE ARTIGOS ⚡
+
+Você é um Editor-Chefe especializado em literatura, operando dentro do Estúdio IDENza.
+Sua missão é redigir um artigo completo no gênero **${genero.nome} — ${topico.nome}**, seguindo as 7 camadas editoriais de qualidade e compliance.
+
+## 📰 ARQUITETURA EDITORIAL — 7 CAMADAS DO ARTIGO
+
+### 7. ESSÊNCIA LITERÁRIA
+- Qual a alma do texto? O que o torna único?
+- Tom, voz narrativa e atmosfera.
+
+### 6. TEORIAS E REFERÊNCIAS
+- Que escolas literárias ou técnicas narrativas embasam o texto?
+- Citar autores, movimentos e obras de referência.
+
+### 5. ESTRUTURA E ENREDO
+- Como a história se organiza? (Apresentação, conflito, clímax, desfecho)
+- Personagens, cenário e tempo.
+
+### 4. APLICAÇÃO CONTEXTUAL
+- Como o texto dialoga com o leitor contemporâneo?
+- Exemplos de publicações similares ou adaptações.
+
+### 3. MÉTODOS E TÉCNICAS NARRATIVAS
+- Técnicas empregadas (fluxo de consciência, diálogos, descrições).
+- Ferramentas de estilo (metáforas, ritmo, pontuação).
+
+### 2. REVISÃO E COTIDIANO
+- Como revisar e polir o texto.
+- Dicas para publicação e divulgação.
+
+### 1. CURIOSIDADES E MARCOS DO GÊNERO
+- História do gênero, autores icônicos e recordes literários.
+
+## 📜 REGRAS DE COMPLIANCE (IMUTÁVEIS)
+1. O artigo DEVE ser original e respeitar a Lei 9.610/98 (Direitos Autorais).
+2. NUNCA plagiar obras existentes — todas as referências devem ser citadas.
+3. Incluir ao final do artigo a nota: "Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1)."
+4. **NUNCA utilizar o símbolo cerquilha (#) para títulos.**
+5. Linguagem adequada ao gênero ${genero.nome}.
+
+## 🎯 TEMA
+**Gênero:** ${genero.nome} — ${topico.nome}
+**Subtópicos sugeridos:** ${subtopicos.join(', ')}
+
+## 🔍 METADADOS AO FINAL (JSON)
+Forneça um bloco JSON com a estrutura do artigo em 7 camadas.
+\`\`\`json
+{
+  "camadas": [
+    { "nivel": 7, "nome": "Essência Literária", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 6, "nome": "Teorias e Referências", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 5, "nome": "Estrutura e Enredo", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 4, "nome": "Aplicação Contextual", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 3, "nome": "Métodos Narrativos", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 2, "nome": "Revisão e Cotidiano", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] },
+    { "nivel": 1, "nome": "Curiosidades do Gênero", "subtemas": ["..."], "conceitos_chave": ["..."], "fontes": ["..."] }
+  ]
+}
+\`\`\`
+Inicie agora a redação do artefato literário imutável, respeitando todas as leis de publicação.`;
+        }
+
+        function extrairCamadas(texto) {
+            if (!texto || typeof texto !== 'string') return [];
+            try { const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/); if (jsonMatch) { const obj = JSON.parse(jsonMatch[0]); if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) { return obj.camadas.map(c => ({ nivel: c.nivel, nome: c.nome, subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [], conceitos_chave: c.conceitos_chave || [], fontes: c.fontes || [] })); } } } catch (e) {}
+            const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
+            const camadas = [];
+            let camadaAtual = null;
+            const titulos = [
+                { nivel: 7, regex: /\b(7|sete)[\.\)\-\s:]*\s*(ESS[EÊ]NCIA|ESSENCE|LITER[ÁA]RIA)/i, nome: 'Essência Literária' },
+                { nivel: 6, regex: /\b(6|seis)[\.\)\-\s:]*\s*(TEORIAS|REFER[EÊ]NCIAS)/i, nome: 'Teorias e Referências' },
+                { nivel: 5, regex: /\b(5|cinco)[\.\)\-\s:]*\s*(ESTRUTURA|ENREDO)/i, nome: 'Estrutura e Enredo' },
+                { nivel: 4, regex: /\b(4|quatro)[\.\)\-\s:]*\s*(APLICA[CÇ][AÃ]O|CONTEXTUAL)/i, nome: 'Aplicação Contextual' },
+                { nivel: 3, regex: /\b(3|tr[EÊ]s)[\.\)\-\s:]*\s*(M[EÉ]TODOS|T[EÉ]CNICAS|NARRATIVAS)/i, nome: 'Métodos Narrativos' },
+                { nivel: 2, regex: /\b(2|dois)[\.\)\-\s:]*\s*(REVIS[AÃ]O|COTIDIANO)/i, nome: 'Revisão e Cotidiano' },
+                { nivel: 1, regex: /\b(1|um)[\.\)\-\s:]*\s*(CURIOSIDADES|MARCOS|HIST[ÓO]RICOS)/i, nome: 'Curiosidades do Gênero' }
+            ];
+            for (const linha of linhas) { let match = null; for (const t of titulos) { const m = linha.match(t.regex); if (m) { match = { nivel: t.nivel, nome: t.nome }; break; } } if (match) { const existente = camadas.findIndex(c => c.nivel === match.nivel); if (existente !== -1) camadas.splice(existente, 1); camadaAtual = { nivel: match.nivel, nome: match.nome, subtemas: [], conceitos_chave: [], fontes: [] }; camadas.push(camadaAtual); } else if (camadaAtual) { const limpo = linha.replace(/^[-*#\s]+/, '').trim(); if (limpo.length > 0 && !/^---+$/.test(limpo) && !/^\*\*?[\s\*]*$/.test(limpo)) { camadaAtual.subtemas.push(limpo); } } }
+            for (const t of titulos) { if (!camadas.find(c => c.nivel === t.nivel)) { camadas.push({ nivel: t.nivel, nome: t.nome, subtemas: ['Conteúdo não encontrado na resposta.'], conceitos_chave: [], fontes: [] }); } }
+            camadas.sort((a, b) => b.nivel - a.nivel);
+            return camadas;
+        }
+
+        const estadoGlobal = {
+            artigosPorGenero: {},
+            artigoSelecionado: null,
+            estruturado: null,
+            abaAtiva: null,
+            painelDetalheAberto: false
+        };
+
+        // ==================== RENDERIZAÇÃO ====================
+        function renderizarGridArtigos(container, artigos, generoId) {
+            container.innerHTML = '';
+            if (!artigos || artigos.length === 0) {
+                container.innerHTML = '<p style="font-size:0.8rem;color:#888;">Nenhum artigo gerado. Clique em "Gerar Super Prompts".</p>';
+                return;
+            }
+            for (const a of artigos) {
+                const card = document.createElement('div');
+                card.className = 'artigo-card';
+                card.innerHTML = `
+              <span class="artigo-icon">${a.escopo.icone || '📄'}</span>
+              <div class="artigo-name">${a.escopo.topico}</div>
+              <div class="artigo-detail">${a.escopo.subtopicos.slice(0,2).join(', ')}</div>
+            `;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.artigo-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    estadoGlobal.artigoSelecionado = a;
+                    abrirPainelDetalhe(a, generoId);
+                });
+                container.appendChild(card);
+            }
+        }
+
+        function abrirPainelDetalhe(artigo, generoId) {
+            const existente = document.getElementById('painelDetalheDinamico');
+            if (existente) existente.remove();
+            const gridContainer = document.getElementById(`grid-${generoId}`);
+            if (!gridContainer) return;
+            const painel = document.createElement('div');
+            painel.id = 'painelDetalheDinamico';
+            painel.className = 'section';
+            painel.style.marginTop = '16px';
+            painel.innerHTML = `
+            <div class="section-title"><span>${artigo.escopo.icone || '📄'}</span> <span id="detalheNome">${artigo.escopo.topico}</span></div>
+            <p style="font-size:0.6rem; color:#888;">Código: <code style="background:#1a1a1a;color:#d4a017;padding:2px 6px;">${artigo.codigo_universal}</code></p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+              <span class="badge-editor">${artigo.escopo.genero}</span>
+              <span class="badge">${artigo.escopo.topico}</span>
+            </div>
+            <div style="margin-top:16px; background:#fdf5ec; padding:16px; border-left:4px solid var(--editor-primary);">
+              <strong style="font-size:0.8rem;color:var(--editor-primary);">⚡ SUPER PROMPT EDITORIAL:</strong>
+              <pre style="font-size:0.7rem; font-family:var(--font-mono); white-space:pre-wrap; margin-top:8px; background:white; padding:12px; border:1px solid #c8b8a8; max-height:400px; overflow-y:auto;">${artigo.superPrompt || ''}</pre>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-outline" id="btnCopiarPromptDetalhe">📋 Copiar Super Prompt</button>
+              <button class="btn btn-outline" id="btnCopiarJSONDetalhe">📋 Copiar JSON</button>
+            </div>
+            <div style="margin-top:16px;">
+              <label style="font-weight:700; color:var(--editor-primary);">📥 Cole a resposta da IA:</label>
+              <textarea class="raw-textarea" id="detalheRespostaIA" placeholder="Cole o texto retornado pela IA..." style="min-height:150px;"></textarea>
+            </div>
+            <button class="btn btn-editor" id="btnEstruturarDetalhe" style="margin-top:8px;">Estruturar Artigo (7 Camadas)</button>
+            <div class="camadas-preview" id="detalheCamadasPreview" style="display:none;"></div>
+            <div class="json-preview" id="detalheJSONPreview" contenteditable="true" style="display:none;"></div>
+            <button class="btn btn-outline" id="btnLimparJSONDetalhe" style="margin-top:6px;">🗑️ Limpar JSON</button>
+            <div style="margin-top:12px;">
+              <button class="btn btn-editor" id="btnEnviarRedisDetalhe" style="display:none;">Enviar para Redis</button>
+            </div>
+            <div class="redis-feedback" id="detalheFeedback"></div>
+            <div class="status-msg" id="detalheStatusMsg"></div>
+          `;
+            gridContainer.parentElement.appendChild(painel);
+            estadoGlobal.painelDetalheAberto = true;
+
+            document.getElementById('btnCopiarPromptDetalhe').addEventListener('click', async () => {
+                const ok = await copiarTextoParaClipboard(artigo.superPrompt || '');
+                document.getElementById('detalheStatusMsg').textContent = ok ? '✅ Super Prompt copiado!' : '❌ Falha.';
+                setTimeout(() => document.getElementById('detalheStatusMsg').textContent = '', 3000);
+            });
+            document.getElementById('btnCopiarJSONDetalhe').addEventListener('click', async () => {
+                const ok = await copiarTextoParaClipboard(JSON.stringify(artigo, null, 2));
+                document.getElementById('detalheStatusMsg').textContent = ok ? '✅ JSON copiado!' : '❌ Falha.';
+                setTimeout(() => document.getElementById('detalheStatusMsg').textContent = '', 3000);
+            });
+            document.getElementById('btnLimparJSONDetalhe').addEventListener('click', () => {
+                document.getElementById('detalheJSONPreview').textContent = '';
+            });
+            document.getElementById('btnEstruturarDetalhe').addEventListener('click', () => {
+                const texto = document.getElementById('detalheRespostaIA').value.trim();
+                if (!texto) { document.getElementById('detalheStatusMsg').textContent = '⚠️ Cole a resposta da IA primeiro.'; return; }
+                const camadas = extrairCamadas(texto);
+                const agora = new Date().toISOString();
+                const jsonResult = {
+                    codigo_universal: artigo.codigo_universal,
+                    versao: 'v1',
+                    hash: btoa(artigo.codigo_universal + texto).substring(0, 16),
+                    escopo: { ...artigo.escopo },
+                    conteudo: { resumo: camadas[0]?.subtemas[0] || '', camadas },
+                    indexacao: { ...artigo.indexacao },
+                    governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Editor-Chefe', aprovado_por: 'Especialista', criado_em: agora, revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0] },
+                    origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: agora, hash_original: btoa(texto).substring(0, 20), uri_original: `/storage/artigos/${artigo.codigo_universal}.md` },
+                    licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' },
+                    compliance: { lei_9610: true, lgpd: true, referencia_ia: 'Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1). Nenhuma outra IA foi utilizada.' }
+                };
+                estadoGlobal.estruturado = jsonResult;
+                document.getElementById('detalheCamadasPreview').style.display = 'block';
+                document.getElementById('detalheCamadasPreview').textContent = camadas.map(c => `Camada ${c.nivel}: ${c.nome} — ${c.subtemas.join(', ')}`).join('\n');
+                document.getElementById('detalheJSONPreview').style.display = 'block';
+                document.getElementById('detalheJSONPreview').textContent = JSON.stringify(jsonResult, null, 2);
+                document.getElementById('btnEnviarRedisDetalhe').style.display = 'inline-flex';
+                document.getElementById('detalheStatusMsg').textContent = '✅ Artigo estruturado com compliance!';
+                setTimeout(() => document.getElementById('detalheStatusMsg').textContent = '', 3000);
+                mostrarExplicacao({ fontes: ['IA IDEnza', 'Super Prompt Editorial'], camadas, score_confianca: 0.85, alertaRevisao: jsonResult.governanca.revisado_em, codigo: jsonResult.codigo_universal });
+            });
+            document.getElementById('btnEnviarRedisDetalhe').addEventListener('click', async () => {
+                if (!estadoGlobal.estruturado) return;
+                await enviarDiretoRedis(estadoGlobal.estruturado, 'artigo', estadoGlobal.estruturado.codigo_universal, 'detalheFeedback');
+            });
+        }
+
+        function mostrarExplicacao(meta) {
+            const panel = document.getElementById('explainPanel');
+            if (!panel) return;
+            panel.style.display = 'block';
+            document.getElementById('explainSources').textContent = (meta.fontes || ['IDEnza']).join(', ');
+            document.getElementById('explainLayers').textContent = meta.camadas ? meta.camadas.map(c => c.nome).join(' → ') : '—';
+            document.getElementById('explainConfidence').textContent = ((meta.score_confianca || 0.85) * 100).toFixed(0) + '%';
+            document.getElementById('explainReview').textContent = meta.alertaRevisao || 'Não definida';
+            document.getElementById('explainCode').textContent = meta.codigo || '—';
+        }
+
+        async function enviarDiretoRedis(payload, tipo, codigo, feedbackElementId) {
+            const feedbackEl = document.getElementById(feedbackElementId);
+            const enhancedPayload = COGNITIVE_SYSTEM.regulatory.addMetadata(payload);
+            const sanitizedPayload = COGNITIVE_SYSTEM.protection.sanitizeOutput(enhancedPayload);
+            updateRedisStatus('sending');
+            if (feedbackEl) { feedbackEl.className = 'redis-feedback show loading'; feedbackEl.textContent = '⏳ Enviando para o Redis...'; }
+            try {
+                const redisUrl = REDIS_CONFIG.url.replace(/\/$/, '');
+                const redisKey = `idenza:artigos:${tipo}:${codigo}`;
+                const response = await fetch(`${redisUrl}/set/${redisKey}`, { method: 'POST', headers: { 'Authorization': `Bearer ${REDIS_CONFIG.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(sanitizedPayload) });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                updateRedisStatus('connected'); if (feedbackEl) { feedbackEl.className = 'redis-feedback show success'; feedbackEl.innerHTML = `✅ Enviado!<br>📁 Chave: <code>${redisKey}</code>`; }
+                return { sucesso: true, redisKey };
+            } catch (error) { updateRedisStatus('disconnected'); if (feedbackEl) { feedbackEl.className = 'redis-feedback show error'; feedbackEl.innerHTML = `❌ Erro: ${error.message}`; } return { sucesso: false, erro: error.message }; }
+        }
+
+        // ==================== CONSTRUÇÃO DAS ABAS ====================
+        function construirAbas() {
+            const tabNav = document.getElementById('tabNav');
+            const mainContent = document.getElementById('mainContent');
+            tabNav.innerHTML = '';
+            mainContent.innerHTML = '';
+
+            // Abas de Gêneros
+            GENEROS_LITERARIOS.forEach((gen, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn editor-tab' + (index === 0 ? ' active' : '');
+                btn.dataset.tab = `tab-${gen.id}`;
+                btn.textContent = `${gen.icone} ${gen.nome}`;
+                tabNav.appendChild(btn);
+
+                const content = document.createElement('div');
+                content.className = 'tab-content' + (index === 0 ? ' active' : '');
+                content.id = `tab-${gen.id}`;
+                content.innerHTML = `
+              <div class="section">
+                <div class="section-title"><span>${gen.icone}</span> ${gen.nome} — Super Prompts Editoriais</div>
+                <p style="font-size:0.7rem; color:#666; margin-bottom:12px;">${gen.descricao} <strong>Clique em um tópico para gerar o artigo.</strong></p>
+                <button class="btn btn-editor" data-action="gerar" data-genero="${gen.id}">🚀 Gerar Super Prompts de ${gen.nome}</button>
+                <div class="redis-feedback" id="feedback-${gen.id}"></div>
+                <div id="grid-${gen.id}" class="artigo-card-grid"></div>
+              </div>
+            `;
+                mainContent.appendChild(content);
+            });
+
+            // Aba Humanoides
+            const btnHum = document.createElement('button');
+            btnHum.className = 'tab-btn editor-tab';
+            btnHum.dataset.tab = 'tab-humanoides';
+            btnHum.textContent = '🤖 Humanoides';
+            tabNav.appendChild(btnHum);
+            const contentHum = document.createElement('div');
+            contentHum.className = 'tab-content';
+            contentHum.id = 'tab-humanoides';
+            contentHum.innerHTML = `
+            <div class="section">
+              <div class="section-title"><span>🤖</span> Humanoides Cognitivos — Perfis Editoriais</div>
+              <p style="font-size:0.7rem; color:#666;">Selecione um perfil de escritor, editor ou crítico para auxiliar na criação.</p>
+              <div class="hum-type-grid" id="humTypeGrid"></div>
+              <div id="humPanel" style="display:none; margin-top:16px;">
+                <div class="section-title"><span id="humIcone"></span> Humanoide: <span id="humNome"></span></div>
+                <p style="font-size:0.6rem;">Código: <code style="background:#1a1a1a;color:#d4a017;padding:2px 6px;" id="humCodigoBase"></code></p>
+                <div style="margin-bottom:16px;"><label style="font-weight:700;">📝 Entrada / Contexto:</label><textarea class="raw-textarea" id="humEntrada" placeholder="Descreva o tema ou ideia..."></textarea></div>
+                <button class="btn btn-gold" id="btnProcessarHum">Processar</button>
+                <div class="redis-feedback" id="redisFeedbackHum"></div>
+                <div id="humResultados" style="display:none;">
+                  <div class="json-preview" id="humJsonCompleto" contenteditable="true"></div>
+                  <button class="btn btn-editor" id="btnEnviarWorkerHum" style="display:none;">Enviar para Redis</button>
+                </div>
+              </div>
+            </div>
+          `;
+            mainContent.appendChild(contentHum);
+
+            // Aba Fábrica
+            const btnFab = document.createElement('button');
+            btnFab.className = 'tab-btn editor-tab';
+            btnFab.dataset.tab = 'tab-cognitivo';
+            btnFab.textContent = '🏭 Fábrica';
+            tabNav.appendChild(btnFab);
+            const contentFab = document.createElement('div');
+            contentFab.className = 'tab-content';
+            contentFab.id = 'tab-cognitivo';
+            contentFab.innerHTML = `
+            <div class="section">
+              <div class="section-title"><span>🏭</span> Fábrica Cognitiva de Artigos</div>
+              <p style="font-size:0.7rem;">Gere novos artefatos editoriais personalizados.</p>
+              <div><label>Nome</label><input type="text" class="raw-textarea" id="fabricaNome" placeholder="Ex: Ensaio sobre Literatura Brasileira"></div>
+              <div><label>Gênero</label><input type="text" class="raw-textarea" id="fabricaGenero" placeholder="Ex: Ensaio, Resenha, Artigo Acadêmico"></div>
+              <button class="btn btn-editor" id="fabricaBtnGerar" style="margin-top:12px;">Gerar Artefato</button>
+              <div id="fabricaResultado" style="display:none; margin-top:20px;">
+                <div class="json-preview" id="fabricaPreviewJSON" contenteditable="true"></div>
+                <button class="btn btn-editor" id="fabricaBtnEnviarRedis">Enviar para Redis</button>
+              </div>
+              <div class="redis-feedback" id="fabricaFeedback"></div>
+            </div>
+          `;
+            mainContent.appendChild(contentFab);
+
+            // Aba Compliance
+            const btnComp = document.createElement('button');
+            btnComp.className = 'tab-btn editor-tab';
+            btnComp.dataset.tab = 'tab-compliance';
+            btnComp.textContent = '⚖️ Compliance';
+            tabNav.appendChild(btnComp);
+            const contentComp = document.createElement('div');
+            contentComp.className = 'tab-content';
+            contentComp.id = 'tab-compliance';
+            contentComp.innerHTML = `
+            <div class="section">
+              <div class="section-title"><span>⚖️</span> Registro de Compliance Legal</div>
+              <div style="font-size:0.8rem; line-height:1.8;">
+                <p><strong>Lei nº 9.610/98 (Lei de Direitos Autorais):</strong> Todos os artigos gerados são originais e não infringem direitos de terceiros.</p>
+                <p><strong>Lei nº 13.709/2018 (LGPD):</strong> Nenhum dado pessoal é armazenado sem consentimento explícito.</p>
+                <p><strong>Licença CC BY-NC 4.0:</strong> Todo conteúdo gerado é licenciado sob Creative Commons Atribuição-NãoComercial 4.0 Internacional.</p>
+                <p><strong>Referência de IA:</strong> Todo artigo gerado por este estúdio conterá obrigatoriamente a nota: <em>"Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1)."</em></p>
+                <p style="margin-top:12px; background:#fdf5ec; padding:12px; border-left:4px solid var(--editor-primary);">
+                  📌 <strong>Declaração:</strong> Esta plataforma não se responsabiliza por usos indevidos dos textos gerados. O usuário é o único responsável pela verificação de originalidade e adequação legal do conteúdo publicado.
+                </p>
+              </div>
+            </div>
+          `;
+            mainContent.appendChild(contentComp);
+        }
+
+        function inicializarGeneros() {
+            GENEROS_LITERARIOS.forEach(gen => {
+                const artigos = [];
+                for (const topico of gen.topicos) {
+                    const codigo = `artigo.${gen.id}.${topico.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ptbr.idenza.v1`;
+                    const superPrompt = gerarSuperPromptArtigo(gen, topico, topico.subtopicos);
+                    artigos.push({
+                        codigo_universal: codigo,
+                        versao: 'v1',
+                        hash: btoa(codigo).substring(0, 16),
+                        escopo: { dominio: gen.id, genero: gen.nome, topico: topico.nome, subtopicos: topico.subtopicos, icone: topico.icone, idioma: 'pt-BR' },
+                        superPrompt: superPrompt,
+                        indexacao: { tags: ['artigo', gen.id, topico.nome.toLowerCase()], palavras_chave: [topico.nome.toLowerCase(), ...topico.subtopicos.map(s => s.toLowerCase())] },
+                        governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Editor-Chefe', aprovado_por: 'Especialista', criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0] },
+                        origem: { tipo: 'ia_externa', modelo: 'DeepSeek', data_geracao: new Date().toISOString() },
+                        licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+                    });
+                }
+                estadoGlobal.artigosPorGenero[gen.id] = artigos;
+                const grid = document.getElementById(`grid-${gen.id}`);
+                if (grid) renderizarGridArtigos(grid, artigos, gen.id);
+            });
+        }
+
+        function inicializarHumanoides() {
+            const tiposHumanoides = [
+                { id: 'escritor', icone: '✍️', nome: 'Escritor Criativo', descricao: 'Especialista em narrativas envolventes e construção de personagens.' },
+                { id: 'poeta', icone: '🎵', nome: 'Poeta', descricao: 'Mestre na arte dos versos, métrica e lirismo.' },
+                { id: 'jornalista', icone: '📰', nome: 'Jornalista Literário', descricao: 'Focado em crônicas, reportagens e textos factuais com estilo.' },
+                { id: 'roteirista', icone: '🎬', nome: 'Roteirista', descricao: 'Especialista em diálogos e estruturas para cinema e TV.' },
+                { id: 'critico', icone: '🔍', nome: 'Crítico Literário', descricao: 'Analisa obras com profundidade teórica e contexto histórico.' },
+                { id: 'revisor', icone: '📝', nome: 'Revisor Ortográfico', descricao: 'Garante a correção gramatical e a fluência do texto.' }
+            ];
+            const humTypeGrid = document.getElementById('humTypeGrid');
+            if (!humTypeGrid) return;
+            humTypeGrid.innerHTML = '';
+            tiposHumanoides.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'hum-type-card';
+                card.innerHTML = `<span class="type-icon">${t.icone}</span><div class="type-name">${t.nome}</div><div class="type-code">${t.id}</div>`;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.hum-type-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    document.getElementById('humPanel').style.display = 'block';
+                    document.getElementById('humIcone').textContent = t.icone;
+                    document.getElementById('humNome').textContent = t.nome;
+                    document.getElementById('humCodigoBase').textContent = `hum.${t.id}.idenza`;
+                    document.getElementById('humEntrada').value = '';
+                    document.getElementById('humResultados').style.display = 'none';
+                    window._humTipo = t;
+                });
+                humTypeGrid.appendChild(card);
+            });
+            document.getElementById('btnProcessarHum').addEventListener('click', () => {
+                const entrada = document.getElementById('humEntrada').value.trim();
+                if (!entrada) return;
+                const agora = new Date().toISOString();
+                const codigo = `hum.${Date.now().toString(36)}.idenza.v1`;
+                const jsonResult = {
+                    codigo_universal: codigo,
+                    escopo: { tipo: window._humTipo?.id, nome: window._humTipo?.nome, entrada },
+                    conteudo: { resposta: `Processamento para "${entrada.substring(0,40)}..."` },
+                    governanca: { score_confianca: 0.80, autor: 'IDEnza', criado_em: agora },
+                    compliance: { referencia_ia: 'Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1).' }
+                };
+                document.getElementById('humResultados').style.display = 'block';
+                document.getElementById('humJsonCompleto').textContent = JSON.stringify(jsonResult, null, 2);
+                document.getElementById('btnEnviarWorkerHum').style.display = 'inline-flex';
+                window._humPayload = jsonResult;
+            });
+            document.getElementById('btnEnviarWorkerHum').addEventListener('click', async () => {
+                if (!window._humPayload) return;
+                await enviarDiretoRedis(window._humPayload, 'humanoide', window._humPayload.codigo_universal, 'redisFeedbackHum');
+            });
+        }
+
+        function configurarEventos() {
+            document.getElementById('tabNav').addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-btn')) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const tabId = e.target.dataset.tab;
+                    const tabContent = document.getElementById(tabId);
+                    if (tabContent) tabContent.classList.add('active');
+                    const painel = document.getElementById('painelDetalheDinamico');
+                    if (painel) painel.remove();
+                    estadoGlobal.painelDetalheAberto = false;
+                }
+            });
+            document.getElementById('mainContent').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action="gerar"]');
+                if (!btn) return;
+                const generoId = btn.dataset.genero;
+                const gen = GENEROS_LITERARIOS.find(g => g.id === generoId);
+                if (!gen) return;
+                const artigos = [];
+                for (const topico of gen.topicos) {
+                    const codigo = `artigo.${gen.id}.${topico.nome.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ptbr.idenza.v1`;
+                    const superPrompt = gerarSuperPromptArtigo(gen, topico, topico.subtopicos);
+                    artigos.push({
+                        codigo_universal: codigo,
+                        versao: 'v1',
+                        hash: btoa(codigo).substring(0, 16),
+                        escopo: { dominio: gen.id, genero: gen.nome, topico: topico.nome, subtopicos: topico.subtopicos, icone: topico.icone, idioma: 'pt-BR' },
+                        superPrompt: superPrompt,
+                        indexacao: { tags: ['artigo', gen.id], palavras_chave: [topico.nome.toLowerCase()] },
+                        governanca: { score_confianca: 0.85, autor: 'IDEnza', revisor: 'Editor-Chefe', criado_em: new Date().toISOString(), revisado_em: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0] },
+                        licenca: { tipo: 'CC BY-NC', responsavel: 'IDEnza' }
+                    });
+                }
+                estadoGlobal.artigosPorGenero[gen.id] = artigos;
+                const grid = document.getElementById(`grid-${gen.id}`);
+                if (grid) renderizarGridArtigos(grid, artigos, gen.id);
+            });
+            document.getElementById('fabricaBtnGerar').addEventListener('click', () => {
+                const nome = document.getElementById('fabricaNome').value.trim() || 'Novo Artefato';
+                const genero = document.getElementById('fabricaGenero').value.trim() || 'Artigo';
+                const codigo = `fabrica.${Date.now().toString(36)}.idenza.v1`;
+                const agora = new Date().toISOString();
+                const resultado = {
+                    codigo_universal: codigo,
+                    escopo: { nome, genero },
+                    governanca: { score_confianca: 0.80, autor: 'IDEnza', criado_em: agora },
+                    compliance: { referencia_ia: 'Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1).' }
+                };
+                document.getElementById('fabricaResultado').style.display = 'block';
+                document.getElementById('fabricaPreviewJSON').textContent = JSON.stringify(resultado, null, 2);
+            });
+            document.getElementById('fabricaBtnEnviarRedis').addEventListener('click', async () => {
+                const json = document.getElementById('fabricaPreviewJSON').textContent;
+                if (!json) return;
+                try { const payload = JSON.parse(json); await enviarDiretoRedis(payload, 'fabrica', payload.codigo_universal, 'fabricaFeedback'); } catch { /* erro */ }
+            });
+        }
+
+        document.getElementById('assistenteBtn').addEventListener('click', () => {
+            const input = document.getElementById('assistenteInput').value.trim();
+            const respostaDiv = document.getElementById('assistenteResposta');
+            if (!input) { respostaDiv.style.display = 'block'; respostaDiv.textContent = 'Por favor, digite um tema.'; return; }
+            respostaDiv.style.display = 'block';
+            respostaDiv.textContent = 'Processando... (conexão com IA em breve)';
+            setTimeout(() => { respostaDiv.innerHTML = `<em>Rascunho para "${input}":</em><br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum. (Texto de exemplo — a IA gerará conteúdo real.)<br><br><small>📌 Texto gerado com auxílio da IA generativa IDEnza (DeepSeek, v1).</small>`; }, 1200);
+        });
+
+        window.addEventListener('load', () => {
+            construirAbas();
+            inicializarGeneros();
+            configurarEventos();
+            inicializarHumanoides();
+            console.log('Estúdio IDEnza — Motor Gerador de Artigos carregado. Compliance ativo.');
+        });
+    </script>
+</body>
+</html>

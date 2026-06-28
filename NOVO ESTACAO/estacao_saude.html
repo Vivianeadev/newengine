@@ -860,50 +860,28 @@
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
         }
-		.top-nav-special {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 8px 16px;
-    background: #2d5a27;
-    border-bottom: 2px solid var(--gold-dark);
-}
-.top-nav-special a {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    transition: 0.2s;
-    border-radius: 4px !important;
-}
-.top-nav-special a:hover {
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-}
-.top-nav-special {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 8px 16px;
-    background: #2d5a27;
-    border-bottom: 2px solid var(--gold-dark);
-}
-.top-nav-special a {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    transition: 0.2s;
-    border-radius: 4px !important;
-}
-.top-nav-special a:hover {
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-}
+        .top-nav-special {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 8px 16px;
+            background: #2d5a27;
+            border-bottom: 2px solid var(--gold-dark);
+        }
+        .top-nav-special a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            transition: 0.2s;
+            border-radius: 4px !important;
+        }
+        .top-nav-special a:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -1401,14 +1379,65 @@ Inicie agora a geração do artefato cognitivo imutável.`;
             return agentes;
         }
 
-        // ==================== FUNÇÃO extrairCamadas ====================
+        // ==================== NOVA FUNÇÃO extrairCamadasRobusto (correção) ====================
         function extrairCamadas(texto) {
             if (!texto || typeof texto !== 'string') return [];
-            try { const jsonMatch = texto.match(/\{[\s\S]*"camadas"[\s\S]*\}/); if (jsonMatch) { const obj = JSON.parse(
-                        jsonMatch[0]); if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) { return obj
-                            .camadas.map(c => ({ nivel: c.nivel, nome: c.nome, subtemas: Array.isArray(c.subtemas) ? c
-                                .subtemas.filter(s => s) : [], conceitos_chave: c.conceitos_chave || [], fontes: c
-                                .fontes || [] })); } } } catch (e) {}
+            // 1. Tenta bloco de código markdown (resultado do super prompt)
+            const codeBlockMatch = texto.match(/```json\s*([\s\S]*?)\s*```/);
+            if (codeBlockMatch) {
+                try {
+                    const obj = JSON.parse(codeBlockMatch[1]);
+                    if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+                        return obj.camadas.map(c => ({
+                            nivel: c.nivel,
+                            nome: c.nome,
+                            subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [],
+                            conceitos_chave: c.conceitos_chave || [],
+                            fontes: c.fontes || []
+                        }));
+                    }
+                } catch (e) { /* falha silenciosa, vai para fallback */ }
+            }
+            // 2. Fallback com contagem balanceada de chaves a partir da primeira aparição de "camadas"
+            const startIndex = texto.indexOf('"camadas"');
+            if (startIndex !== -1) {
+                let braceStart = startIndex;
+                while (braceStart >= 0 && texto[braceStart] !== '{') { braceStart--; }
+                if (braceStart >= 0) {
+                    let braceCount = 0;
+                    let inString = false;
+                    let escape = false;
+                    let endIndex = -1;
+                    for (let i = braceStart; i < texto.length; i++) {
+                        const char = texto[i];
+                        if (escape) { escape = false; continue; }
+                        if (char === '\\') { escape = true; continue; }
+                        if (char === '"') { inString = !inString; continue; }
+                        if (!inString) {
+                            if (char === '{') braceCount++;
+                            else if (char === '}') {
+                                braceCount--;
+                                if (braceCount === 0) { endIndex = i; break; }
+                            }
+                        }
+                    }
+                    if (endIndex !== -1) {
+                        try {
+                            const obj = JSON.parse(texto.slice(braceStart, endIndex + 1));
+                            if (obj.camadas && Array.isArray(obj.camadas) && obj.camadas.length > 0) {
+                                return obj.camadas.map(c => ({
+                                    nivel: c.nivel,
+                                    nome: c.nome,
+                                    subtemas: Array.isArray(c.subtemas) ? c.subtemas.filter(s => s) : [],
+                                    conceitos_chave: c.conceitos_chave || [],
+                                    fontes: c.fontes || []
+                                }));
+                            }
+                        } catch (e) { /* último recurso */ }
+                    }
+                }
+            }
+            // 3. Último recurso: parse linha-a-linha (versão original resiliente)
             const linhas = texto.split('\n').map(l => l.trim()).filter(l => l);
             const camadas = [];
             let camadaAtual = null;
